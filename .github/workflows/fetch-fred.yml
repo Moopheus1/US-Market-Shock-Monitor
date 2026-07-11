@@ -2,8 +2,13 @@ name: Fetch FRED Data
 
 on:
   schedule:
-    - cron: '0 16 * * *'  # Daily at 4pm UTC (≈ US market close)
-  workflow_dispatch:       # Manual trigger button
+    # Run at 11:30 AM UTC = 6:30 AM ET (pre-market data refresh)
+    # FRED publishes previous-day data early morning ET
+    - cron: '30 11 * * *'
+    # Also run at 9:00 PM UTC = 4:00 PM ET (right after market close)
+    # Catches any same-day updates FRED publishes post-close
+    - cron: '0 21 * * *'
+  workflow_dispatch:
 
 jobs:
   fetch:
@@ -23,14 +28,12 @@ jobs:
             local file=$2
             echo "Fetching ${series}..."
             curl -s "https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${API_KEY}&file_type=json&sort_order=desc&limit=200"               -o "data/${file}.json"
-            # Verify it's valid JSON
             if ! python3 -c "import json; json.load(open('data/${file}.json'))" 2>/dev/null; then
               echo "WARNING: ${series} returned invalid JSON, keeping previous file if exists"
               git checkout -- "data/${file}.json" 2>/dev/null || true
             fi
           }
 
-          # Core indicators
           fetch_series "VIXCLS"        "vix"
           fetch_series "DTWEXBGS"      "dxy"
           fetch_series "T10Y2Y"        "yield10y2y"
@@ -46,7 +49,6 @@ jobs:
           fetch_series "SP500"         "sp500"
           fetch_series "NASDAQCOM"     "nasdaq"
 
-          # Also fetch a metadata file with last update timestamp
           echo '{"lastUpdated":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > data/meta.json
 
       - name: Commit and Push
