@@ -1,0 +1,49 @@
+name: Fetch FRED Data
+
+on:
+  schedule:
+    - cron: '0 16 * * *'  # Runs daily at 4pm UTC (≈ market close)
+  workflow_dispatch:       # Allows manual trigger
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Fetch FRED Data
+        run: |
+          mkdir -p data
+          
+          # Helper function to fetch series
+          fetch_series() {
+            local series=$1
+            local file=$2
+            curl -s "https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${{ secrets.FRED_API_KEY }}&file_type=json&sort_order=desc&limit=100" \
+              -o "data/${file}.json"
+            echo "Fetched ${series} -> data/${file}.json"
+          }
+          
+          # Key indicators for a Market Shock Monitor
+          fetch_series "DGS10"        "treasury_10y"          # 10Y Treasury
+          fetch_series "DGS2"         "treasury_2y"            # 2Y Treasury
+          fetch_series "T10Y2Y"       "yield_curve"            # Yield curve spread
+          fetch_series "VIXCLS"       "vix"                    # Volatility index
+          fetch_series "UNRATE"       "unemployment"           # Unemployment
+          fetch_series "CPIAUCSL"     "cpi"                    # Consumer Price Index
+          fetch_series "BAMLH0A0HYM2" "high_yield_spread"      # Credit spreads
+          fetch_series "DFF"          "fed_funds"              # Fed Funds Rate
+          fetch_series "M2SL"         "m2_money"               # M2 Money Supply
+          fetch_series "DCOILWTICO"   "wti_oil"                # Oil prices
+          fetch_series "NASDAQCOM"    "nasdaq"                 # NASDAQ
+          fetch_series "SP500"        "sp500"                  # S&P 500
+          
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Update FRED data [$(date -u +%Y-%m-%d)]"
+          git push
