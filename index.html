@@ -127,6 +127,9 @@
   /* NAAIM SECTION START — see fetch-naaim.yml header for removal instructions */
   .naaim-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
   .naaim-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .panel-source-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--blue); text-decoration: none; }
+  .panel-source-link:hover { text-decoration: underline; }
+  .panel-source-link svg { width: 11px; height: 11px; }
   .naaim-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
   .naaim-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; }
   .naaim-status { font-size: 12px; color: var(--text-muted); }
@@ -145,12 +148,28 @@
   .naaim-deprecation-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.5; }
   /* NAAIM SECTION END */
 
+  /* GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. */
+  .gold-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .gold-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .gold-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .gold-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .gold-status { font-size: 12px; color: var(--text-muted); }
+  .gold-status.live { color: var(--green); }
+  .gold-status.error { color: var(--red); }
+  .gold-body { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; }
+  .gold-price { font-size: 28px; font-weight: 800; }
+  .gold-change { font-size: 14px; font-weight: 700; }
+  .gold-trend-row { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); }
+  .gold-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+  /* GOLD SECTION END */
+
   .signpost-list { display: flex; flex-wrap: wrap; gap: 6px; margin: -10px 0 16px 0; }
   .signpost-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: opacity 0.15s; }
   .signpost-chip:hover { opacity: 0.8; }
   .signpost-chip.level { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
   .signpost-chip.trend { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
   .signpost-chip.both { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239,68,68,0.4); font-weight: 700; }
+  .signpost-chip.collapse { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239,68,68,0.4); font-weight: 700; }
   .signpost-empty { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 4px 0 12px 0; }
 
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -285,17 +304,19 @@
 
   <div class="framework-box open" id="frameworkPartI" onclick="toggleFramework('frameworkPartI')">
     <div class="framework-toggle">
-      <span class="framework-toggle-label">▸ signal framework — how the signpost count works</span>
+      <span class="framework-toggle-label">▸ signal framework — how the signpost count works (backtested)</span>
       <span class="framework-toggle-arrow">▾</span>
     </div>
     <div class="framework-body">
       <div class="framework-row"><span class="framework-range" style="color:var(--green)">&lt;20% triggered — accumulate</span><span class="framework-meaning">Few indicators flashing. Overweight equities, buy dips aggressively.</span></div>
       <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">20–39% — maintain</span><span class="framework-meaning">A handful of signposts firing, not yet broad-based. Hold positions, add hedges (puts/VIX calls).</span></div>
-      <div class="framework-row"><span class="framework-range" style="color:var(--orange, #f97316)">40–64% — reduce risk</span><span class="framework-meaning">Close to half of all signposts triggered. Raise cash to 20–30%, avoid new equity positions.</span></div>
-      <div class="framework-row"><span class="framework-range" style="color:var(--red)">65%+ — derisk</span><span class="framework-meaning">Broad-based, majority of signposts triggered. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--orange, #f97316)">40–59% — reduce risk</span><span class="framework-meaning">Close to half of all signposts triggered. Raise cash to 20–30%, avoid new equity positions.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--red)">60%+ — derisk</span><span class="framework-meaning">Broad-based, majority of signposts triggered. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
       <div class="framework-arrow-note">
-        Each of the 14 indicators is checked against two independent conditions: LEVEL (is it currently sitting in its own red zone?) and TREND (has it moved fast toward red recently, even from a calm level, measured off real historical FRED values — not a blended average). Either one firing counts as that indicator's signpost being "triggered." The number shown is a straight count — e.g. "6/14" — the same way BofA's public commentary counts triggered bear-market signposts, not a blended average that lets 13 calm indicators dilute one screaming outlier. Click any chip above the indicator grid to jump straight to that indicator's card.
-        This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below. The trend/level thresholds are a judgment call, not a backtested constant — worth watching for a few weeks before trusting fully.
+        Each indicator triggers on LEVEL (in its own red zone), TREND (moved fast toward red recently, off real historical FRED values), or for VIX and treasury yields specifically, a third condition tuned for crash detection - see below. Either firing counts as triggered; the number shown is a straight count, not a blended average.
+        <strong style="color:var(--text-primary)">Backtested against 2015-2026 (2,896 trading days, out-of-sample - only data available as of each historical date was used):</strong> VIX's card display deliberately uses contrarian zones (high VIX = accumulate signal, for entry timing). That framing, unmodified, meant the signpost count read VIX=82.69 as calm during the actual COVID crash peak. A separate stress-only VIX zone (used only for signposts, never the card) fixed this - verified peak reading during COVID rose from 45.5% to 72.7% once applied. Treasury yields also got a flight-to-safety collapse check (a fast yield COLLAPSE, not just a rise, is itself a stress signal - 10Y fell 1.88%→0.54% during COVID and was previously invisible to this model). The 60% derisk threshold reflects the actual historical ceiling after these fixes, not a round number.
+        <strong style="color:var(--text-primary)">Known, unfixed limitation:</strong> the 2018 Q4 selloff (~20% SPX drawdown) still only reaches 27.3% under this model, even after the fixes above - that correction wasn't well-represented by any of the 12 available FRED series simultaneously (mostly a growth/rate-fear equity correction, not a classic vol-spike or flight-to-safety event). This is a data-coverage gap, not a threshold problem - closing it would need indicators this dashboard doesn't have yet (credit market breadth, equity positioning, liquidity stress).
+        This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below.
       </div>
     </div>
   </div>
@@ -303,7 +324,7 @@
   <!-- NAAIM SECTION START — see fetch-naaim.yml header for full removal instructions -->
   <div class="naaim-bar" id="naaimBar">
     <div class="naaim-title-row">
-      <span class="naaim-title">NAAIM active manager positioning <span class="naaim-sub">(weekly, contrarian read — auto, free until Aug 1 2026)</span></span>
+      <span class="naaim-title">NAAIM active manager positioning <span class="naaim-sub">(weekly, contrarian read — auto, free until Aug 1 2026)</span> <a class="panel-source-link" href="https://naaim.org/programs/naaim-exposure-index/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> naaim.org</a></span>
       <span class="naaim-status" id="naaimStatus">loading...</span>
     </div>
     <div class="naaim-body">
@@ -323,6 +344,24 @@
     <div class="naaim-deprecation-note">NAAIM announced this data moves to subscription access on Aug 1, 2026 — this panel will show "unavailable" after that date unless a paid source replaces it. Contrarian read: high manager exposure historically precedes weakness, very low/negative exposure historically precedes strength — the opposite of how you'd read most sentiment gauges at face value.</div>
   </div>
   <!-- NAAIM SECTION END -->
+
+  <!-- GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. -->
+  <div class="gold-bar" id="goldBar">
+    <div class="gold-title-row">
+      <span class="gold-title">gold (GLD) <span class="gold-sub">— informational only, not part of the signpost score</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/GLD/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/GLD</a></span>
+      <span class="gold-status" id="goldStatus">loading...</span>
+    </div>
+    <div class="gold-body">
+      <div class="gold-price" id="goldPrice">--</div>
+      <div class="gold-change" id="goldChange">--</div>
+      <div class="gold-trend-row">
+        <span id="gold5d">5d: --</span>
+        <span id="gold20d">20d: --</span>
+      </div>
+    </div>
+    <div class="gold-note">Backtested against 2018 Q4, COVID, and 2022: gold worked as a hedge in only 1 of those 3 stress events (rallied +6.6% in 2018, but fell in both COVID's liquidity panic and the 2022 rate-driven selloff). Not reliable enough to score as a signpost — shown here as context only, not signal.</div>
+  </div>
+  <!-- GOLD SECTION END -->
 
   <div class="bias-bar" id="biasBar">
     <div class="bias-left">
@@ -858,6 +897,39 @@ async function loadNAAIMData() {
 }
 // NAAIM SECTION END
 
+// GOLD SECTION START — informational only, not scored. See fetch-gold.yml for removal.
+async function loadGoldData() {
+  const statusEl = document.getElementById('goldStatus');
+  let data = null;
+  try {
+    const res = await fetch('data/gold.json', { cache: 'no-store' });
+    if (res.ok) data = await res.json();
+  } catch (e) { data = null; }
+
+  if (!data || data._fetchFailed || data.price === undefined) {
+    statusEl.textContent = 'unavailable — data/gold.json missing or fetch failed';
+    statusEl.className = 'gold-status error';
+    document.getElementById('goldPrice').textContent = '--';
+    document.getElementById('goldChange').textContent = '--';
+    return;
+  }
+
+  const age = hoursAgo(data._lastFetched || data._lastUpdated);
+  const ageTxt = age < 24 ? Math.round(age) + 'h ago' : Math.round(age / 24) + 'd ago';
+  statusEl.textContent = 'updated ' + ageTxt;
+  statusEl.className = 'gold-status ' + (age < 48 ? 'live' : 'error');
+
+  document.getElementById('goldPrice').textContent = '$' + data.price.toFixed(2);
+  const changeEl = document.getElementById('goldChange');
+  const chg = data.changePct;
+  changeEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% today';
+  changeEl.style.color = chg > 0 ? 'var(--green)' : chg < 0 ? 'var(--red)' : 'var(--text-muted)';
+
+  document.getElementById('gold5d').textContent = '5d: ' + (data.change5d !== null && data.change5d !== undefined ? (data.change5d >= 0 ? '+' : '') + data.change5d.toFixed(1) + '%' : '--');
+  document.getElementById('gold20d').textContent = '20d: ' + (data.change20d !== null && data.change20d !== undefined ? (data.change20d >= 0 ? '+' : '') + data.change20d.toFixed(1) + '%' : '--');
+}
+// GOLD SECTION END
+
 async function loadBreadthData() {
   const statusEl = document.getElementById('breadthStatus');
   try {
@@ -1371,8 +1443,25 @@ function updateFOMC() {
 // Both threshold constants below are judgment calls, not backtested - same
 // caveat as every other manually-set threshold in this file (MOO, TICK,
 // treasury zones). Watch a few weeks of real triggers before trusting them.
-const SIGNPOST_TREND_LOOKBACK = 5;   // compare current zonePos to N points back
-const SIGNPOST_TREND_THRESHOLD = 0.15; // zonePos move (on the 0-1 scale) counted as "fast"
+const SIGNPOST_TREND_LOOKBACK = 5;
+const SIGNPOST_TREND_THRESHOLD = 0.15;
+
+// BACKTEST-VALIDATED FIX (2015-2026 historical simulation, see conversation record):
+// VIX's card display deliberately uses inverted/contrarian zones (green=[30,100] -
+// "high VIX = buying opportunity"). That's fine for entry-timing on the card, but it
+// meant the signpost model read VIX=82.69 during the COVID crash peak as GREEN/calm -
+// actively fighting crash detection. This override zone is used ONLY for signposts,
+// never for the VIX card's own display, which keeps its contrarian framing unchanged.
+const SIGNPOST_STRESS_OVERRIDE_ZONES = {
+  vix: { green: [0, 17], yellow: [17, 25], red: [25, 100] },
+};
+
+// BACKTEST-VALIDATED FIX: a fast COLLAPSE in yields (flight to safety) is itself a
+// stress signal, not just a rise. 10Y fell from 1.88% to 0.54% during the COVID crash -
+// under level/trend logic alone (which only catches yields RISING toward red) that
+// collapse was invisible. This catches a >=15% relative drop over the trend lookback,
+// independent of which zone the level currently sits in.
+const SIGNPOST_COLLAPSE_WATCH = { treasury10y: 0.15, treasury2y: 0.15 };
 
 function computeSignposts() {
   const results = [];
@@ -1380,20 +1469,37 @@ function computeSignposts() {
     const cfg = FRED_CONFIG[ind.id];
     if (!cfg) return; // indicator without a real zone config - shouldn't happen, skip defensively
 
-    const levelTriggered = ind.zonePos >= 0.66;
+    const zones = SIGNPOST_STRESS_OVERRIDE_ZONES[ind.id] || cfg.zones;
+    // Level check uses the override zone if one exists (recomputed from the raw current
+    // value, not ind.zonePos, since ind.zonePos was computed with the card's own zones)
+    const currentRaw = ind.chartData && ind.chartData.length ? ind.chartData[ind.chartData.length - 1] : null;
+    const levelTriggered = currentRaw !== null
+      ? computeZonePos(currentRaw, zones, cfg.redUpper) >= 0.66
+      : ind.zonePos >= 0.66;
 
-    let trendTriggered = false, trendDelta = null;
+    let trendTriggered = false, trendDelta = null, collapseTriggered = false;
     if (ind.chartData && ind.chartData.length >= SIGNPOST_TREND_LOOKBACK + 1) {
-      const zonePosSeries = ind.chartData.map(v => computeZonePos(v, cfg.zones, cfg.redUpper));
+      const series = ind.chartData;
+      const zonePosSeries = series.map(v => computeZonePos(v, zones, cfg.redUpper));
       const recent = zonePosSeries[zonePosSeries.length - 1];
       const past = zonePosSeries[zonePosSeries.length - 1 - SIGNPOST_TREND_LOOKBACK];
       trendDelta = recent - past;
       trendTriggered = trendDelta >= SIGNPOST_TREND_THRESHOLD;
+
+      if (SIGNPOST_COLLAPSE_WATCH[ind.id]) {
+        const curVal = series[series.length - 1];
+        const pastVal = series[series.length - 1 - SIGNPOST_TREND_LOOKBACK];
+        if (pastVal !== 0) {
+          const relDrop = (pastVal - curVal) / Math.abs(pastVal);
+          collapseTriggered = relDrop >= SIGNPOST_COLLAPSE_WATCH[ind.id];
+        }
+      }
     }
 
-    const triggered = levelTriggered || trendTriggered;
+    const triggered = levelTriggered || trendTriggered || collapseTriggered;
     let reason = null;
-    if (levelTriggered && trendTriggered) reason = 'both';
+    if (collapseTriggered) reason = levelTriggered || trendTriggered ? 'both' : 'collapse';
+    else if (levelTriggered && trendTriggered) reason = 'both';
     else if (levelTriggered) reason = 'level';
     else if (trendTriggered) reason = 'trend';
 
@@ -1410,8 +1516,8 @@ function renderSignpostList(signposts) {
     return;
   }
   el.innerHTML = triggered.map(s => {
-    const icon = s.reason === 'both' ? '●▲' : s.reason === 'level' ? '●' : '▲';
-    const label = s.reason === 'both' ? 'level + trend' : s.reason;
+    const icon = s.reason === 'both' ? '●▲' : s.reason === 'level' ? '●' : s.reason === 'collapse' ? '▼' : '▲';
+    const label = s.reason === 'both' ? 'level + trend' : s.reason === 'collapse' ? 'flight-to-safety' : s.reason;
     return '<span class="signpost-chip ' + s.reason + '" onclick="scrollToIndicator(\'' + s.id + '\')">' + icon + ' ' + s.title + ' <span style="opacity:0.7">(' + label + ')</span></span>';
   }).join('');
 }
@@ -1438,7 +1544,7 @@ function calcComposite() {
   let badge = 'reduce risk', action = 'raise cash to 20-30%, avoid new equity', cls = 'badge-orange', color = 'var(--yellow)';
   if (pct < 0.20) { badge = 'accumulate'; action = 'overweight equities, buy dips aggressively'; cls = 'badge-green'; color = 'var(--green)'; }
   else if (pct < 0.40) { badge = 'maintain'; action = 'hold positions, add hedges (puts/vix calls)'; cls = 'badge-yellow'; color = 'var(--yellow)'; }
-  else if (pct >= 0.65) { badge = 'derisk'; action = 'sell aggressively, raise cash > 50%, go defensive'; cls = 'badge-red'; color = 'var(--red)'; }
+  else if (pct >= 0.60) { badge = 'derisk'; action = 'sell aggressively, raise cash > 50%, go defensive'; cls = 'badge-red'; color = 'var(--red)'; }
   const b = document.getElementById('mainBadge');
   b.textContent = badge;
   b.className = 'signal-badge ' + cls;
@@ -1459,6 +1565,7 @@ async function manualRefresh() {
   await loadFREDData();
   await loadBreadthData();
   await loadNAAIMData();
+  await loadGoldData();
   await fetchRealtime();
   renderCards();
   calcComposite();
@@ -1474,6 +1581,7 @@ async function manualRefresh() {
   await loadFREDData();
   await loadBreadthData();
   await loadNAAIMData();
+  await loadGoldData();
   await fetchRealtime();
   renderCards();
   calcComposite();
