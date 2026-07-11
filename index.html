@@ -7,8 +7,8 @@
 <style>
   :root {
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --bg: #0a0c10; --card-bg: #111318; --border: #1e2128;
-    --text-primary: #e8e8e8; --text-secondary: #9ca3af; --text-muted: #6b7280;
+    --bg: #f4f5f7; --card-bg: #ffffff; --border: #dde1e6;
+    --text-primary: #14161a; --text-secondary: #4b5563; --text-muted: #6b7280;
     --green: #22c55e; --green-dim: rgba(34,197,94,0.1); --green-glow: rgba(34,197,94,0.15);
     --yellow: #f59e0b; --yellow-dim: rgba(245,158,11,0.1); --yellow-glow: rgba(245,158,11,0.15);
     --red: #ef4444; --red-dim: rgba(239,68,68,0.1); --red-glow: rgba(239,68,68,0.15);
@@ -19,115 +19,128 @@
   body { font-family: var(--font); background: var(--bg); color: var(--text-primary); min-height: 100vh; }
   .container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; }
   .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; }
   .brand-icon { width: 26px; height: 26px; }
-  .last-update { font-size: 11px; color: var(--text-muted); }
-  .refresh-btn { font-size: 11px; color: var(--blue); cursor: pointer; background: none; border: 1px solid rgba(59,130,246,0.2); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
+  .last-update { font-size: 13px; color: var(--text-muted); }
+  .refresh-btn { font-size: 13px; color: var(--blue); cursor: pointer; background: none; border: 1px solid rgba(59,130,246,0.2); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
   .refresh-btn:hover { background: var(--blue-dim); }
   .refresh-btn.spinning { animation: spin 1s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .signal-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .signal-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .signal-badge { font-size: 14px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
   .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
   .badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
   .badge-orange { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
   .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-  .signal-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
+  .signal-text { font-size: 16px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
   .signal-text strong { color: var(--text-primary); font-weight: 600; }
   .signal-right { display: flex; align-items: center; gap: 14px; }
   .signal-score { text-align: right; }
-  .signal-score-num { font-size: 32px; font-weight: 800; line-height: 1; }
-  .signal-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-  .signal-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; }
+  .signal-score-num { font-size: 34px; font-weight: 800; line-height: 1; }
+  .signal-score-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+  .signal-meter { width: 180px; height: 10px; background: #e7eaee; border-radius: 5px; overflow: hidden; }
   .signal-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
 
   .bias-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .bias-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .bias-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .bias-badge { font-size: 14px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
   .bias-badge-bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
   .bias-badge-bull-strong { background: var(--green-glow); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
   .bias-badge-neutral { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
   .bias-badge-bear { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
   .bias-badge-bear-strong { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
-  .bias-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
+  .bias-text { font-size: 16px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
   .bias-text strong { color: var(--text-primary); font-weight: 600; }
   .bias-right { display: flex; align-items: center; gap: 14px; }
   .bias-score { text-align: right; }
-  .bias-score-num { font-size: 32px; font-weight: 800; line-height: 1; }
-  .bias-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-  .bias-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; position: relative; }
+  .bias-score-num { font-size: 34px; font-weight: 800; line-height: 1; }
+  .bias-score-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+  .bias-meter { width: 180px; height: 10px; background: #e7eaee; border-radius: 5px; overflow: hidden; position: relative; }
   .bias-meter::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--text-muted); opacity: 0.3; z-index: 2; }
   .bias-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease, left 0.8s ease, background 0.3s ease; position: absolute; top: 0; }
   .bias-fill.bull { left: 50%; background: var(--green); }
   .bias-fill.bear { right: 50%; background: var(--red); }
 
   .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: block; }
-  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-  .pulse-status { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .pulse-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .pulse-status { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
   .pulse-status.live { color: var(--green); }
   .pulse-status.error { color: var(--red); }
   .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .pulse-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .pulse-item { background: #eef0f3; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
   .pulse-item.error { border-color: rgba(239,68,68,0.2); }
-  .pulse-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .pulse-value { font-size: 18px; font-weight: 800; line-height: 1.2; }
-  .pulse-change { font-size: 11px; font-weight: 700; margin-top: 2px; }
-  .pulse-stale { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+  .pulse-name { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .pulse-value { font-size: 20px; font-weight: 800; line-height: 1.2; }
+  .pulse-change { font-size: 13px; font-weight: 700; margin-top: 2px; }
+  .pulse-stale { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
   @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
 
   .moo-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
   .moo-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-  .moo-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .moo-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; }
-  .moo-status { font-size: 10px; color: var(--text-muted); }
+  .moo-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .moo-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .moo-status { font-size: 12px; color: var(--text-muted); }
   .moo-status.set { color: var(--green); }
   .moo-grid { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 8px; align-items: end; }
   .moo-field { display: flex; flex-direction: column; gap: 3px; }
-  .moo-field label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
-  .moo-field input { background: #0a0c10; border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); padding: 7px 8px; font-size: 13px; font-family: var(--font); width: 100%; }
+  .moo-field label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .moo-field input { background: #eef0f3; border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); padding: 7px 8px; font-size: 15px; font-family: var(--font); width: 100%; }
   .moo-field input:focus { outline: none; border-color: var(--blue); }
-  .moo-btn { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.3); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; height: 33px; }
+  .moo-btn { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.3); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; height: 33px; }
   .moo-btn:hover { background: rgba(59,130,246,0.2); }
   @media (max-width: 640px) { .moo-grid { grid-template-columns: repeat(2, 1fr); } .moo-btn { grid-column: 1 / -1; } }
 
   .breadth-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
   .breadth-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-  .breadth-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .breadth-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; }
-  .breadth-status { font-size: 10px; color: var(--text-muted); }
+  .breadth-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .breadth-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .breadth-status { font-size: 12px; color: var(--text-muted); }
   .breadth-status.live { color: var(--green); }
   .breadth-status.error { color: var(--red); }
   .breadth-summary { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-  .breadth-ratio { font-size: 26px; font-weight: 800; }
-  .breadth-ratio-label { font-size: 11px; color: var(--text-muted); }
+  .breadth-ratio { font-size: 28px; font-weight: 800; }
+  .breadth-ratio-label { font-size: 13px; color: var(--text-muted); }
   .breadth-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .breadth-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
-  .breadth-item-name { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .breadth-item { background: #eef0f3; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .breadth-item-name { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
   .breadth-item-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
   .breadth-item-up { background: var(--green); }
   .breadth-item-down { background: var(--red); }
-  .breadth-item-pct { font-size: 11px; font-weight: 700; }
+  .breadth-item-pct { font-size: 13px; font-weight: 700; }
   @media (max-width: 640px) { .breadth-grid { grid-template-columns: repeat(2, 1fr); } }
 
+  .framework-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; margin: -8px 0 16px 0; font-size: 14px; }
+  .framework-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+  .framework-toggle-label { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 12px; }
+  .framework-toggle-arrow { color: var(--text-muted); transition: transform 0.15s; font-size: 12px; }
+  .framework-box.open .framework-toggle-arrow { transform: rotate(180deg); }
+  .framework-body { display: none; padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--border); }
+  .framework-box.open .framework-body { display: block; }
+  .framework-row { display: flex; align-items: baseline; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+  .framework-row:last-of-type { border-bottom: none; }
+  .framework-range { min-width: 90px; font-weight: 700; font-family: var(--font); flex-shrink: 0; }
+  .framework-meaning { color: var(--text-secondary); line-height: 1.5; }
+  .framework-arrow-note { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-  .tab { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
-  .tab:hover { background: #1a1d24; color: var(--text-secondary); }
+  .tab { padding: 7px 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
+  .tab:hover { background: #e7eaee; color: var(--text-secondary); }
   .tab.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
   .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; overflow: hidden; }
-  .card:hover { border-color: #2a2d35; transform: translateY(-1px); }
+  .card:hover { border-color: #c7ccd3; transform: translateY(-1px); }
   .card.hidden { display: none; }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
   .card-title-wrap { display: flex; align-items: center; gap: 8px; }
   .card-icon { width: 18px; height: 18px; color: var(--text-muted); flex-shrink: 0; }
-  .card-title { font-size: 14px; font-weight: 700; }
-  .card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .card-title { font-size: 16px; font-weight: 700; }
+  .card-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
   .card-value-row { display: flex; align-items: baseline; gap: 10px; margin: 8px 0; }
-  .card-value { font-size: 30px; font-weight: 800; line-height: 1.1; }
-  .card-change { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+  .card-value { font-size: 32px; font-weight: 800; line-height: 1.1; }
+  .card-change { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
   .card-change svg { width: 14px; height: 14px; }
   .card-sparkline { width: 100%; height: 36px; margin-top: 4px; }
   .th-strip { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 12px; margin-bottom: 4px; position: relative; }
@@ -135,70 +148,70 @@
   .th-yellow-bg { background: var(--yellow); opacity: 0.2; flex: 1; }
   .th-red-bg { background: var(--red); opacity: 0.2; flex: 1; }
   .th-marker { position: absolute; top: -3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--card-bg); transform: translateX(-50%); transition: left 0.5s ease; }
-  .th-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .th-current { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+  .th-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .th-current { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
   .th-current strong { color: var(--text-primary); font-weight: 600; }
   .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
-  .severity { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; }
+  .severity { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 6px; }
   .sev-low { background: var(--green-dim); color: var(--green); }
   .sev-med { background: var(--yellow-dim); color: var(--yellow); }
   .sev-high { background: var(--red-dim); color: var(--red); }
-  .data-age { font-size: 9px; color: var(--text-muted); margin-left: 6px; }
+  .data-age { font-size: 11px; color: var(--text-muted); margin-left: 6px; }
   .data-age.stale { color: var(--yellow); }
   .data-age.fresh { color: var(--green); }
-  .source-link { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; }
+  .source-link { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; }
   .source-link:hover { color: var(--blue); }
   .source-link svg { width: 12px; height: 12px; }
   .change-up { color: var(--green); } .change-down { color: var(--red); } .change-neutral { color: var(--text-muted); }
 
   .zone-strip { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
-  .zone-pill { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; color: var(--bg); text-transform: uppercase; letter-spacing: 0.3px; transition: opacity 0.2s; }
+  .zone-pill { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; color: var(--bg); text-transform: uppercase; letter-spacing: 0.3px; transition: opacity 0.2s; }
 
   .fomc { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
   .fomc-left { display: flex; align-items: center; gap: 12px; }
   .fomc-icon { width: 32px; height: 32px; }
-  .fomc-title { font-size: 15px; font-weight: 700; }
-  .fomc-sub { font-size: 12px; color: var(--text-muted); }
+  .fomc-title { font-size: 17px; font-weight: 700; }
+  .fomc-sub { font-size: 14px; color: var(--text-muted); }
   .countdown { display: flex; gap: 14px; align-items: center; }
   .cd-box { text-align: center; min-width: 52px; }
-  .cd-num { font-size: 26px; font-weight: 800; line-height: 1; }
-  .cd-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
-  .cd-sep { font-size: 22px; color: var(--text-muted); font-weight: 300; margin-top: -8px; }
+  .cd-num { font-size: 28px; font-weight: 800; line-height: 1; }
+  .cd-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
+  .cd-sep { font-size: 24px; color: var(--text-muted); font-weight: 300; margin-top: -8px; }
 
   .detail { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 4px; display: none; }
   .detail.open { display: block; }
   .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .detail-title { font-size: 17px; font-weight: 700; }
+  .detail-title { font-size: 19px; font-weight: 700; }
   .detail-close { cursor: pointer; padding: 6px; border-radius: 8px; color: var(--text-muted); }
-  .detail-close:hover { color: var(--text-primary); background: #1a1d24; }
+  .detail-close:hover { color: var(--text-primary); background: #e7eaee; }
   .detail-close svg { width: 20px; height: 20px; }
-  .detail-chart { width: 100%; height: 180px; border-radius: 8px; background: #0a0c10; }
-  .detail-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-top: 14px; }
-  .detail-source { margin-top: 10px; font-size: 12px; }
+  .detail-chart { width: 100%; height: 180px; border-radius: 8px; background: #eef0f3; }
+  .detail-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-top: 14px; }
+  .detail-source { margin-top: 10px; font-size: 14px; }
   .detail-source a { color: var(--blue); text-decoration: none; }
   .detail-source a:hover { text-decoration: underline; }
   .detail-zones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-  .dz-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
-  .dz-row { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 6px; padding: 7px 12px; border-radius: 6px; }
+  .dz-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .dz-row { display: flex; align-items: center; gap: 10px; font-size: 15px; margin-bottom: 6px; padding: 7px 12px; border-radius: 6px; }
   .dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .dz-label { font-weight: 700; min-width: 100px; }
   .dz-val { color: var(--text-secondary); flex: 1; }
-  .dz-next { font-size: 11px; color: var(--text-muted); font-style: italic; }
-  .dz-methodology { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #0a0c10; border-radius: 6px; border-left: 3px solid var(--blue); }
-  .dz-legend { font-size: 11px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .dz-next { font-size: 13px; color: var(--text-muted); font-style: italic; }
+  .dz-methodology { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #eef0f3; border-radius: 6px; border-left: 3px solid var(--blue); }
+  .dz-legend { font-size: 13px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 
   .info-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
-  .info-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .info-text { font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
   .info-text strong { color: var(--blue); }
   .info-text a { color: var(--blue); text-decoration: none; }
   .info-text a:hover { text-decoration: underline; }
 
   .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 0.3s; }
   .loading-overlay.done { opacity: 0; pointer-events: none; }
-  .loading-text { font-size: 14px; color: var(--text-muted); }
+  .loading-text { font-size: 16px; color: var(--text-muted); }
 
   @media (max-width: 640px) {
-    .grid { grid-template-columns: 1fr; } .card-value { font-size: 26px; }
+    .grid { grid-template-columns: 1fr; } .card-value { font-size: 28px; }
     .signal-bar, .bias-bar { flex-direction: column; align-items: flex-start; }
     .signal-right, .bias-right { width: 100%; justify-content: space-between; }
     .pulse-grid { grid-template-columns: repeat(2, 1fr); }
@@ -235,7 +248,23 @@
     </div>
   </div>
 
-  <!-- PART II: PRE-MARKET BIAS -->
+  <div class="framework-box open" id="frameworkPartI" onclick="toggleFramework('frameworkPartI')">
+    <div class="framework-toggle">
+      <span class="framework-toggle-label">▸ signal framework — how the composite shock score works</span>
+      <span class="framework-toggle-arrow">▾</span>
+    </div>
+    <div class="framework-body">
+      <div class="framework-row"><span class="framework-range" style="color:var(--green)">0–34 accumulate</span><span class="framework-meaning">Macro regime is calm across most FRED indicators. Overweight equities, buy dips aggressively.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">35–54 maintain</span><span class="framework-meaning">Mixed signals — some indicators elevated, most still normal. Hold positions, add hedges (puts/VIX calls).</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--orange, #f97316)">55–69 reduce risk</span><span class="framework-meaning">Majority of indicators trending toward stress. Raise cash to 20–30%, avoid new equity positions.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--red)">70–100 derisk</span><span class="framework-meaning">Broad-based macro stress across indicators. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
+      <div class="framework-arrow-note">
+        The score is the average of all 14 indicator severities (low=25, med=50, high=75, crit=95) — it moves as individual indicators cross their own green/yellow/red zones (click any card below to see that indicator's specific thresholds). A rising score means more indicators are drifting toward stress; a falling score means more are normalizing.
+        This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below.
+      </div>
+    </div>
+  </div>
+
   <div class="bias-bar" id="biasBar">
     <div class="bias-left">
       <span class="bias-badge bias-badge-neutral" id="biasBadge">neutral</span>
@@ -250,7 +279,24 @@
     </div>
   </div>
 
-  <!-- PRE-MARKET PULSE -->
+  <div class="framework-box open" id="frameworkPartII" onclick="toggleFramework('frameworkPartII')">
+    <div class="framework-toggle">
+      <span class="framework-toggle-label">▸ signal framework — how the pre-market bias score works</span>
+      <span class="framework-toggle-arrow">▾</span>
+    </div>
+    <div class="framework-body">
+      <div class="framework-row"><span class="framework-range" style="color:var(--red)">0–14 strong bear</span><span class="framework-meaning">Futures down + VIX up, one-sided. Reduce risk, raise cash, add hedges.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--red)">15–39 bearish</span><span class="framework-meaning">Futures net negative. Favor shorts, tighten stops on longs.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">40–60 neutral</span><span class="framework-meaning">Mixed or weak signals. Wait for first-hour confirmation before sizing either direction.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--green)">61–84 bullish</span><span class="framework-meaning">Futures net positive. Favor longs, tighten stops on shorts.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--green)">85–100 strong bull</span><span class="framework-meaning">Futures up + VIX down, one-sided. Consider adding risk, size up longs.</span></div>
+      <div class="framework-arrow-note">
+        Built from a weighted average of ES/NQ/YM/RTY futures, VIX, DXY, WTI, MOO imbalance (if entered), and the buy/sell volume proxy (once available) — each contributes a -3..+3 signal scaled to its own extreme threshold, weighted by conviction (futures highest, breadth-type signals lower). 50 = neutral. As the score rises through 60 the badge flips to bullish, through 85 to strong bull — same symmetrically on the way down through 40 and 15. Watch the direction of travel, not just the current bucket: a score climbing from 45→58 is a different signal than one sitting flat at 58.
+        This is a same-session tactical read (minutes-to-hours), not the multi-week regime read in Part I above — the two can and often do disagree, and that's informative, not a bug.
+      </div>
+    </div>
+  </div>
+
   <div class="pulse-bar" id="pulseBar">
     <div class="pulse-title">
       <span>pre-market pulse — real-time market data</span>
@@ -367,8 +413,8 @@ const FRED_CONFIG = {
   credit: { file: 'credit.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 1.5], yellow: [1.5, 3.5], red: [3.5, 10.0] } },
   fedbal: { file: 'fedbal.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000, zones: { green: [0, 7.5], yellow: [7.5, 8.5], red: [8.5, 15.0] } },
   consumer: { file: 'consumer.json', decimals: 1, prefix: '', suffix: '', zones: { green: [110, 150], yellow: [80, 110], red: [0, 80] } },
-  treasury10y: { file: 'treasury10y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } },
-  treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } },
+  treasury10y: { file: 'treasury10y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 4.25], yellow: [4.25, 5.25], red: [5.25, 10.0] } },
+  treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 4.0], yellow: [4.0, 5.0], red: [5.0, 10.0] } },
   m2: { file: 'm2.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000, zones: { green: [22, 100], yellow: [18, 22], red: [0, 18] } }
 };
 // NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
@@ -1060,6 +1106,7 @@ const linkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 
 function renderCards() {
   const grid = document.getElementById('grid');
+  closeDetail();
   grid.querySelectorAll('.indicator-card').forEach(c => c.remove());
   indicators.forEach(ind => {
     const arrow = ind.changeDir === 'up' ? upArrow : ind.changeDir === 'down' ? downArrow : '';
@@ -1092,13 +1139,19 @@ function renderCards() {
     card.className = 'card indicator-card';
     card.dataset.cat = ind.cat;
     card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
-    card.onclick = () => openDetail(ind);
+    card.onclick = () => openDetail(ind, card);
     grid.appendChild(card);
   });
 }
 
-function openDetail(ind) {
+function openDetail(ind, cardEl) {
   const panel = document.getElementById('detailPanel');
+
+  // Move the panel to sit directly after whichever card was clicked, so the explanation
+  // appears right under that indicator instead of at the bottom of the whole grid. Same
+  // panel element is reused and relocated each click rather than duplicated per card.
+  if (cardEl) cardEl.insertAdjacentElement('afterend', panel);
+
   document.getElementById('detailTitle').textContent = ind.title;
   document.getElementById('detailDesc').textContent = ind.desc;
   document.getElementById('detailSource').innerHTML = 'source: <a href="' + ind.sourceUrl + '" target="_blank" rel="noopener">' + ind.sourceName + '</a>';
@@ -1132,6 +1185,10 @@ function openDetail(ind) {
 }
 
 function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); }
+
+function toggleFramework(id) {
+  document.getElementById(id).classList.toggle('open');
+}
 
 function filterCategory(cat) {
   const cards = document.querySelectorAll('.indicator-card');
