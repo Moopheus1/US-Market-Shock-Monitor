@@ -9,10 +9,11 @@
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --bg: #0a0c10; --card-bg: #111318; --border: #1e2128;
     --text-primary: #e8e8e8; --text-secondary: #9ca3af; --text-muted: #6b7280;
-    --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
-    --yellow: #f59e0b; --yellow-dim: rgba(245,158,11,0.1);
-    --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+    --green: #22c55e; --green-dim: rgba(34,197,94,0.1); --green-glow: rgba(34,197,94,0.15);
+    --yellow: #f59e0b; --yellow-dim: rgba(245,158,11,0.1); --yellow-glow: rgba(245,158,11,0.15);
+    --red: #ef4444; --red-dim: rgba(239,68,68,0.1); --red-glow: rgba(239,68,68,0.15);
     --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.1);
+    --cyan: #06b6d4; --cyan-dim: rgba(6,182,212,0.1);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--font); background: var(--bg); color: var(--text-primary); min-height: 100vh; }
@@ -21,6 +22,8 @@
   .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
   .brand-icon { width: 26px; height: 26px; }
   .last-update { font-size: 11px; color: var(--text-muted); }
+
+  /* === PART I: MACRO REGIME === */
   .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .signal-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .signal-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
@@ -36,10 +39,45 @@
   .signal-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
   .signal-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; }
   .signal-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
+
+  /* === PART II: PRE-MARKET BIAS === */
+  .bias-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
+  .bias-bar.open { display: flex; }
+  .bias-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .bias-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .bias-badge-bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+  .bias-badge-bull-strong { background: var(--green-glow); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .bias-badge-neutral { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+  .bias-badge-bear { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+  .bias-badge-bear-strong { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .bias-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
+  .bias-text strong { color: var(--text-primary); font-weight: 600; }
+  .bias-right { display: flex; align-items: center; gap: 14px; }
+  .bias-score { text-align: right; }
+  .bias-score-num { font-size: 32px; font-weight: 800; line-height: 1; }
+  .bias-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+  .bias-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; position: relative; }
+  .bias-meter::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--text-muted); opacity: 0.3; z-index: 2; }
+  .bias-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease, left 0.8s ease, background 0.3s ease; position: absolute; top: 0; }
+  .bias-fill.bull { left: 50%; background: var(--green); }
+  .bias-fill.bear { right: 50%; background: var(--red); }
+
+  .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; }
+  .pulse-bar.open { display: block; }
+  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .pulse-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .pulse-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .pulse-value { font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .pulse-change { font-size: 11px; font-weight: 700; margin-top: 2px; }
+  .pulse-stale { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
+
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
   .tab { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
   .tab:hover { background: #1a1d24; color: var(--text-secondary); }
   .tab.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+
   .framework-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; display: none; }
   .framework-panel.open { display: block; }
   .fw-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
@@ -59,6 +97,7 @@
   .fw-note { font-size: 12px; color: var(--text-muted); margin-top: 16px; line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
   .fw-note strong { color: var(--text-secondary); }
   .fw-note code { background: #1a1d24; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; }
+
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
   .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; overflow: hidden; }
   .card:hover { border-color: #2a2d35; transform: translateY(-1px); }
@@ -90,6 +129,7 @@
   .source-link:hover { color: var(--blue); }
   .source-link svg { width: 12px; height: 12px; }
   .change-up { color: var(--green); } .change-down { color: var(--red); } .change-neutral { color: var(--text-muted); }
+
   .fomc { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
   .fomc-left { display: flex; align-items: center; gap: 12px; }
   .fomc-icon { width: 32px; height: 32px; }
@@ -100,6 +140,7 @@
   .cd-num { font-size: 26px; font-weight: 800; line-height: 1; }
   .cd-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
   .cd-sep { font-size: 22px; color: var(--text-muted); font-weight: 300; margin-top: -8px; }
+
   .detail { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 4px; display: none; }
   .detail.open { display: block; }
   .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -119,30 +160,23 @@
   .dz-label { font-weight: 700; min-width: 100px; }
   .dz-val { color: var(--text-secondary); flex: 1; }
   .dz-next { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
   .info-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
   .info-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
   .info-text strong { color: var(--blue); }
   .info-text a { color: var(--blue); text-decoration: none; }
   .info-text a:hover { text-decoration: underline; }
+
   .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 0.3s; }
   .loading-overlay.done { opacity: 0; pointer-events: none; }
   .loading-text { font-size: 14px; color: var(--text-muted); }
+
   @media (max-width: 640px) {
     .grid { grid-template-columns: 1fr; } .card-value { font-size: 26px; }
-    .signal-bar { flex-direction: column; align-items: flex-start; }
-    .signal-right { width: 100%; justify-content: space-between; }
-    .fw-grid { grid-template-columns: 1fr; } .signal-meter { width: 140px; }
+    .signal-bar, .bias-bar { flex-direction: column; align-items: flex-start; }
+    .signal-right, .bias-right { width: 100%; justify-content: space-between; }
+    .fw-grid { grid-template-columns: 1fr; } .signal-meter, .bias-meter { width: 140px; }
   }
-  .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; }
-  .pulse-bar.open { display: block; }
-  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-  .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .pulse-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
-  .pulse-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .pulse-value { font-size: 18px; font-weight: 800; line-height: 1.2; }
-  .pulse-change { font-size: 11px; font-weight: 700; margin-top: 2px; }
-  .pulse-stale { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-  @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
@@ -155,10 +189,12 @@
     </div>
     <div class="last-update" id="lastUpdate">demo mode - static data</div>
   </div>
-  <div class="signal-bar">
+
+  <!-- PART I: MACRO REGIME SIGNAL BAR -->
+  <div class="signal-bar" id="signalBar">
     <div class="signal-left">
       <span class="signal-badge badge-orange" id="mainBadge">reduce risk</span>
-      <span class="signal-text">composite shock score <strong id="mainScore">58</strong> - <strong id="mainAction">raise cash to 20-30%, avoid new equity positions</strong></span>
+      <span class="signal-text">composite shock score <strong id="mainScore">58</strong> — <strong id="mainAction">raise cash to 20-30%, avoid new equity positions</strong></span>
     </div>
     <div class="signal-right">
       <div class="signal-score">
@@ -168,6 +204,23 @@
       <div class="signal-meter"><div class="signal-fill" id="mainFill" style="width:58%;background:var(--yellow)"></div></div>
     </div>
   </div>
+
+  <!-- PART II: PRE-MARKET BIAS BAR -->
+  <div class="bias-bar" id="biasBar">
+    <div class="bias-left">
+      <span class="bias-badge bias-badge-neutral" id="biasBadge">neutral</span>
+      <span class="bias-text">pre-market bias score <strong id="biasScore">0</strong> — <strong id="biasAction">wait for first hour confirmation before sizing</strong></span>
+    </div>
+    <div class="bias-right">
+      <div class="bias-score">
+        <div class="bias-score-num" id="biasNum">0</div>
+        <div class="bias-score-label">bias score</div>
+      </div>
+      <div class="bias-meter" id="biasMeter"><div class="bias-fill" id="biasFill" style="width:0%;background:var(--yellow)"></div></div>
+    </div>
+  </div>
+
+  <!-- PRE-MARKET PULSE (mini, always visible when data loads) -->
   <div class="pulse-bar" id="pulseBar">
     <div class="pulse-title">pre-market pulse — real-time via Yahoo Finance</div>
     <div class="pulse-grid" id="pulseGrid">
@@ -177,6 +230,7 @@
       <div class="pulse-item" id="pulse-tnx"><div class="pulse-name">10Y Treasury</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
     </div>
   </div>
+
   <div class="tabs">
     <button class="tab active" data-cat="all">all indicators</button>
     <button class="tab" data-cat="sentiment">sentiment</button>
@@ -184,12 +238,15 @@
     <button class="tab" data-cat="macro">macro</button>
     <button class="tab" data-cat="fiscal">fiscal</button>
     <button class="tab" data-cat="commodities">commodities</button>
+    <button class="tab" data-cat="premarket">pre-market bias</button>
     <button class="tab" data-cat="framework" style="margin-left:auto;">signal framework</button>
   </div>
+
+  <!-- FRAMEWORK PANEL -->
   <div class="framework-panel" id="frameworkPanel">
     <div class="fw-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--text-secondary)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      signal framework - how to read this dashboard
+      signal framework — how to read this dashboard
     </div>
     <div class="fw-grid" id="fwGrid"></div>
     <div class="fw-legend">
@@ -198,20 +255,21 @@
       <div class="fw-legend-item"><span class="fw-legend-dot" style="background:var(--red)"></span>red zone = derisk / sell</div>
     </div>
     <div class="fw-note">
-      <strong>composite score methodology:</strong> each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power:
-      sentiment & credit spreads (30%), rates & fed (25%), macro (25%), fiscal (15%), commodities (5%).<br><br>
+      <strong>Part I — Macro Regime (FRED data):</strong> This answers "Are we in a risky macro regime?" — not "Is today going to be red?" Use it for strategic positioning (cash levels, hedges, sector allocation) over a 2–4 week horizon. Each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power: sentiment & credit spreads (30%), rates & fed (25%), macro (25%), fiscal (15%), commodities (5%).<br><br>
+      <strong>Part II — Pre-Market Bias (Yahoo Finance real-time):</strong> This answers "Is the market likely to open higher or lower today?" Use it for tactical entry/exit timing, position sizing, and stop-loss placement. Data is fetched live from Yahoo Finance and reflects pre-market futures, spot VIX, and leading stocks/ETFs.<br><br>
       <strong>score thresholds:</strong> &lt; 35 = green (accumulate), 35-55 = yellow (maintain), 55-70 = orange (reduce), &gt; 70 = red (derisk).<br><br>
-      <strong>how to read the threshold strip:</strong> each card shows a green/yellow/red bar. the colored dot shows where the indicator currently sits.
-      if the dot is near a boundary, watch for a breakout - that is your early warning. click any card to see the "next level" text telling you exactly what data point would push it into the adjacent zone.
+      <strong>how to read the threshold strip:</strong> each card shows a green/yellow/red bar. the colored dot shows where the indicator currently sits. if the dot is near a boundary, watch for a breakout — that is your early warning. click any card to see the "next level" text telling you exactly what data point would push it into the adjacent zone.
     </div>
   </div>
+
+  <!-- MAIN GRID -->
   <div class="grid" id="grid">
     <div class="info-banner" id="infoBanner">
       <div class="info-text">
         <strong>This dashboard answers: "Are we in a risky macro regime?" — not "Is today going to be red?"</strong><br>
-        Use this for <strong>strategic positioning</strong> (cash levels, hedges, sector allocation) over 2–4 weeks.
-        FRED data is always 1 day behind — it tells you the structural risk picture, not intraday moves.
-        To add live data, you need a <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank">free FRED API key</a>.
+        Use Part I (Macro Regime) for <strong>strategic positioning</strong> (cash levels, hedges, sector allocation) over 2–4 weeks.
+        Use Part II (Pre-Market Bias) for <strong>tactical entry/exit</strong> timing on the current trading day.
+        To add live FRED data, you need a <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank">free FRED API key</a>.
         See the <strong>signal framework</strong> tab for setup instructions.
       </div>
     </div>
@@ -220,7 +278,7 @@
         <svg class="fomc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         <div>
           <div class="fomc-title">next FOMC meeting</div>
-          <div class="fomc-sub">federal reserve policy decision - jul 29-30, 2026</div>
+          <div class="fomc-sub">federal reserve policy decision — jul 29-30, 2026</div>
         </div>
       </div>
       <div class="countdown" id="fomcCountdown">
@@ -232,6 +290,7 @@
       </div>
     </div>
   </div>
+
   <div class="detail" id="detailPanel">
     <div class="detail-header">
       <div class="detail-title" id="detailTitle">indicator detail</div>
@@ -246,15 +305,14 @@
 <script>
 
 // =========================================================
-// FRED DATA LOADER — fetches local JSON files generated by
-// GitHub Actions. Falls back to demo data if unavailable.
+// PART I: FRED DATA LOADER — Macro Regime
 // =========================================================
 
 const FRED_CONFIG = {
   vix: {
     file: 'vix.json', type: 'daily', decimals: 2, prefix: '', suffix: '',
     zones: { green: [30, 100], yellow: [15, 30], red: [0, 15] },
-    invertChange: true // higher = worse for sentiment
+    invertChange: true
   },
   dxy: {
     file: 'dxy.json', type: 'daily', decimals: 2, prefix: '', suffix: '',
@@ -267,7 +325,7 @@ const FRED_CONFIG = {
   oil: {
     file: 'oil.json', type: 'daily', decimals: 2, prefix: '$', suffix: '',
     zones: { green: [55, 75], yellow: [75, 90], red: [0, 40] },
-    redUpper: 100 // also red if > 100
+    redUpper: 100
   },
   cpi: {
     file: 'cpi.json', type: 'monthly', decimals: 1, prefix: '', suffix: '%', yoy: true,
@@ -339,7 +397,6 @@ function computeZonePos(value, zones, redUpper) {
     const p = r > 0 ? (value - zones.red[0]) / r : 1;
     return 0.66 + Math.max(0, Math.min(0.34, p * 0.34));
   }
-  // Out of defined bounds — clamp to nearest zone
   if (value < zones.green[0]) return 0.05;
   if (value > zones.red[1]) return 0.95;
   return 0.5;
@@ -395,12 +452,10 @@ async function loadFREDData() {
         const zonePos = computeZonePos(currentVal, cfg.zones, cfg.redUpper);
         const markerColor = zonePos < 0.33 ? 'var(--green)' : zonePos < 0.66 ? 'var(--yellow)' : 'var(--red)';
 
-        // Determine severity based on zone
         let severity = 'low', severityLabel = 'stable';
         if (zonePos >= 0.66) { severity = 'high'; severityLabel = 'critical'; }
         else if (zonePos >= 0.33) { severity = 'med'; severityLabel = 'elevated'; }
 
-        // Find matching indicator and update
         const idx = indicators.findIndex(i => i.id === id);
         if (idx >= 0) {
           indicators[idx].value = formatValue(currentVal, cfg);
@@ -430,8 +485,184 @@ async function loadFREDData() {
 }
 
 // =========================================================
-// DEMO DATA (fallback when FRED JSON not yet available)
+// PART II: PRE-MARKET BIAS — Real-time via Yahoo Finance
 // =========================================================
+// Answers: "Is the market likely to open higher or lower today?"
+// Use for: tactical entry/exit timing, position sizing, stop-loss placement
+
+let preMarketData = {};
+
+const PREMARKET_SYMBOLS = [
+  // Futures (most predictive)
+  { ticker: 'ES=F', name: 'S&P 500 Futures', weight: 25, invert: false, decimals: 2, id: 'pulse-es' },
+  { ticker: 'NQ=F', name: 'NASDAQ Futures', weight: 20, invert: false, decimals: 2, id: 'pulse-nq' },
+  { ticker: 'YM=F', name: 'Dow Futures', weight: 10, invert: false, decimals: 0, id: 'pulse-ym' },
+  { ticker: 'RTY=F', name: 'Russell 2000 Futures', weight: 10, invert: false, decimals: 2, id: 'pulse-rty' },
+  // Volatility (inverted: up = bearish)
+  { ticker: '^VIX', name: 'VIX', weight: 15, invert: true, decimals: 2, id: 'pulse-vix' },
+  // Rates & FX
+  { ticker: '^TNX', name: '10Y Treasury', weight: 8, invert: false, decimals: 2, id: 'pulse-tnx' },
+  { ticker: 'DX-Y.NYB', name: 'US Dollar', weight: 5, invert: false, decimals: 2, id: 'pulse-dxy' },
+  // Commodities
+  { ticker: 'CL=F', name: 'WTI Crude', weight: 4, invert: false, decimals: 2, id: 'pulse-cl' },
+  { ticker: 'GC=F', name: 'Gold', weight: 3, invert: false, decimals: 2, id: 'pulse-gc' },
+];
+
+async function fetchYahooData(symbol) {
+  try {
+    const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    const result = json.chart?.result?.[0];
+    if (!result) return null;
+
+    const meta = result.meta;
+    const current = meta.regularMarketPrice || meta.previousClose;
+    const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
+    if (!current || !prev) return null;
+
+    const change = ((current - prev) / prev) * 100;
+    return {
+      name: symbol.name,
+      ticker: symbol.ticker,
+      current: current,
+      previous: prev,
+      change: change,
+      weight: symbol.weight,
+      invert: symbol.invert,
+      decimals: symbol.decimals,
+      id: symbol.id
+    };
+  } catch (e) {
+    console.warn('Yahoo fetch failed for', symbol.ticker);
+    return null;
+  }
+}
+
+function computeBiasScore(data) {
+  // Weighted average of all indicators
+  // For inverted indicators (VIX), up = bearish (negative contribution)
+  let totalWeight = 0;
+  let weightedScore = 0;
+
+  data.forEach(d => {
+    let score = d.change;
+    if (d.invert) score = -score; // VIX up = market down
+    weightedScore += score * d.weight;
+    totalWeight += d.weight;
+  });
+
+  if (totalWeight === 0) return { score: 0, direction: 'neutral', strength: 0 };
+
+  const rawScore = weightedScore / totalWeight;
+  // Clamp to -50 to +50 range, then normalize to 0-100 display
+  const clamped = Math.max(-3, Math.min(3, rawScore));
+  const normalized = ((clamped + 3) / 6) * 100; // -3% = 0, 0 = 50, +3% = 100
+
+  let direction = 'neutral';
+  if (normalized > 60) direction = 'bull';
+  else if (normalized < 40) direction = 'bear';
+
+  let strength = Math.abs(normalized - 50) * 2; // 0 = neutral, 100 = extreme
+
+  return { score: Math.round(normalized), direction, strength, raw: rawScore };
+}
+
+function updatePulseUI(data) {
+  data.forEach(d => {
+    const el = document.getElementById(d.id);
+    if (!el) return;
+
+    const changeStr = (d.change >= 0 ? '+' : '') + d.change.toFixed(2) + '%';
+    let colorClass = 'change-neutral';
+    if (d.invert) {
+      colorClass = d.change > 0 ? 'change-down' : 'change-up';
+    } else {
+      colorClass = d.change > 0 ? 'change-up' : 'change-down';
+    }
+
+    el.querySelector('.pulse-value').textContent = d.current.toFixed(d.decimals);
+    el.querySelector('.pulse-change').textContent = changeStr;
+    el.querySelector('.pulse-change').className = 'pulse-change ' + colorClass;
+  });
+}
+
+function updateBiasBar(bias) {
+  const bar = document.getElementById('biasBar');
+  const badge = document.getElementById('biasBadge');
+  const scoreEl = document.getElementById('biasScore');
+  const numEl = document.getElementById('biasNum');
+  const actionEl = document.getElementById('biasAction');
+  const fill = document.getElementById('biasFill');
+
+  bar.classList.add('open');
+  scoreEl.textContent = bias.score;
+  numEl.textContent = bias.score;
+
+  // Bias meter: center = 50 (neutral). Fill extends left (bear) or right (bull)
+  const deviation = bias.score - 50;
+  const width = Math.abs(deviation) * 2; // 0-100 scale
+  fill.style.width = width + '%';
+
+  if (bias.direction === 'bull') {
+    fill.style.left = '50%';
+    fill.style.right = 'auto';
+    fill.className = 'bias-fill bull';
+    if (bias.strength > 70) {
+      badge.textContent = 'strong bull';
+      badge.className = 'bias-badge bias-badge-bull-strong';
+      actionEl.textContent = 'futures up + VIX down — consider adding risk, size up longs';
+    } else {
+      badge.textContent = 'bullish';
+      badge.className = 'bias-badge bias-badge-bull';
+      actionEl.textContent = 'futures positive — favor longs, tighten stops on shorts';
+    }
+  } else if (bias.direction === 'bear') {
+    fill.style.left = 'auto';
+    fill.style.right = '50%';
+    fill.className = 'bias-fill bear';
+    if (bias.strength > 70) {
+      badge.textContent = 'strong bear';
+      badge.className = 'bias-badge bias-badge-bear-strong';
+      actionEl.textContent = 'futures down + VIX up — reduce risk, raise cash, add hedges';
+    } else {
+      badge.textContent = 'bearish';
+      badge.className = 'bias-badge bias-badge-bear';
+      actionEl.textContent = 'futures negative — favor shorts, tighten stops on longs';
+    }
+  } else {
+    fill.style.width = '0%';
+    fill.className = 'bias-fill';
+    badge.textContent = 'neutral';
+    badge.className = 'bias-badge bias-badge-neutral';
+    actionEl.textContent = 'mixed signals — wait for first hour confirmation before sizing';
+  }
+}
+
+async function fetchRealtime() {
+  const results = [];
+  for (const s of PREMARKET_SYMBOLS) {
+    const data = await fetchYahooData(s);
+    if (data) results.push(data);
+  }
+
+  if (results.length === 0) {
+    console.warn('No pre-market data available');
+    return;
+  }
+
+  preMarketData = results;
+  updatePulseUI(results);
+  document.getElementById('pulseBar').classList.add('open');
+
+  const bias = computeBiasScore(results);
+  updateBiasBar(bias);
+}
+
+// =========================================================
+// DEMO DATA (Part I fallback)
+// =========================================================
+
 const DEMO_INDICATORS = [
   {
     id: 'vix', cat: 'sentiment', title: 'CBOE VIX', subtitle: 'volatility index',
@@ -709,16 +940,35 @@ function filterCategory(cat) {
   const fw = document.getElementById('frameworkPanel');
   const info = document.getElementById('infoBanner');
   const detail = document.getElementById('detailPanel');
+  const pulse = document.getElementById('pulseBar');
+  const bias = document.getElementById('biasBar');
+
   if (cat === 'framework') {
     cards.forEach(c => c.classList.add('hidden'));
     fomc.style.display = 'none';
     info.style.display = 'none';
+    pulse.style.display = 'none';
+    bias.style.display = 'none';
     fw.classList.add('open');
     detail.classList.remove('open');
     return;
   }
+
+  if (cat === 'premarket') {
+    cards.forEach(c => c.classList.add('hidden'));
+    fomc.style.display = 'none';
+    info.style.display = 'none';
+    fw.classList.remove('open');
+    pulse.style.display = 'block';
+    bias.style.display = 'flex';
+    detail.classList.remove('open');
+    return;
+  }
+
   fw.classList.remove('open');
   info.style.display = 'block';
+  pulse.style.display = '';
+  bias.style.display = '';
   cards.forEach(c => { if (cat === 'all' || c.dataset.cat === cat) c.classList.remove('hidden'); else c.classList.add('hidden'); });
   fomc.style.display = (cat === 'all' || cat === 'rates') ? '' : 'none';
 }
@@ -758,68 +1008,11 @@ function calcComposite() {
 }
 
 // =========================================================
-// REAL-TIME PRE-MARKET PULSE — Yahoo Finance
-// Answers: "Is today going to be red?" (tactical, not strategic)
-// =========================================================
-
-async function fetchRealtime() {
-  const symbols = [
-    { ticker: 'ES=F', name: 'S&P 500 Futures', id: 'pulse-es', invert: false },
-    { ticker: 'NQ=F', name: 'NASDAQ Futures', id: 'pulse-nq', invert: false },
-    { ticker: '^VIX', name: 'VIX', id: 'pulse-vix', invert: true },   // up = bad
-    { ticker: '^TNX', name: '10Y Yield', id: 'pulse-tnx', invert: false }
-  ];
-
-  let successCount = 0;
-
-  for (const s of symbols) {
-    try {
-      const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s.ticker}?interval=1d&range=5d`);
-      if (!res.ok) continue;
-      const json = await res.json();
-      const result = json.chart?.result?.[0];
-      if (!result) continue;
-
-      const meta = result.meta;
-      const current = meta.regularMarketPrice || meta.previousClose;
-      const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
-
-      if (!current || !prev) continue;
-
-      const change = ((current - prev) / prev) * 100;
-      const changeStr = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
-
-      // Determine color: for VIX, up = red (bad), down = green (good)
-      let colorClass = 'change-neutral';
-      if (s.invert) {
-        colorClass = change > 0 ? 'change-down' : 'change-up';
-      } else {
-        colorClass = change > 0 ? 'change-up' : 'change-down';
-      }
-
-      const el = document.getElementById(s.id);
-      if (el) {
-        el.querySelector('.pulse-value').textContent = current.toFixed(2);
-        el.querySelector('.pulse-change').textContent = changeStr;
-        el.querySelector('.pulse-change').className = 'pulse-change ' + colorClass;
-      }
-      successCount++;
-    } catch (e) {
-      console.warn('Yahoo fetch failed for', s.ticker, e.message);
-    }
-  }
-
-  if (successCount > 0) {
-    document.getElementById('pulseBar').classList.add('open');
-  }
-}
-
-// =========================================================
 // INITIALIZATION
 // =========================================================
 (async function init() {
   await loadFREDData();
-  await fetchRealtime(); // pre-market pulse — "Is today going to be red?"
+  await fetchRealtime();
   renderCards();
   renderFramework();
   calcComposite();
