@@ -41,7 +41,7 @@
   .signal-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
 
   /* === PART II: PRE-MARKET BIAS === */
-  .bias-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
+  .bias-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .bias-bar.open { display: flex; }
   .bias-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .bias-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
@@ -62,7 +62,7 @@
   .bias-fill.bull { left: 50%; background: var(--green); }
   .bias-fill.bear { right: 50%; background: var(--red); }
 
-  .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; }
+  .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: block; }
   .pulse-bar.open { display: block; }
   .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
   .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -78,26 +78,7 @@
   .tab:hover { background: #1a1d24; color: var(--text-secondary); }
   .tab.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
 
-  .framework-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; display: none; }
-  .framework-panel.open { display: block; }
-  .fw-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-  .fw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
-  .fw-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .fw-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .fw-card-title { font-size: 14px; font-weight: 700; }
-  .fw-zones { display: flex; flex-direction: column; gap: 6px; }
-  .fw-zone { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 7px 10px; border-radius: 6px; }
-  .fw-zone-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .fw-zone-label { font-weight: 700; min-width: 85px; }
-  .fw-zone-val { color: var(--text-secondary); flex: 1; }
-  .fw-zone-arrow { font-size: 11px; color: var(--text-muted); font-style: italic; max-width: 180px; text-align: right; }
-  .fw-legend { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--border); }
-  .fw-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
-  .fw-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .fw-note { font-size: 12px; color: var(--text-muted); margin-top: 16px; line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
-  .fw-note strong { color: var(--text-secondary); }
-  .fw-note code { background: #1a1d24; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; }
-
+  
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
   .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; overflow: hidden; }
   .card:hover { border-color: #2a2d35; transform: translateY(-1px); }
@@ -177,6 +158,10 @@
     .signal-right, .bias-right { width: 100%; justify-content: space-between; }
     .fw-grid { grid-template-columns: 1fr; } .signal-meter, .bias-meter { width: 140px; }
   }
+  .zone-strip { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+  .zone-pill { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; color: var(--bg); text-transform: uppercase; letter-spacing: 0.3px; transition: opacity 0.2s; }
+  .dz-methodology { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #0a0c10; border-radius: 6px; border-left: 3px solid var(--blue); }
+  .dz-legend { font-size: 11px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -238,29 +223,10 @@
     <button class="tab" data-cat="macro">macro</button>
     <button class="tab" data-cat="fiscal">fiscal</button>
     <button class="tab" data-cat="commodities">commodities</button>
-    <button class="tab" data-cat="premarket">pre-market bias</button>
-    <button class="tab" data-cat="framework" style="margin-left:auto;">signal framework</button>
   </div>
 
   <!-- FRAMEWORK PANEL -->
-  <div class="framework-panel" id="frameworkPanel">
-    <div class="fw-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--text-secondary)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      signal framework — how to read this dashboard
-    </div>
-    <div class="fw-grid" id="fwGrid"></div>
-    <div class="fw-legend">
-      <div class="fw-legend-item"><span class="fw-legend-dot" style="background:var(--green)"></span>green zone = accumulate / buy</div>
-      <div class="fw-legend-item"><span class="fw-legend-dot" style="background:var(--yellow)"></span>yellow zone = maintain / watch</div>
-      <div class="fw-legend-item"><span class="fw-legend-dot" style="background:var(--red)"></span>red zone = derisk / sell</div>
-    </div>
-    <div class="fw-note">
-      <strong>Part I — Macro Regime (FRED data):</strong> This answers "Are we in a risky macro regime?" — not "Is today going to be red?" Use it for strategic positioning (cash levels, hedges, sector allocation) over a 2–4 week horizon. Each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power: sentiment & credit spreads (30%), rates & fed (25%), macro (25%), fiscal (15%), commodities (5%).<br><br>
-      <strong>Part II — Pre-Market Bias (Yahoo Finance real-time):</strong> This answers "Is the market likely to open higher or lower today?" Use it for tactical entry/exit timing, position sizing, and stop-loss placement. Data is fetched live from Yahoo Finance and reflects pre-market futures, spot VIX, and leading stocks/ETFs.<br><br>
-      <strong>score thresholds:</strong> &lt; 35 = green (accumulate), 35-55 = yellow (maintain), 55-70 = orange (reduce), &gt; 70 = red (derisk).<br><br>
-      <strong>how to read the threshold strip:</strong> each card shows a green/yellow/red bar. the colored dot shows where the indicator currently sits. if the dot is near a boundary, watch for a breakout — that is your early warning. click any card to see the "next level" text telling you exactly what data point would push it into the adjacent zone.
-    </div>
-  </div>
+  
 
   <!-- MAIN GRID -->
   <div class="grid" id="grid">
@@ -881,24 +847,17 @@ function renderCards() {
     const card = document.createElement('div');
     card.className = 'card indicator-card';
     card.dataset.cat = ind.cat;
-    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div><div class="th-current">current zone: <strong>' + currentZone.label + '</strong> - ' + currentZone.next.split('.')[0] + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
-    card.onclick = () => openDetail(ind);
-    grid.appendChild(card);
-  });
-}
-
-function renderFramework() {
-  const grid = document.getElementById('fwGrid');
-  grid.innerHTML = '';
-  indicators.forEach(ind => {
-    const card = document.createElement('div');
-    card.className = 'fw-card';
-    let zonesHtml = '';
+    // Build zone mini-strip
+    let zoneStrip = '<div class="zone-strip">';
     ind.zones.forEach(z => {
-      const bg = z.color === 'green' ? 'rgba(34,197,94,0.06)' : z.color === 'yellow' ? 'rgba(245,158,11,0.06)' : 'rgba(239,68,68,0.06)';
-      zonesHtml += '<div class="fw-zone" style="background:' + bg + '"><span class="fw-zone-dot" style="background:' + COLORS[z.color] + '"></span><span class="fw-zone-label" style="color:' + COLORS[z.color] + '">' + z.label + '</span><span class="fw-zone-val">' + z.val + '</span><span class="fw-zone-arrow">' + z.next + '</span></div>';
+      const isActive = (ind.zonePos < 0.33 && z.color === 'green') || (ind.zonePos >= 0.33 && ind.zonePos < 0.66 && z.color === 'yellow') || (ind.zonePos >= 0.66 && z.color === 'red');
+      const opacity = isActive ? '1' : '0.35';
+      zoneStrip += '<span class="zone-pill" style="background:' + COLORS[z.color] + ';opacity:' + opacity + '">' + z.label + '</span>';
     });
-    card.innerHTML = '<div class="fw-card-header"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="fw-card-title">' + ind.title + '</span></div><div class="fw-zones">' + zonesHtml + '</div>';
+    zoneStrip += '</div>';
+
+    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
+    card.onclick = () => openDetail(ind);
     grid.appendChild(card);
   });
 }
@@ -908,13 +867,16 @@ function openDetail(ind) {
   document.getElementById('detailTitle').textContent = ind.title;
   document.getElementById('detailDesc').textContent = ind.desc;
   document.getElementById('detailSource').innerHTML = 'source: <a href="' + ind.sourceUrl + '" target="_blank" rel="noopener">' + ind.sourceName + '</a>';
-  let zonesHtml = '<div class="dz-title">threshold zones - what to watch for</div>';
+  let zonesHtml = '<div class="dz-title">signal framework — how to read ' + ind.title + '</div>';
+  zonesHtml += '<div class="dz-methodology">Each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power. Click any zone to see what data point would push the indicator into that zone.</div>';
   ind.zones.forEach(z => {
     const isActive = (ind.zonePos < 0.33 && z.color === 'green') || (ind.zonePos >= 0.33 && ind.zonePos < 0.66 && z.color === 'yellow') || (ind.zonePos >= 0.66 && z.color === 'red');
     const bg = isActive ? (z.color === 'green' ? 'rgba(34,197,94,0.08)' : z.color === 'yellow' ? 'rgba(245,158,11,0.08)' : 'rgba(239,68,68,0.08)') : '';
     const border = isActive ? 'border:1px solid ' + (z.color === 'green' ? 'rgba(34,197,94,0.2)' : z.color === 'yellow' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)') : '';
-    zonesHtml += '<div class="dz-row" style="' + bg + ';' + border + '"><span class="dz-dot" style="background:' + COLORS[z.color] + '"></span><span class="dz-label" style="color:' + COLORS[z.color] + '">' + z.label + '</span><span class="dz-val">' + z.val + '</span><span class="dz-next">' + z.next + '</span></div>';
+    const activeLabel = isActive ? ' ← CURRENT' : '';
+    zonesHtml += '<div class="dz-row" style="' + bg + ';' + border + '"><span class="dz-dot" style="background:' + COLORS[z.color] + '"></span><span class="dz-label" style="color:' + COLORS[z.color] + '">' + z.label + activeLabel + '</span><span class="dz-val">' + z.val + '</span><span class="dz-next">' + z.next + '</span></div>';
   });
+  zonesHtml += '<div class="dz-legend"><span style="color:var(--green)">●</span> green = accumulate/buy &nbsp; <span style="color:var(--yellow)">●</span> yellow = maintain/watch &nbsp; <span style="color:var(--red)">●</span> red = derisk/sell</div>';
   document.getElementById('detailZones').innerHTML = zonesHtml;
   const chart = document.getElementById('detailChart');
   const data = ind.chartData;
@@ -943,32 +905,8 @@ function filterCategory(cat) {
   const pulse = document.getElementById('pulseBar');
   const bias = document.getElementById('biasBar');
 
-  if (cat === 'framework') {
-    cards.forEach(c => c.classList.add('hidden'));
-    fomc.style.display = 'none';
-    info.style.display = 'none';
-    pulse.style.display = 'none';
-    bias.style.display = 'none';
-    fw.classList.add('open');
-    detail.classList.remove('open');
-    return;
-  }
-
-  if (cat === 'premarket') {
-    cards.forEach(c => c.classList.add('hidden'));
-    fomc.style.display = 'none';
-    info.style.display = 'none';
-    fw.classList.remove('open');
-    pulse.style.display = 'block';
-    bias.style.display = 'flex';
-    detail.classList.remove('open');
-    return;
-  }
-
   fw.classList.remove('open');
   info.style.display = 'block';
-  pulse.style.display = '';
-  bias.style.display = '';
   cards.forEach(c => { if (cat === 'all' || c.dataset.cat === cat) c.classList.remove('hidden'); else c.classList.add('hidden'); });
   fomc.style.display = (cat === 'all' || cat === 'rates') ? '' : 'none';
 }
@@ -1014,7 +952,6 @@ function calcComposite() {
   await loadFREDData();
   await fetchRealtime();
   renderCards();
-  renderFramework();
   calcComposite();
   updateFOMC();
   setInterval(updateFOMC, 60000);
