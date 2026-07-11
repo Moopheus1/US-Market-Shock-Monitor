@@ -1,0 +1,124 @@
+name: Fetch NAAIM Exposure Index
+
+# ============================================================================
+# TIME-LIMITED DATA SOURCE - READ BEFORE TOUCHING
+# NAAIM's own site states this data moves to a subscription model effective
+# Aug 1, 2026 (confirmed by fetching naaim.org directly on 2026-07-12).
+# This workflow is expected to start failing after that date. It fails
+# gracefully (writes fetchFailed:true, doesn't crash the pipeline) rather
+# than breaking anything else - but it will stop producing new data.
+#
+# TO FULLY REMOVE THIS SOURCE (e.g. once paywalled and not worth paying for):
+#   1. Delete this file (.github/workflows/fetch-naaim.yml)
+#   2. Delete data/naaim.json from the repo (optional, harmless to leave)
+#   3. In index.html, delete the block between
+#      "<!-- NAAIM SECTION START" and "NAAIM SECTION END -->"
+#      (both the HTML panel and the matching CSS/JS blocks are marked
+#      with the same START/END comments)
+#   That's it - nothing else in the dashboard depends on this data.
+# ============================================================================
+
+on:
+  schedule:
+    # Thursday 19:00 UTC (~3pm ET) - NAAIM's usual posting window.
+    - cron: '0 19 * * 4'
+    # Friday 15:00 UTC backup - catches it if Thursday's posting slips late.
+    # Still weekly in spirit (the dedup logic in the script means this is a
+    # no-op if Thursday's run already got it) - not daily polling of data
+    # that only changes once a week.
+    - cron: '0 15 * * 5'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch NAAIM Exposure Index
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json
+          import re
+          import urllib.request
+          import datetime
+          import os
+
+          URL = "https://naaim.org/programs/naaim-exposure-index/"
+          HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; MarketShockMonitor/1.0)"}
+          OUT_PATH = "data/naaim.json"
+
+          # Load existing file so we can append to history rather than losing it
+          # if a future fetch fails or the page structure changes.
+          existing = {"history": []}
+          if os.path.exists(OUT_PATH):
+              try:
+                  with open(OUT_PATH) as f:
+                      existing = json.load(f)
+                  if "history" not in existing:
+                      existing["history"] = []
+              except Exception:
+                  pass
+
+          try:
+              req = urllib.request.Request(URL, headers=HEADERS)
+              with urllib.request.urlopen(req, timeout=15) as r:
+                  html = r.read().decode("utf-8", errors="ignore")
+
+              # Pattern confirmed against live HTML on 2026-07-12. If NAAIM changes
+              # their page structure, this will start returning None and the fetch
+              # will be marked failed below - it won't crash or write garbage.
+              value_match = re.search(
+                  r'NAAIM Exposure Index number is\*?:</h4><div[^>]*>([\-0-9.]+)</div>',
+                  html
+              )
+              date_match = re.search(r'Posted on ([A-Za-z]+, [A-Za-z]+ \d+, \d+)', html)
+
+              if not value_match:
+                  raise ValueError("Could not find NAAIM number in page - structure may have changed, or access may now require subscription (expected after Aug 1 2026)")
+
+              current = float(value_match.group(1))
+              posted = date_match.group(1) if date_match else None
+              today = datetime.date.today().isoformat()
+
+              # Only append a new history entry if this week's value is actually new
+              # (avoid duplicate entries if the workflow runs more than once before
+              # NAAIM's next weekly update).
+              history = existing.get("history", [])
+              if not history or history[-1].get("value") != current:
+                  history.append({"date": today, "value": current, "postedLabel": posted})
+              history = history[-52:]  # keep ~1 year of weekly readings
+
+              out = {
+                  "current": current,
+                  "postedLabel": posted,
+                  "history": history,
+                  "_lastFetched": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "_source": URL,
+                  "_fetchFailed": False,
+                  "_deprecationNote": "NAAIM stated this moves to subscription access effective Aug 1, 2026. If _fetchFailed is true after that date, this is why - see this workflow's file header for removal instructions.",
+              }
+              print(f"OK: NAAIM = {current}, posted {posted}")
+
+          except Exception as e:
+              print(f"FETCH FAILED: {e}")
+              out = dict(existing)
+              out["_lastFetched"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+              out["_fetchFailed"] = True
+              out["_fetchError"] = str(e)
+              out["_deprecationNote"] = "NAAIM stated this moves to subscription access effective Aug 1, 2026. If this is failing on/after that date, that's expected - see this workflow's file header for removal instructions."
+
+          with open(OUT_PATH, "w") as f:
+              json.dump(out, f, indent=2)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/naaim.json
+          git diff --cached --quiet || git commit -m "Update NAAIM Exposure Index [$(date -u +%Y-%m-%d)]"
+          git push
