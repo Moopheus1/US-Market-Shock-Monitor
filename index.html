@@ -145,6 +145,14 @@
   .naaim-deprecation-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.5; }
   /* NAAIM SECTION END */
 
+  .signpost-list { display: flex; flex-wrap: wrap; gap: 6px; margin: -10px 0 16px 0; }
+  .signpost-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: opacity 0.15s; }
+  .signpost-chip:hover { opacity: 0.8; }
+  .signpost-chip.level { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+  .signpost-chip.trend { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+  .signpost-chip.both { background: var(--red-glow); color: var(--red); border: 1px solid rgba(239,68,68,0.4); font-weight: 700; }
+  .signpost-empty { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 4px 0 12px 0; }
+
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
   .tab { padding: 7px 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
   .tab:hover { background: #e7eaee; color: var(--text-secondary); }
@@ -262,30 +270,32 @@
   <div class="signal-bar" id="signalBar">
     <div class="signal-left">
       <span class="signal-badge badge-orange" id="mainBadge">reduce risk</span>
-      <span class="signal-text">composite shock score <strong id="mainScore">58</strong> — <strong id="mainAction">raise cash to 20-30%, avoid new equity positions</strong></span>
+      <span class="signal-text">signposts triggered <strong id="mainScore">6/14</strong> — <strong id="mainAction">raise cash to 20-30%, avoid new equity positions</strong></span>
     </div>
     <div class="signal-right">
       <div class="signal-score">
-        <div class="signal-score-num" id="mainNum">58</div>
-        <div class="signal-score-label">shock score</div>
+        <div class="signal-score-num" id="mainNum">6/14</div>
+        <div class="signal-score-label">signposts</div>
       </div>
-      <div class="signal-meter"><div class="signal-fill" id="mainFill" style="width:58%;background:var(--yellow)"></div></div>
+      <div class="signal-meter"><div class="signal-fill" id="mainFill" style="width:43%;background:var(--yellow)"></div></div>
     </div>
   </div>
 
+  <div class="signpost-list" id="signpostList"></div>
+
   <div class="framework-box open" id="frameworkPartI" onclick="toggleFramework('frameworkPartI')">
     <div class="framework-toggle">
-      <span class="framework-toggle-label">▸ signal framework — how the composite shock score works</span>
+      <span class="framework-toggle-label">▸ signal framework — how the signpost count works</span>
       <span class="framework-toggle-arrow">▾</span>
     </div>
     <div class="framework-body">
-      <div class="framework-row"><span class="framework-range" style="color:var(--green)">0–34 accumulate</span><span class="framework-meaning">Macro regime is calm across most FRED indicators. Overweight equities, buy dips aggressively.</span></div>
-      <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">35–54 maintain</span><span class="framework-meaning">Mixed signals — some indicators elevated, most still normal. Hold positions, add hedges (puts/VIX calls).</span></div>
-      <div class="framework-row"><span class="framework-range" style="color:var(--orange, #f97316)">55–69 reduce risk</span><span class="framework-meaning">Majority of indicators trending toward stress. Raise cash to 20–30%, avoid new equity positions.</span></div>
-      <div class="framework-row"><span class="framework-range" style="color:var(--red)">70–100 derisk</span><span class="framework-meaning">Broad-based macro stress across indicators. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--green)">&lt;20% triggered — accumulate</span><span class="framework-meaning">Few indicators flashing. Overweight equities, buy dips aggressively.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">20–39% — maintain</span><span class="framework-meaning">A handful of signposts firing, not yet broad-based. Hold positions, add hedges (puts/VIX calls).</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--orange, #f97316)">40–64% — reduce risk</span><span class="framework-meaning">Close to half of all signposts triggered. Raise cash to 20–30%, avoid new equity positions.</span></div>
+      <div class="framework-row"><span class="framework-range" style="color:var(--red)">65%+ — derisk</span><span class="framework-meaning">Broad-based, majority of signposts triggered. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
       <div class="framework-arrow-note">
-        The score is the average of all 14 indicator severities (low=25, med=50, high=75, crit=95) — it moves as individual indicators cross their own green/yellow/red zones (click any card below to see that indicator's specific thresholds). A rising score means more indicators are drifting toward stress; a falling score means more are normalizing.
-        This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below.
+        Each of the 14 indicators is checked against two independent conditions: LEVEL (is it currently sitting in its own red zone?) and TREND (has it moved fast toward red recently, even from a calm level, measured off real historical FRED values — not a blended average). Either one firing counts as that indicator's signpost being "triggered." The number shown is a straight count — e.g. "6/14" — the same way BofA's public commentary counts triggered bear-market signposts, not a blended average that lets 13 calm indicators dilute one screaming outlier. Click any chip above the indicator grid to jump straight to that indicator's card.
+        This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below. The trend/level thresholds are a judgment call, not a backtested constant — worth watching for a few weeks before trusting fully.
       </div>
     </div>
   </div>
@@ -1341,23 +1351,101 @@ function updateFOMC() {
   } else { document.getElementById('cdDays').textContent = '0'; document.getElementById('cdHours').textContent = '00'; document.getElementById('cdMins').textContent = '00'; }
 }
 
+// =========================================================
+// SIGNPOST MODEL (replaces averaged-severity composite score)
+// =========================================================
+// Averaging all 14 indicators into one blended number hides outliers - one
+// indicator screaming red gets diluted by 13 calm ones. This counts discrete
+// triggers instead, the way BofA's public "7 of 10 signposts triggered"
+// commentary works: a threshold-crossing count, not a blend.
+//
+// A signpost triggers on EITHER:
+//   LEVEL - the indicator currently sits in its own red zone (same red-zone
+//     definition already used for that indicator's card)
+//   TREND - the indicator's zone position has worsened fast recently, even if
+//     it hasn't reached red yet. Computed by re-running computeZonePos() across
+//     each indicator's actual historical values (from live FRED data, up to 30
+//     points) - not a separate invented series, the same real data the card's
+//     own chart uses.
+//
+// Both threshold constants below are judgment calls, not backtested - same
+// caveat as every other manually-set threshold in this file (MOO, TICK,
+// treasury zones). Watch a few weeks of real triggers before trusting them.
+const SIGNPOST_TREND_LOOKBACK = 5;   // compare current zonePos to N points back
+const SIGNPOST_TREND_THRESHOLD = 0.15; // zonePos move (on the 0-1 scale) counted as "fast"
+
+function computeSignposts() {
+  const results = [];
+  indicators.forEach(ind => {
+    const cfg = FRED_CONFIG[ind.id];
+    if (!cfg) return; // indicator without a real zone config - shouldn't happen, skip defensively
+
+    const levelTriggered = ind.zonePos >= 0.66;
+
+    let trendTriggered = false, trendDelta = null;
+    if (ind.chartData && ind.chartData.length >= SIGNPOST_TREND_LOOKBACK + 1) {
+      const zonePosSeries = ind.chartData.map(v => computeZonePos(v, cfg.zones, cfg.redUpper));
+      const recent = zonePosSeries[zonePosSeries.length - 1];
+      const past = zonePosSeries[zonePosSeries.length - 1 - SIGNPOST_TREND_LOOKBACK];
+      trendDelta = recent - past;
+      trendTriggered = trendDelta >= SIGNPOST_TREND_THRESHOLD;
+    }
+
+    const triggered = levelTriggered || trendTriggered;
+    let reason = null;
+    if (levelTriggered && trendTriggered) reason = 'both';
+    else if (levelTriggered) reason = 'level';
+    else if (trendTriggered) reason = 'trend';
+
+    results.push({ id: ind.id, title: ind.title, triggered, reason, trendDelta });
+  });
+  return results;
+}
+
+function renderSignpostList(signposts) {
+  const el = document.getElementById('signpostList');
+  const triggered = signposts.filter(s => s.triggered);
+  if (triggered.length === 0) {
+    el.innerHTML = '<div class="signpost-empty">no signposts currently triggered</div>';
+    return;
+  }
+  el.innerHTML = triggered.map(s => {
+    const icon = s.reason === 'both' ? '●▲' : s.reason === 'level' ? '●' : '▲';
+    const label = s.reason === 'both' ? 'level + trend' : s.reason;
+    return '<span class="signpost-chip ' + s.reason + '" onclick="scrollToIndicator(\'' + s.id + '\')">' + icon + ' ' + s.title + ' <span style="opacity:0.7">(' + label + ')</span></span>';
+  }).join('');
+}
+
+function scrollToIndicator(id) {
+  const ind = indicators.find(i => i.id === id);
+  const card = Array.from(document.querySelectorAll('.indicator-card')).find(c => c.querySelector('.card-title')?.textContent === ind?.title);
+  if (card && ind) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => { if (openDetailIndId !== ind.id) openDetail(ind, card); }, 400);
+  }
+}
+
 function calcComposite() {
-  const weights = { low: 25, med: 50, high: 75, crit: 95 };
-  let total = 0;
-  indicators.forEach(i => { total += weights[i.severity] || 50; });
-  const avg = Math.round(total / indicators.length);
-  document.getElementById('mainScore').textContent = avg;
-  document.getElementById('mainNum').textContent = avg;
-  document.getElementById('mainFill').style.width = avg + '%';
+  const signposts = computeSignposts();
+  const total = signposts.length;
+  const count = signposts.filter(s => s.triggered).length;
+  const pct = total > 0 ? count / total : 0;
+
+  document.getElementById('mainScore').textContent = count + '/' + total;
+  document.getElementById('mainNum').textContent = count + '/' + total;
+  document.getElementById('mainFill').style.width = (pct * 100) + '%';
+
   let badge = 'reduce risk', action = 'raise cash to 20-30%, avoid new equity', cls = 'badge-orange', color = 'var(--yellow)';
-  if (avg < 35) { badge = 'accumulate'; action = 'overweight equities, buy dips aggressively'; cls = 'badge-green'; color = 'var(--green)'; }
-  else if (avg < 55) { badge = 'maintain'; action = 'hold positions, add hedges (puts/vix calls)'; cls = 'badge-yellow'; color = 'var(--yellow)'; }
-  else if (avg >= 70) { badge = 'derisk'; action = 'sell aggressively, raise cash > 50%, go defensive'; cls = 'badge-red'; color = 'var(--red)'; }
+  if (pct < 0.20) { badge = 'accumulate'; action = 'overweight equities, buy dips aggressively'; cls = 'badge-green'; color = 'var(--green)'; }
+  else if (pct < 0.40) { badge = 'maintain'; action = 'hold positions, add hedges (puts/vix calls)'; cls = 'badge-yellow'; color = 'var(--yellow)'; }
+  else if (pct >= 0.65) { badge = 'derisk'; action = 'sell aggressively, raise cash > 50%, go defensive'; cls = 'badge-red'; color = 'var(--red)'; }
   const b = document.getElementById('mainBadge');
   b.textContent = badge;
   b.className = 'signal-badge ' + cls;
   document.getElementById('mainAction').textContent = action;
   document.getElementById('mainFill').style.background = color;
+
+  renderSignpostList(signposts);
 }
 
 // =========================================================
