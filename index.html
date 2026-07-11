@@ -133,6 +133,16 @@
     .signal-right { width: 100%; justify-content: space-between; }
     .fw-grid { grid-template-columns: 1fr; } .signal-meter { width: 140px; }
   }
+  .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: none; }
+  .pulse-bar.open { display: block; }
+  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .pulse-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .pulse-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .pulse-value { font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .pulse-change { font-size: 11px; font-weight: 700; margin-top: 2px; }
+  .pulse-stale { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
@@ -156,6 +166,15 @@
         <div class="signal-score-label">shock score</div>
       </div>
       <div class="signal-meter"><div class="signal-fill" id="mainFill" style="width:58%;background:var(--yellow)"></div></div>
+    </div>
+  </div>
+  <div class="pulse-bar" id="pulseBar">
+    <div class="pulse-title">pre-market pulse — real-time via Yahoo Finance</div>
+    <div class="pulse-grid" id="pulseGrid">
+      <div class="pulse-item" id="pulse-es"><div class="pulse-name">S&P 500 Futures</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-nq"><div class="pulse-name">NASDAQ Futures</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-vix"><div class="pulse-name">VIX Live</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-tnx"><div class="pulse-name">10Y Treasury</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
     </div>
   </div>
   <div class="tabs">
@@ -739,10 +758,68 @@ function calcComposite() {
 }
 
 // =========================================================
+// REAL-TIME PRE-MARKET PULSE — Yahoo Finance
+// Answers: "Is today going to be red?" (tactical, not strategic)
+// =========================================================
+
+async function fetchRealtime() {
+  const symbols = [
+    { ticker: 'ES=F', name: 'S&P 500 Futures', id: 'pulse-es', invert: false },
+    { ticker: 'NQ=F', name: 'NASDAQ Futures', id: 'pulse-nq', invert: false },
+    { ticker: '^VIX', name: 'VIX', id: 'pulse-vix', invert: true },   // up = bad
+    { ticker: '^TNX', name: '10Y Yield', id: 'pulse-tnx', invert: false }
+  ];
+
+  let successCount = 0;
+
+  for (const s of symbols) {
+    try {
+      const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s.ticker}?interval=1d&range=5d`);
+      if (!res.ok) continue;
+      const json = await res.json();
+      const result = json.chart?.result?.[0];
+      if (!result) continue;
+
+      const meta = result.meta;
+      const current = meta.regularMarketPrice || meta.previousClose;
+      const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
+
+      if (!current || !prev) continue;
+
+      const change = ((current - prev) / prev) * 100;
+      const changeStr = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+
+      // Determine color: for VIX, up = red (bad), down = green (good)
+      let colorClass = 'change-neutral';
+      if (s.invert) {
+        colorClass = change > 0 ? 'change-down' : 'change-up';
+      } else {
+        colorClass = change > 0 ? 'change-up' : 'change-down';
+      }
+
+      const el = document.getElementById(s.id);
+      if (el) {
+        el.querySelector('.pulse-value').textContent = current.toFixed(2);
+        el.querySelector('.pulse-change').textContent = changeStr;
+        el.querySelector('.pulse-change').className = 'pulse-change ' + colorClass;
+      }
+      successCount++;
+    } catch (e) {
+      console.warn('Yahoo fetch failed for', s.ticker, e.message);
+    }
+  }
+
+  if (successCount > 0) {
+    document.getElementById('pulseBar').classList.add('open');
+  }
+}
+
+// =========================================================
 // INITIALIZATION
 // =========================================================
 (async function init() {
   await loadFREDData();
+  await fetchRealtime(); // pre-market pulse — "Is today going to be red?"
   renderCards();
   renderFramework();
   calcComposite();
