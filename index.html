@@ -22,8 +22,11 @@
   .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
   .brand-icon { width: 26px; height: 26px; }
   .last-update { font-size: 11px; color: var(--text-muted); }
+  .refresh-btn { font-size: 11px; color: var(--blue); cursor: pointer; background: none; border: 1px solid rgba(59,130,246,0.2); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
+  .refresh-btn:hover { background: var(--blue-dim); }
+  .refresh-btn.spinning { animation: spin 1s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  /* === PART I: MACRO REGIME === */
   .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .signal-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .signal-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
@@ -40,9 +43,7 @@
   .signal-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; }
   .signal-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
 
-  /* === PART II: PRE-MARKET BIAS === */
   .bias-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
-  .bias-bar.open { display: flex; }
   .bias-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .bias-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
   .bias-badge-bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
@@ -63,14 +64,17 @@
   .bias-fill.bear { right: 50%; background: var(--red); }
 
   .pulse-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: block; }
-  .pulse-bar.open { display: block; }
-  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .pulse-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .pulse-status { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .pulse-status.live { color: var(--green); }
+  .pulse-status.error { color: var(--red); }
   .pulse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .pulse-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .pulse-item.error { border-color: rgba(239,68,68,0.2); }
   .pulse-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
   .pulse-value { font-size: 18px; font-weight: 800; line-height: 1.2; }
   .pulse-change { font-size: 11px; font-weight: 700; margin-top: 2px; }
-  .pulse-stale { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .pulse-stale { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
   @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
 
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -78,7 +82,6 @@
   .tab:hover { background: #1a1d24; color: var(--text-secondary); }
   .tab.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
 
-  
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
   .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; overflow: hidden; }
   .card:hover { border-color: #2a2d35; transform: translateY(-1px); }
@@ -106,10 +109,16 @@
   .sev-low { background: var(--green-dim); color: var(--green); }
   .sev-med { background: var(--yellow-dim); color: var(--yellow); }
   .sev-high { background: var(--red-dim); color: var(--red); }
+  .data-age { font-size: 9px; color: var(--text-muted); margin-left: 6px; }
+  .data-age.stale { color: var(--yellow); }
+  .data-age.fresh { color: var(--green); }
   .source-link { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; }
   .source-link:hover { color: var(--blue); }
   .source-link svg { width: 12px; height: 12px; }
   .change-up { color: var(--green); } .change-down { color: var(--red); } .change-neutral { color: var(--text-muted); }
+
+  .zone-strip { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+  .zone-pill { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; color: var(--bg); text-transform: uppercase; letter-spacing: 0.3px; transition: opacity 0.2s; }
 
   .fomc { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
   .fomc-left { display: flex; align-items: center; gap: 12px; }
@@ -141,6 +150,8 @@
   .dz-label { font-weight: 700; min-width: 100px; }
   .dz-val { color: var(--text-secondary); flex: 1; }
   .dz-next { font-size: 11px; color: var(--text-muted); font-style: italic; }
+  .dz-methodology { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #0a0c10; border-radius: 6px; border-left: 3px solid var(--blue); }
+  .dz-legend { font-size: 11px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 
   .info-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
   .info-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
@@ -156,12 +167,9 @@
     .grid { grid-template-columns: 1fr; } .card-value { font-size: 26px; }
     .signal-bar, .bias-bar { flex-direction: column; align-items: flex-start; }
     .signal-right, .bias-right { width: 100%; justify-content: space-between; }
-    .fw-grid { grid-template-columns: 1fr; } .signal-meter, .bias-meter { width: 140px; }
+    .pulse-grid { grid-template-columns: repeat(2, 1fr); }
+    .signal-meter, .bias-meter { width: 140px; }
   }
-  .zone-strip { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
-  .zone-pill { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; color: var(--bg); text-transform: uppercase; letter-spacing: 0.3px; transition: opacity 0.2s; }
-  .dz-methodology { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #0a0c10; border-radius: 6px; border-left: 3px solid var(--blue); }
-  .dz-legend { font-size: 11px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -172,10 +180,13 @@
       <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
       Market Shock Monitor
     </div>
-    <div class="last-update" id="lastUpdate">demo mode - static data</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="last-update" id="lastUpdate">loading...</div>
+      <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh all data">↻ Refresh</button>
+    </div>
   </div>
 
-  <!-- PART I: MACRO REGIME SIGNAL BAR -->
+  <!-- PART I: MACRO REGIME -->
   <div class="signal-bar" id="signalBar">
     <div class="signal-left">
       <span class="signal-badge badge-orange" id="mainBadge">reduce risk</span>
@@ -190,7 +201,7 @@
     </div>
   </div>
 
-  <!-- PART II: PRE-MARKET BIAS BAR -->
+  <!-- PART II: PRE-MARKET BIAS -->
   <div class="bias-bar" id="biasBar">
     <div class="bias-left">
       <span class="bias-badge bias-badge-neutral" id="biasBadge">neutral</span>
@@ -205,14 +216,21 @@
     </div>
   </div>
 
-  <!-- PRE-MARKET PULSE (mini, always visible when data loads) -->
+  <!-- PRE-MARKET PULSE -->
   <div class="pulse-bar" id="pulseBar">
-    <div class="pulse-title">pre-market pulse — real-time via Yahoo Finance</div>
+    <div class="pulse-title">
+      <span>pre-market pulse — real-time market data</span>
+      <span class="pulse-status" id="pulseStatus">connecting...</span>
+    </div>
     <div class="pulse-grid" id="pulseGrid">
       <div class="pulse-item" id="pulse-es"><div class="pulse-name">S&P 500 Futures</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
       <div class="pulse-item" id="pulse-nq"><div class="pulse-name">NASDAQ Futures</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
-      <div class="pulse-item" id="pulse-vix"><div class="pulse-name">VIX Live</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
-      <div class="pulse-item" id="pulse-tnx"><div class="pulse-name">10Y Treasury</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-ym"><div class="pulse-name">Dow Futures</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-rty"><div class="pulse-name">Russell 2000</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-vix"><div class="pulse-name">VIX Spot</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-tnx"><div class="pulse-name">10Y Yield</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-dxy"><div class="pulse-name">US Dollar</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
+      <div class="pulse-item" id="pulse-cl"><div class="pulse-name">WTI Crude</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
     </div>
   </div>
 
@@ -225,18 +243,12 @@
     <button class="tab" data-cat="commodities">commodities</button>
   </div>
 
-  <!-- FRAMEWORK PANEL -->
-  
-
-  <!-- MAIN GRID -->
   <div class="grid" id="grid">
     <div class="info-banner" id="infoBanner">
       <div class="info-text">
-        <strong>This dashboard answers: "Are we in a risky macro regime?" — not "Is today going to be red?"</strong><br>
-        Use Part I (Macro Regime) for <strong>strategic positioning</strong> (cash levels, hedges, sector allocation) over 2–4 weeks.
-        Use Part II (Pre-Market Bias) for <strong>tactical entry/exit</strong> timing on the current trading day.
-        To add live FRED data, you need a <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank">free FRED API key</a>.
-        See the <strong>signal framework</strong> tab for setup instructions.
+        <strong>Part I answers: "Are we in a risky macro regime?"</strong> — Use for strategic positioning (cash, hedges) over 2–4 weeks. FRED data has 1-day lag.<br>
+        <strong>Part II answers: "Is today likely to open higher or lower?"</strong> — Use for tactical entry/exit timing. Real-time data from Yahoo Finance.<br>
+        Click any card to see its signal framework. Data refreshes automatically.
       </div>
     </div>
     <div class="fomc" data-cat="rates">
@@ -271,57 +283,25 @@
 <script>
 
 // =========================================================
-// PART I: FRED DATA LOADER — Macro Regime
+// CONFIG & UTILS
 // =========================================================
 
 const FRED_CONFIG = {
-  vix: {
-    file: 'vix.json', type: 'daily', decimals: 2, prefix: '', suffix: '',
-    zones: { green: [30, 100], yellow: [15, 30], red: [0, 15] },
-    invertChange: true
-  },
-  dxy: {
-    file: 'dxy.json', type: 'daily', decimals: 2, prefix: '', suffix: '',
-    zones: { green: [0, 100], yellow: [100, 108], red: [108, 150] }
-  },
-  yield10y2y: {
-    file: 'yield10y2y.json', type: 'daily', decimals: 2, prefix: '', suffix: '%',
-    zones: { green: [1.0, 5.0], yellow: [-0.5, 1.0], red: [-2.0, -0.5] }
-  },
-  oil: {
-    file: 'oil.json', type: 'daily', decimals: 2, prefix: '$', suffix: '',
-    zones: { green: [55, 75], yellow: [75, 90], red: [0, 40] },
-    redUpper: 100
-  },
-  cpi: {
-    file: 'cpi.json', type: 'monthly', decimals: 1, prefix: '', suffix: '%', yoy: true,
-    zones: { green: [0, 2.5], yellow: [2.5, 4.0], red: [4.0, 10.0] }
-  },
-  unemployment: {
-    file: 'unemployment.json', type: 'monthly', decimals: 1, prefix: '', suffix: '%',
-    zones: { green: [0, 3.5], yellow: [3.5, 5.0], red: [5.0, 15.0] }
-  },
-  credit: {
-    file: 'credit.json', type: 'daily', decimals: 2, prefix: '', suffix: '%',
-    zones: { green: [0, 1.5], yellow: [1.5, 3.5], red: [3.5, 10.0] }
-  },
-  fedbal: {
-    file: 'fedbal.json', type: 'weekly', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000,
-    zones: { green: [0, 7.5], yellow: [7.5, 8.5], red: [8.5, 15.0] }
-  },
-  consumer: {
-    file: 'consumer.json', type: 'monthly', decimals: 1, prefix: '', suffix: '',
-    zones: { green: [110, 150], yellow: [80, 110], red: [0, 80] }
-  },
-  treasury10y: {
-    file: 'treasury10y.json', type: 'daily', decimals: 2, prefix: '', suffix: '%',
-    zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] }
-  },
-  treasury2y: {
-    file: 'treasury2y.json', type: 'daily', decimals: 2, prefix: '', suffix: '%',
-    zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] }
-  }
+  vix: { file: 'vix.json', decimals: 2, prefix: '', suffix: '', zones: { green: [30, 100], yellow: [15, 30], red: [0, 15] }, invertChange: true },
+  dxy: { file: 'dxy.json', decimals: 2, prefix: '', suffix: '', zones: { green: [0, 100], yellow: [100, 108], red: [108, 150] } },
+  yield10y2y: { file: 'yield10y2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [1.0, 5.0], yellow: [-0.5, 1.0], red: [-2.0, -0.5] } },
+  oil: { file: 'oil.json', decimals: 2, prefix: '$', suffix: '', zones: { green: [55, 75], yellow: [75, 90], red: [0, 40] }, redUpper: 100 },
+  cpi: { file: 'cpi.json', decimals: 1, prefix: '', suffix: '%', yoy: true, zones: { green: [0, 2.5], yellow: [2.5, 4.0], red: [4.0, 10.0] } },
+  unemployment: { file: 'unemployment.json', decimals: 1, prefix: '', suffix: '%', zones: { green: [0, 3.5], yellow: [3.5, 5.0], red: [5.0, 15.0] } },
+  credit: { file: 'credit.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 1.5], yellow: [1.5, 3.5], red: [3.5, 10.0] } },
+  fedbal: { file: 'fedbal.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000, zones: { green: [0, 7.5], yellow: [7.5, 8.5], red: [8.5, 15.0] } },
+  consumer: { file: 'consumer.json', decimals: 1, prefix: '', suffix: '', zones: { green: [110, 150], yellow: [80, 110], red: [0, 80] } },
+  treasury10y: { file: 'treasury10y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } },
+  treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } }
 };
+
+let fredLastUpdated = null;
+let yahooLastUpdated = null;
 
 function parseObservations(json) {
   if (!json || !json.observations) return [];
@@ -333,8 +313,7 @@ function parseObservations(json) {
 
 function calcCPIYoY(obs) {
   if (obs.length < 13) return null;
-  const cur = obs[0].value, ago = obs[12].value;
-  return ((cur - ago) / ago) * 100;
+  return ((obs[0].value - obs[12].value) / obs[12].value) * 100;
 }
 
 function calcChange(current, previous, decimals) {
@@ -350,18 +329,15 @@ function computeZonePos(value, zones, redUpper) {
   if (redUpper !== undefined && value > redUpper) return 0.95;
   if (value >= zones.green[0] && value <= zones.green[1]) {
     const r = zones.green[1] - zones.green[0];
-    const p = r > 0 ? (value - zones.green[0]) / r : 0;
-    return Math.max(0, Math.min(0.33, p * 0.33));
+    return Math.max(0, Math.min(0.33, r > 0 ? (value - zones.green[0]) / r * 0.33 : 0));
   }
   if (value >= zones.yellow[0] && value <= zones.yellow[1]) {
     const r = zones.yellow[1] - zones.yellow[0];
-    const p = r > 0 ? (value - zones.yellow[0]) / r : 0.5;
-    return 0.33 + Math.max(0, Math.min(0.33, p * 0.33));
+    return 0.33 + Math.max(0, Math.min(0.33, r > 0 ? (value - zones.yellow[0]) / r * 0.33 : 0.17));
   }
   if (value >= zones.red[0] && value <= zones.red[1]) {
     const r = zones.red[1] - zones.red[0];
-    const p = r > 0 ? (value - zones.red[0]) / r : 1;
-    return 0.66 + Math.max(0, Math.min(0.34, p * 0.34));
+    return 0.66 + Math.max(0, Math.min(0.34, r > 0 ? (value - zones.red[0]) / r * 0.34 : 0.17));
   }
   if (value < zones.green[0]) return 0.05;
   if (value > zones.red[1]) return 0.95;
@@ -377,26 +353,47 @@ function formatDate(dateStr) {
 function formatValue(val, cfg) {
   if (val === null || val === undefined) return '--';
   let v = cfg.divide ? val / cfg.divide : val;
-  let s = v.toFixed(cfg.decimals);
-  return cfg.prefix + s + cfg.suffix;
+  return cfg.prefix + v.toFixed(cfg.decimals) + cfg.suffix;
 }
+
+function hoursAgo(dateStr) {
+  if (!dateStr) return 9999;
+  const d = new Date(dateStr);
+  return (Date.now() - d.getTime()) / (1000 * 60 * 60);
+}
+
+function dataAgeBadge(dateStr) {
+  const h = hoursAgo(dateStr);
+  if (h < 24) return '<span class="data-age fresh">● live</span>';
+  if (h < 72) return '<span class="data-age stale">● ' + Math.round(h/24) + 'd old</span>';
+  return '<span class="data-age stale">● stale</span>';
+}
+
+// =========================================================
+// PART I: FRED DATA LOADER
+// =========================================================
 
 async function loadFREDData() {
   let meta = null;
   try {
-    const r = await fetch('data/meta.json');
-    if (r.ok) meta = await r.json();
+    const r = await fetch('data/meta.json', { cache: 'no-store' });
+    if (r.ok) {
+      meta = await r.json();
+      fredLastUpdated = meta.lastUpdated;
+    }
   } catch (e) {}
 
   let updatedCount = 0;
+  let failedCount = 0;
+
   await Promise.allSettled(
     Object.entries(FRED_CONFIG).map(async ([id, cfg]) => {
       try {
-        const res = await fetch('data/' + cfg.file);
-        if (!res.ok) return;
+        const res = await fetch('data/' + cfg.file, { cache: 'no-store' });
+        if (!res.ok) { failedCount++; return; }
         const json = await res.json();
         const obs = parseObservations(json);
-        if (obs.length < 2) return;
+        if (obs.length < 2) { failedCount++; return; }
 
         let currentVal = obs[0].value;
         let prevVal = obs[1].value;
@@ -412,7 +409,7 @@ async function loadFREDData() {
           chartData = obs.slice(0, 30).reverse().map(o => o.value);
         }
 
-        if (currentVal === null) return;
+        if (currentVal === null) { failedCount++; return; }
 
         const change = calcChange(currentVal, prevVal, cfg.decimals);
         const zonePos = computeZonePos(currentVal, cfg.zones, cfg.redUpper);
@@ -434,122 +431,143 @@ async function loadFREDData() {
           indicators[idx].sparkline = sparkData;
           indicators[idx].chartData = chartData;
           indicators[idx].sourceName = 'FRED / St. Louis Fed';
+          indicators[idx]._dataAge = obs[0].date;
           updatedCount++;
         }
       } catch (e) {
         console.warn('FRED load failed for ' + id, e);
+        failedCount++;
       }
     })
   );
 
-  if (meta && meta.lastUpdated) {
-    const d = new Date(meta.lastUpdated);
-    document.getElementById('lastUpdate').textContent = 'live data via FRED — last updated ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  // Update header status
+  const statusEl = document.getElementById('lastUpdate');
+  if (fredLastUpdated) {
+    const d = new Date(fredLastUpdated);
+    const age = hoursAgo(fredLastUpdated);
+    if (age < 24) {
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated);
+    } else if (age < 72) {
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated) + ' — workflow may need trigger';
+    } else {
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' <span style="color:var(--red)">● stale (>3 days)</span> — check Actions tab';
+    }
   } else if (updatedCount > 0) {
-    document.getElementById('lastUpdate').textContent = 'live data via FRED — ' + updatedCount + ' indicators updated';
+    statusEl.textContent = 'FRED: ' + updatedCount + ' indicators loaded (no meta timestamp)';
+  } else {
+    statusEl.innerHTML = '<span style="color:var(--yellow)">● demo mode</span> — FRED data not found. Run workflow or check data/ folder.';
   }
+
+  console.log('FRED load complete:', updatedCount, 'updated,', failedCount, 'failed');
+  return { updatedCount, failedCount };
 }
 
 // =========================================================
-// PART II: PRE-MARKET BIAS — Real-time via Yahoo Finance
+// PART II: PRE-MARKET BIAS — Yahoo Finance with fallbacks
 // =========================================================
-// Answers: "Is the market likely to open higher or lower today?"
-// Use for: tactical entry/exit timing, position sizing, stop-loss placement
-
-let preMarketData = {};
 
 const PREMARKET_SYMBOLS = [
-  // Futures (most predictive)
   { ticker: 'ES=F', name: 'S&P 500 Futures', weight: 25, invert: false, decimals: 2, id: 'pulse-es' },
   { ticker: 'NQ=F', name: 'NASDAQ Futures', weight: 20, invert: false, decimals: 2, id: 'pulse-nq' },
   { ticker: 'YM=F', name: 'Dow Futures', weight: 10, invert: false, decimals: 0, id: 'pulse-ym' },
-  { ticker: 'RTY=F', name: 'Russell 2000 Futures', weight: 10, invert: false, decimals: 2, id: 'pulse-rty' },
-  // Volatility (inverted: up = bearish)
-  { ticker: '^VIX', name: 'VIX', weight: 15, invert: true, decimals: 2, id: 'pulse-vix' },
-  // Rates & FX
-  { ticker: '^TNX', name: '10Y Treasury', weight: 8, invert: false, decimals: 2, id: 'pulse-tnx' },
+  { ticker: 'RTY=F', name: 'Russell 2000', weight: 10, invert: false, decimals: 2, id: 'pulse-rty' },
+  { ticker: '^VIX', name: 'VIX Spot', weight: 15, invert: true, decimals: 2, id: 'pulse-vix' },
+  { ticker: '^TNX', name: '10Y Yield', weight: 8, invert: false, decimals: 2, id: 'pulse-tnx' },
   { ticker: 'DX-Y.NYB', name: 'US Dollar', weight: 5, invert: false, decimals: 2, id: 'pulse-dxy' },
-  // Commodities
   { ticker: 'CL=F', name: 'WTI Crude', weight: 4, invert: false, decimals: 2, id: 'pulse-cl' },
-  { ticker: 'GC=F', name: 'Gold', weight: 3, invert: false, decimals: 2, id: 'pulse-gc' },
 ];
 
-async function fetchYahooData(symbol) {
-  try {
-    const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`);
-    if (!res.ok) return null;
-    const json = await res.json();
-    const result = json.chart?.result?.[0];
-    if (!result) return null;
+async function fetchYahooWithFallback(symbol) {
+  const endpoints = [
+    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`,
+  ];
 
-    const meta = result.meta;
-    const current = meta.regularMarketPrice || meta.previousClose;
-    const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
-    if (!current || !prev) return null;
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const result = json.chart?.result?.[0];
+      if (!result) continue;
 
-    const change = ((current - prev) / prev) * 100;
-    return {
-      name: symbol.name,
-      ticker: symbol.ticker,
-      current: current,
-      previous: prev,
-      change: change,
-      weight: symbol.weight,
-      invert: symbol.invert,
-      decimals: symbol.decimals,
-      id: symbol.id
-    };
-  } catch (e) {
-    console.warn('Yahoo fetch failed for', symbol.ticker);
-    return null;
+      const meta = result.meta;
+      const current = meta.regularMarketPrice || meta.previousClose || meta.chartPreviousClose;
+      const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
+      if (!current || !prev) continue;
+
+      const change = ((current - prev) / prev) * 100;
+      return {
+        name: symbol.name, ticker: symbol.ticker, current, previous: prev, change,
+        weight: symbol.weight, invert: symbol.invert, decimals: symbol.decimals, id: symbol.id,
+        _source: 'yahoo', _timestamp: new Date().toISOString()
+      };
+    } catch (e) {
+      continue;
+    }
   }
+  return null;
 }
 
 function computeBiasScore(data) {
-  // Weighted average of all indicators
-  // For inverted indicators (VIX), up = bearish (negative contribution)
-  let totalWeight = 0;
-  let weightedScore = 0;
-
+  let totalWeight = 0, weightedScore = 0;
   data.forEach(d => {
     let score = d.change;
-    if (d.invert) score = -score; // VIX up = market down
+    if (d.invert) score = -score;
     weightedScore += score * d.weight;
     totalWeight += d.weight;
   });
-
-  if (totalWeight === 0) return { score: 0, direction: 'neutral', strength: 0 };
+  if (totalWeight === 0) return { score: 50, direction: 'neutral', strength: 0 };
 
   const rawScore = weightedScore / totalWeight;
-  // Clamp to -50 to +50 range, then normalize to 0-100 display
   const clamped = Math.max(-3, Math.min(3, rawScore));
-  const normalized = ((clamped + 3) / 6) * 100; // -3% = 0, 0 = 50, +3% = 100
+  const normalized = ((clamped + 3) / 6) * 100;
 
   let direction = 'neutral';
   if (normalized > 60) direction = 'bull';
   else if (normalized < 40) direction = 'bear';
 
-  let strength = Math.abs(normalized - 50) * 2; // 0 = neutral, 100 = extreme
-
+  let strength = Math.abs(normalized - 50) * 2;
   return { score: Math.round(normalized), direction, strength, raw: rawScore };
 }
 
-function updatePulseUI(data) {
+function updatePulseUI(data, hasErrors) {
+  const statusEl = document.getElementById('pulseStatus');
+  if (data.length === 0) {
+    statusEl.textContent = 'unavailable — Yahoo Finance may be blocking requests';
+    statusEl.className = 'pulse-status error';
+    return;
+  }
+
+  statusEl.textContent = 'live — ' + data.length + '/' + PREMARKET_SYMBOLS.length + ' symbols loaded';
+  statusEl.className = 'pulse-status live';
+
   data.forEach(d => {
     const el = document.getElementById(d.id);
     if (!el) return;
-
     const changeStr = (d.change >= 0 ? '+' : '') + d.change.toFixed(2) + '%';
     let colorClass = 'change-neutral';
-    if (d.invert) {
-      colorClass = d.change > 0 ? 'change-down' : 'change-up';
-    } else {
-      colorClass = d.change > 0 ? 'change-up' : 'change-down';
-    }
+    if (d.invert) colorClass = d.change > 0 ? 'change-down' : 'change-up';
+    else colorClass = d.change > 0 ? 'change-up' : 'change-down';
 
     el.querySelector('.pulse-value').textContent = d.current.toFixed(d.decimals);
     el.querySelector('.pulse-change').textContent = changeStr;
     el.querySelector('.pulse-change').className = 'pulse-change ' + colorClass;
+    el.classList.remove('error');
+  });
+
+  // Mark missing symbols as error
+  PREMARKET_SYMBOLS.forEach(s => {
+    if (!data.find(d => d.id === s.id)) {
+      const el = document.getElementById(s.id);
+      if (el) {
+        el.classList.add('error');
+        el.querySelector('.pulse-value').textContent = 'N/A';
+        el.querySelector('.pulse-change').textContent = 'unavailable';
+        el.querySelector('.pulse-change').className = 'pulse-change change-neutral';
+      }
+    }
   });
 }
 
@@ -565,42 +583,31 @@ function updateBiasBar(bias) {
   scoreEl.textContent = bias.score;
   numEl.textContent = bias.score;
 
-  // Bias meter: center = 50 (neutral). Fill extends left (bear) or right (bull)
   const deviation = bias.score - 50;
-  const width = Math.abs(deviation) * 2; // 0-100 scale
+  const width = Math.abs(deviation) * 2;
   fill.style.width = width + '%';
 
   if (bias.direction === 'bull') {
-    fill.style.left = '50%';
-    fill.style.right = 'auto';
-    fill.className = 'bias-fill bull';
+    fill.style.left = '50%'; fill.style.right = 'auto'; fill.className = 'bias-fill bull';
     if (bias.strength > 70) {
-      badge.textContent = 'strong bull';
-      badge.className = 'bias-badge bias-badge-bull-strong';
+      badge.textContent = 'strong bull'; badge.className = 'bias-badge bias-badge-bull-strong';
       actionEl.textContent = 'futures up + VIX down — consider adding risk, size up longs';
     } else {
-      badge.textContent = 'bullish';
-      badge.className = 'bias-badge bias-badge-bull';
+      badge.textContent = 'bullish'; badge.className = 'bias-badge bias-badge-bull';
       actionEl.textContent = 'futures positive — favor longs, tighten stops on shorts';
     }
   } else if (bias.direction === 'bear') {
-    fill.style.left = 'auto';
-    fill.style.right = '50%';
-    fill.className = 'bias-fill bear';
+    fill.style.left = 'auto'; fill.style.right = '50%'; fill.className = 'bias-fill bear';
     if (bias.strength > 70) {
-      badge.textContent = 'strong bear';
-      badge.className = 'bias-badge bias-badge-bear-strong';
+      badge.textContent = 'strong bear'; badge.className = 'bias-badge bias-badge-bear-strong';
       actionEl.textContent = 'futures down + VIX up — reduce risk, raise cash, add hedges';
     } else {
-      badge.textContent = 'bearish';
-      badge.className = 'bias-badge bias-badge-bear';
+      badge.textContent = 'bearish'; badge.className = 'bias-badge bias-badge-bear';
       actionEl.textContent = 'futures negative — favor shorts, tighten stops on longs';
     }
   } else {
-    fill.style.width = '0%';
-    fill.className = 'bias-fill';
-    badge.textContent = 'neutral';
-    badge.className = 'bias-badge bias-badge-neutral';
+    fill.style.width = '0%'; fill.className = 'bias-fill';
+    badge.textContent = 'neutral'; badge.className = 'bias-badge bias-badge-neutral';
     actionEl.textContent = 'mixed signals — wait for first hour confirmation before sizing';
   }
 }
@@ -608,21 +615,25 @@ function updateBiasBar(bias) {
 async function fetchRealtime() {
   const results = [];
   for (const s of PREMARKET_SYMBOLS) {
-    const data = await fetchYahooData(s);
+    const data = await fetchYahooWithFallback(s);
     if (data) results.push(data);
   }
 
-  if (results.length === 0) {
-    console.warn('No pre-market data available');
-    return;
+  updatePulseUI(results, results.length < PREMARKET_SYMBOLS.length);
+
+  if (results.length > 0) {
+    const bias = computeBiasScore(results);
+    updateBiasBar(bias);
+    yahooLastUpdated = new Date().toISOString();
+  } else {
+    // Show bias bar as unavailable
+    document.getElementById('biasBadge').textContent = 'unavailable';
+    document.getElementById('biasBadge').className = 'bias-badge bias-badge-neutral';
+    document.getElementById('biasAction').textContent = 'Yahoo Finance data unavailable — check connection or try refreshing';
   }
 
-  preMarketData = results;
-  updatePulseUI(results);
   document.getElementById('pulseBar').classList.add('open');
-
-  const bias = computeBiasScore(results);
-  updateBiasBar(bias);
+  return results;
 }
 
 // =========================================================
@@ -844,19 +855,22 @@ function renderCards() {
       if (ind.zonePos < 0.66) return z.color === 'yellow';
       return z.color === 'red';
     });
-    const card = document.createElement('div');
-    card.className = 'card indicator-card';
-    card.dataset.cat = ind.cat;
-    // Build zone mini-strip
+
+    // Zone pills
     let zoneStrip = '<div class="zone-strip">';
     ind.zones.forEach(z => {
       const isActive = (ind.zonePos < 0.33 && z.color === 'green') || (ind.zonePos >= 0.33 && ind.zonePos < 0.66 && z.color === 'yellow') || (ind.zonePos >= 0.66 && z.color === 'red');
-      const opacity = isActive ? '1' : '0.35';
-      zoneStrip += '<span class="zone-pill" style="background:' + COLORS[z.color] + ';opacity:' + opacity + '">' + z.label + '</span>';
+      zoneStrip += '<span class="zone-pill" style="background:' + COLORS[z.color] + ';opacity:' + (isActive ? '1' : '0.35') + '">' + z.label + '</span>';
     });
     zoneStrip += '</div>';
 
-    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
+    // Data age badge
+    const ageBadge = ind._dataAge ? dataAgeBadge(ind._dataAge) : '<span class="data-age">● demo</span>';
+
+    const card = document.createElement('div');
+    card.className = 'card indicator-card';
+    card.dataset.cat = ind.cat;
+    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
     card.onclick = () => openDetail(ind);
     grid.appendChild(card);
   });
@@ -867,8 +881,9 @@ function openDetail(ind) {
   document.getElementById('detailTitle').textContent = ind.title;
   document.getElementById('detailDesc').textContent = ind.desc;
   document.getElementById('detailSource').innerHTML = 'source: <a href="' + ind.sourceUrl + '" target="_blank" rel="noopener">' + ind.sourceName + '</a>';
+
   let zonesHtml = '<div class="dz-title">signal framework — how to read ' + ind.title + '</div>';
-  zonesHtml += '<div class="dz-methodology">Each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power. Click any zone to see what data point would push the indicator into that zone.</div>';
+  zonesHtml += '<div class="dz-methodology">This indicator is scored 0-100 based on its zone position. The colored dot on the card shows where it currently sits. If the dot is near a boundary, watch for a breakout — that is your early warning.</div>';
   ind.zones.forEach(z => {
     const isActive = (ind.zonePos < 0.33 && z.color === 'green') || (ind.zonePos >= 0.33 && ind.zonePos < 0.66 && z.color === 'yellow') || (ind.zonePos >= 0.66 && z.color === 'red');
     const bg = isActive ? (z.color === 'green' ? 'rgba(34,197,94,0.08)' : z.color === 'yellow' ? 'rgba(245,158,11,0.08)' : 'rgba(239,68,68,0.08)') : '';
@@ -878,6 +893,7 @@ function openDetail(ind) {
   });
   zonesHtml += '<div class="dz-legend"><span style="color:var(--green)">●</span> green = accumulate/buy &nbsp; <span style="color:var(--yellow)">●</span> yellow = maintain/watch &nbsp; <span style="color:var(--red)">●</span> red = derisk/sell</div>';
   document.getElementById('detailZones').innerHTML = zonesHtml;
+
   const chart = document.getElementById('detailChart');
   const data = ind.chartData;
   const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
@@ -899,16 +915,12 @@ function closeDetail() { document.getElementById('detailPanel').classList.remove
 function filterCategory(cat) {
   const cards = document.querySelectorAll('.indicator-card');
   const fomc = document.querySelector('.fomc');
-  const fw = document.getElementById('frameworkPanel');
   const info = document.getElementById('infoBanner');
   const detail = document.getElementById('detailPanel');
-  const pulse = document.getElementById('pulseBar');
-  const bias = document.getElementById('biasBar');
-
-  fw.classList.remove('open');
-  info.style.display = 'block';
   cards.forEach(c => { if (cat === 'all' || c.dataset.cat === cat) c.classList.remove('hidden'); else c.classList.add('hidden'); });
   fomc.style.display = (cat === 'all' || cat === 'rates') ? '' : 'none';
+  info.style.display = 'block';
+  detail.classList.remove('open');
 }
 
 document.querySelectorAll('.tab').forEach(tab => {
@@ -943,6 +955,23 @@ function calcComposite() {
   b.className = 'signal-badge ' + cls;
   document.getElementById('mainAction').textContent = action;
   document.getElementById('mainFill').style.background = color;
+}
+
+// =========================================================
+// MANUAL REFRESH
+// =========================================================
+async function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  btn.textContent = 'Refreshing...';
+
+  await loadFREDData();
+  await fetchRealtime();
+  renderCards();
+  calcComposite();
+
+  btn.classList.remove('spinning');
+  btn.textContent = '↻ Refresh';
 }
 
 // =========================================================
