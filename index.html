@@ -77,6 +77,40 @@
   .pulse-stale { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
   @media (max-width: 640px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
 
+  .moo-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .moo-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .moo-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .moo-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .moo-status { font-size: 10px; color: var(--text-muted); }
+  .moo-status.set { color: var(--green); }
+  .moo-grid { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 8px; align-items: end; }
+  .moo-field { display: flex; flex-direction: column; gap: 3px; }
+  .moo-field label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .moo-field input { background: #0a0c10; border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); padding: 7px 8px; font-size: 13px; font-family: var(--font); width: 100%; }
+  .moo-field input:focus { outline: none; border-color: var(--blue); }
+  .moo-btn { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.3); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; height: 33px; }
+  .moo-btn:hover { background: rgba(59,130,246,0.2); }
+  @media (max-width: 640px) { .moo-grid { grid-template-columns: repeat(2, 1fr); } .moo-btn { grid-column: 1 / -1; } }
+
+  .breadth-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .breadth-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .breadth-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .breadth-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .breadth-status { font-size: 10px; color: var(--text-muted); }
+  .breadth-status.live { color: var(--green); }
+  .breadth-status.error { color: var(--red); }
+  .breadth-summary { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .breadth-ratio { font-size: 26px; font-weight: 800; }
+  .breadth-ratio-label { font-size: 11px; color: var(--text-muted); }
+  .breadth-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .breadth-item { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .breadth-item-name { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .breadth-item-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+  .breadth-item-up { background: var(--green); }
+  .breadth-item-down { background: var(--red); }
+  .breadth-item-pct { font-size: 11px; font-weight: 700; }
+  @media (max-width: 640px) { .breadth-grid { grid-template-columns: repeat(2, 1fr); } }
+
   .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
   .tab { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
   .tab:hover { background: #1a1d24; color: var(--text-secondary); }
@@ -233,6 +267,43 @@
       <div class="pulse-item" id="pulse-cl"><div class="pulse-name">WTI Crude</div><div class="pulse-value">--</div><div class="pulse-change">--</div></div>
     </div>
   </div>
+
+  <!-- MOO IMBALANCE — manual entry, not auto-fetched. See index.html comments for why. -->
+  <div class="moo-bar" id="mooBar">
+    <div class="moo-title-row">
+      <span class="moo-title">MOO imbalance <span class="moo-sub">(paste from your source, ~9:20-9:30am ET / ~9:20-9:30pm SGT — feeds bias score)</span></span>
+      <span class="moo-status" id="mooStatus">not entered yet</span>
+    </div>
+    <div class="moo-grid">
+      <div class="moo-field"><label>S&P 500 (mln)</label><input type="number" step="0.1" id="moo-sp500" placeholder="e.g. 164.5"></div>
+      <div class="moo-field"><label>Nasdaq 100 (mln)</label><input type="number" step="0.1" id="moo-ndx" placeholder="e.g. -42.7"></div>
+      <div class="moo-field"><label>Dow 30 (mln)</label><input type="number" step="0.1" id="moo-dow" placeholder="e.g. -22.1"></div>
+      <div class="moo-field"><label>Mag 7 (mln)</label><input type="number" step="0.1" id="moo-mag7" placeholder="e.g. -41.4"></div>
+      <button class="moo-btn" onclick="updateMOOImbalance()">Update &amp; recalc bias</button>
+    </div>
+  </div>
+
+  <!-- BUY/SELL VOLUME PROXY — fully automated, no manual entry. See fetch-breadth.yml.
+       Method: 1-min bars for SPY/QQQ/DIA/IWM classified up/down by close vs prior close.
+       This is a bar-direction proxy, NOT tick-level aggressor-side (Lee-Ready) volume -
+       that needs paid NBBO quote data. Labeled clearly below so it's never mistaken for it. -->
+  <div class="breadth-bar" id="breadthBar">
+    <div class="breadth-title-row">
+      <span class="breadth-title">buy/sell volume proxy <span class="breadth-sub">(auto, 1-min bar direction — SPY/QQQ/DIA/IWM, first 4 trading hours)</span></span>
+      <span class="breadth-status" id="breadthStatus">loading...</span>
+    </div>
+    <div class="breadth-summary">
+      <span class="breadth-ratio" id="breadthRatio">--</span>
+      <span class="breadth-ratio-label">up-volume : down-volume ratio</span>
+    </div>
+    <div class="breadth-grid" id="breadthGrid">
+      <div class="breadth-item" id="breadth-SPY"><div class="breadth-item-name">S&P 500 (SPY)</div><div class="breadth-item-bar"></div><div class="breadth-item-pct">--</div></div>
+      <div class="breadth-item" id="breadth-QQQ"><div class="breadth-item-name">Nasdaq 100 (QQQ)</div><div class="breadth-item-bar"></div><div class="breadth-item-pct">--</div></div>
+      <div class="breadth-item" id="breadth-DIA"><div class="breadth-item-name">Dow 30 (DIA)</div><div class="breadth-item-bar"></div><div class="breadth-item-pct">--</div></div>
+      <div class="breadth-item" id="breadth-IWM"><div class="breadth-item-name">Russell 2000 (IWM)</div><div class="breadth-item-bar"></div><div class="breadth-item-pct">--</div></div>
+    </div>
+  </div>
+
 
   <div class="tabs">
     <button class="tab active" data-cat="all">all indicators</button>
@@ -609,6 +680,137 @@ function updateBiasBar(bias) {
   }
 }
 
+// =========================================================
+// BUY/SELL VOLUME PROXY — fully automated, see fetch-breadth.yml
+// =========================================================
+const BREADTH_WEIGHT = 10; // same order of magnitude as VIX/MOO - meaningful but not dominant
+let breadthData = null;
+
+async function loadBreadthData() {
+  const statusEl = document.getElementById('breadthStatus');
+  try {
+    const res = await fetch('data/breadth.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('not found');
+    breadthData = await res.json();
+  } catch (e) {
+    breadthData = null;
+  }
+
+  if (!breadthData || !breadthData.symbols) {
+    statusEl.textContent = 'unavailable — data/breadth.json missing. Check the "Fetch Buy/Sell Volume Proxy" workflow in Actions.';
+    statusEl.className = 'breadth-status error';
+    document.getElementById('breadthRatio').textContent = '--';
+    return;
+  }
+
+  const age = hoursAgo(breadthData._lastUpdated);
+  const ageTxt = age < (1/60) ? 'just now' : age < 1 ? Math.round(age * 60) + 'm ago' : Math.round(age) + 'h ago';
+  statusEl.textContent = 'updated ' + ageTxt + (breadthData._failedSymbols && breadthData._failedSymbols.length ? ' · ' + breadthData._failedSymbols.length + ' symbol(s) failed' : '');
+  statusEl.className = 'breadth-status ' + (age < 1 ? 'live' : 'error');
+
+  const ratio = breadthData.upDownRatio;
+  const ratioEl = document.getElementById('breadthRatio');
+  ratioEl.textContent = ratio !== null ? ratio.toFixed(2) : '--';
+  ratioEl.style.color = ratio > 1.1 ? 'var(--green)' : ratio < 0.9 ? 'var(--red)' : 'var(--text-primary)';
+
+  Object.entries(breadthData.symbols).forEach(([ticker, d]) => {
+    const el = document.getElementById('breadth-' + ticker);
+    if (!el) return;
+    const total = d.upVolume + d.downVolume;
+    const upPct = total > 0 ? (d.upVolume / total) * 100 : 50;
+    el.querySelector('.breadth-item-bar').innerHTML =
+      '<div class="breadth-item-up" style="width:' + upPct.toFixed(1) + '%"></div>' +
+      '<div class="breadth-item-down" style="width:' + (100 - upPct).toFixed(1) + '%"></div>';
+    const pctEl = el.querySelector('.breadth-item-pct');
+    pctEl.textContent = upPct.toFixed(0) + '% up-volume';
+    pctEl.style.color = upPct > 55 ? 'var(--green)' : upPct < 45 ? 'var(--red)' : 'var(--text-secondary)';
+  });
+
+  recomputeAndRenderBias();
+}
+
+
+// S&P 500 imbalance magnitude (millions $) treated as roughly equivalent in signal
+// strength to a 3%-move futures day when it hits this threshold. This is a judgment
+// call, not a backtested constant - adjust MOO_SP500_EXTREME_MLN if it feels off
+// versus how the market actually opens relative to what you see.
+const MOO_SP500_EXTREME_MLN = 1500;
+const MOO_WEIGHT = 12; // comparable order of magnitude to VIX(15)/ES futures(25) weights
+
+let manualMOOEntry = null; // { sp500, ndx, dow, mag7, enteredAt } or null if not yet entered
+
+function updateMOOImbalance() {
+  const sp500 = parseFloat(document.getElementById('moo-sp500').value);
+  const ndx = parseFloat(document.getElementById('moo-ndx').value);
+  const dow = parseFloat(document.getElementById('moo-dow').value);
+  const mag7 = parseFloat(document.getElementById('moo-mag7').value);
+
+  if (isNaN(sp500)) {
+    document.getElementById('mooStatus').textContent = 'enter at least S&P 500 value';
+    document.getElementById('mooStatus').className = 'moo-status';
+    return;
+  }
+
+  manualMOOEntry = { sp500, ndx: isNaN(ndx) ? null : ndx, dow: isNaN(dow) ? null : dow, mag7: isNaN(mag7) ? null : mag7, enteredAt: new Date() };
+
+  const statusEl = document.getElementById('mooStatus');
+  const timeStr = manualMOOEntry.enteredAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const sp500Dir = sp500 >= 0 ? '+' : '';
+
+  // Breadth read: agreement across NDX/DOW/MAG7 sign vs S&P sign tells you whether the
+  // open imbalance is broad-based or concentrated in one part of the market. Informational
+  // only - doesn't change the score, since these constituents overlap with S&P 500 anyway.
+  const others = [ndx, dow, mag7].filter(v => !isNaN(v));
+  let breadthNote = '';
+  if (others.length > 0) {
+    const agree = others.filter(v => (v >= 0) === (sp500 >= 0)).length;
+    if (agree === others.length) breadthNote = ' — broad-based (all segments agree)';
+    else if (agree === 0) breadthNote = ' — narrow/conflicting (segments disagree with S&P)';
+    else breadthNote = ' — mixed (' + agree + '/' + others.length + ' segments agree)';
+  }
+
+  statusEl.textContent = 'entered ' + timeStr + ' — S&P ' + sp500Dir + sp500 + 'mln driving bias' + breadthNote;
+  statusEl.className = 'moo-status set';
+
+  recomputeAndRenderBias();
+}
+
+// Converts the current pulse results + (optional) manual MOO entry into a bias score
+// and updates the bias bar. Shared by fetchRealtime() and updateMOOImbalance() so the
+// two data sources are combined consistently instead of MOO silently overwriting futures.
+let lastPulseResults = [];
+
+function recomputeAndRenderBias() {
+  const combined = lastPulseResults.slice();
+
+  if (manualMOOEntry) {
+    const clamped = Math.max(-1, Math.min(1, manualMOOEntry.sp500 / MOO_SP500_EXTREME_MLN));
+    const pseudoChangePct = clamped * 3; // maps onto the same -3..+3 raw scale as futures %
+    combined.push({
+      name: 'MOO Imbalance (S&P 500)', ticker: 'MOO-SPX', current: manualMOOEntry.sp500, previous: 0,
+      change: pseudoChangePct, weight: MOO_WEIGHT, invert: false, decimals: 1, id: 'moo-composite'
+    });
+  }
+
+  if (breadthData && breadthData.upDownRatio !== null && breadthData.upDownRatio !== undefined) {
+    const ratio = breadthData.upDownRatio;
+    // log-scaled so it's symmetric: a 2x up/down ratio and a 0.5x ratio are equally extreme.
+    // 2x treated as the "maxed out" reference point - a judgment call, not backtested,
+    // same caveat as the other manual-threshold constants in this file.
+    const clamped = Math.max(-1, Math.min(1, Math.log(ratio) / Math.log(2)));
+    const pseudoChangePct = clamped * 3;
+    combined.push({
+      name: 'Buy/Sell Volume Proxy', ticker: 'BREADTH', current: ratio, previous: 1,
+      change: pseudoChangePct, weight: BREADTH_WEIGHT, invert: false, decimals: 2, id: 'breadth-composite'
+    });
+  }
+
+  if (combined.length > 0) {
+    const bias = computeBiasScore(combined);
+    updateBiasBar(bias);
+  }
+}
+
 async function fetchRealtime() {
   const pulseData = await loadPulseData();
   const results = [];
@@ -627,11 +829,11 @@ async function fetchRealtime() {
     yahooLastUpdated = pulseData._lastUpdated || null;
   }
 
+  lastPulseResults = results;
   updatePulseUI(results, results.length < PREMARKET_SYMBOLS.length, yahooLastUpdated);
 
-  if (results.length > 0) {
-    const bias = computeBiasScore(results);
-    updateBiasBar(bias);
+  if (results.length > 0 || manualMOOEntry || (breadthData && breadthData.upDownRatio !== null)) {
+    recomputeAndRenderBias();
   } else {
     document.getElementById('biasBadge').textContent = 'unavailable';
     document.getElementById('biasBadge').className = 'bias-badge bias-badge-neutral';
@@ -985,6 +1187,7 @@ async function manualRefresh() {
   btn.textContent = 'Refreshing...';
 
   await loadFREDData();
+  await loadBreadthData();
   await fetchRealtime();
   renderCards();
   calcComposite();
@@ -998,6 +1201,7 @@ async function manualRefresh() {
 // =========================================================
 (async function init() {
   await loadFREDData();
+  await loadBreadthData();
   await fetchRealtime();
   renderCards();
   calcComposite();
