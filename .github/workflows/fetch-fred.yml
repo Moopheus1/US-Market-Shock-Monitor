@@ -22,15 +22,21 @@ jobs:
         run: |
           mkdir -p data
           API_KEY="${{ secrets.FRED_API_KEY }}"
+          FAIL_COUNT=0
+          TOTAL_COUNT=0
+          FAILED_SERIES=""
 
           fetch_series() {
             local series=$1
             local file=$2
+            TOTAL_COUNT=$((TOTAL_COUNT+1))
             echo "Fetching ${series}..."
             curl -s "https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${API_KEY}&file_type=json&sort_order=desc&limit=200"               -o "data/${file}.json"
             if ! python3 -c "import json; json.load(open('data/${file}.json'))" 2>/dev/null; then
               echo "WARNING: ${series} returned invalid JSON, keeping previous file if exists"
               git checkout -- "data/${file}.json" 2>/dev/null || true
+              FAIL_COUNT=$((FAIL_COUNT+1))
+              FAILED_SERIES="${FAILED_SERIES}${series},"
             fi
           }
 
@@ -49,7 +55,18 @@ jobs:
           fetch_series "SP500"         "sp500"
           fetch_series "NASDAQCOM"     "nasdaq"
 
-          echo '{"lastUpdated":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > data/meta.json
+          echo "Fetched: $((TOTAL_COUNT-FAIL_COUNT))/${TOTAL_COUNT}. Failed: ${FAILED_SERIES:-none}"
+
+          # meta.json now reflects reality instead of unconditionally claiming "fresh".
+          # If FRED_API_KEY is bad or FRED is down, lastUpdated will still update (so you
+          # can see the workflow ran) but failedSeries/failedCount will expose that the
+          # data itself didn't actually refresh - check this before trusting the dashboard.
+          echo '{"lastUpdated":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","fetchedCount":'$((TOTAL_COUNT-FAIL_COUNT))',"totalCount":'${TOTAL_COUNT}',"failedSeries":"'${FAILED_SERIES}'"}' > data/meta.json
+
+          if [ "$FAIL_COUNT" -eq "$TOTAL_COUNT" ]; then
+            echo "::error::All ${TOTAL_COUNT} FRED series failed - check FRED_API_KEY secret"
+            exit 1
+          fi
 
       - name: Commit and Push
         run: |
