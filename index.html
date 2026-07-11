@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>US Market Shock Monitor</title>
+<title>Market Shock Monitor</title>
 <style>
   :root {
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -297,8 +297,14 @@ const FRED_CONFIG = {
   fedbal: { file: 'fedbal.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000, zones: { green: [0, 7.5], yellow: [7.5, 8.5], red: [8.5, 15.0] } },
   consumer: { file: 'consumer.json', decimals: 1, prefix: '', suffix: '', zones: { green: [110, 150], yellow: [80, 110], red: [0, 80] } },
   treasury10y: { file: 'treasury10y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } },
-  treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } }
+  treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 3.0], yellow: [3.0, 4.5], red: [4.5, 10.0] } },
+  m2: { file: 'm2.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000, zones: { green: [22, 100], yellow: [18, 22], red: [0, 18] } }
 };
+// NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
+// NOT mapped here. They're index price levels, not risk-zone metrics - the green/yellow/red
+// zone framework (fixed absolute ranges) doesn't mean anything for a number that trends up
+// over decades. If you want these on the dashboard, they need a different card type
+// (e.g. % off all-time high, or distance from 200-day MA) - flag it if you want that built.
 
 let fredLastUpdated = null;
 let yahooLastUpdated = null;
@@ -443,15 +449,16 @@ async function loadFREDData() {
 
   // Update header status
   const statusEl = document.getElementById('lastUpdate');
+  const fetchWarning = (meta && meta.failedSeries) ? ' <span style="color:var(--red)">● ' + (meta.totalCount - meta.fetchedCount) + '/' + meta.totalCount + ' series failed last run</span>' : '';
   if (fredLastUpdated) {
     const d = new Date(fredLastUpdated);
     const age = hoursAgo(fredLastUpdated);
     if (age < 24) {
-      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated);
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated) + fetchWarning;
     } else if (age < 72) {
-      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated) + ' — workflow may need trigger';
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + dataAgeBadge(fredLastUpdated) + ' — workflow may need trigger' + fetchWarning;
     } else {
-      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' <span style="color:var(--red)">● stale (>3 days)</span> — check Actions tab';
+      statusEl.innerHTML = 'FRED data: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' <span style="color:var(--red)">● stale (>3 days)</span> — check Actions tab' + fetchWarning;
     }
   } else if (updatedCount > 0) {
     statusEl.textContent = 'FRED: ' + updatedCount + ' indicators loaded (no meta timestamp)';
@@ -478,36 +485,24 @@ const PREMARKET_SYMBOLS = [
   { ticker: 'CL=F', name: 'WTI Crude', weight: 4, invert: false, decimals: 2, id: 'pulse-cl' },
 ];
 
-async function fetchYahooWithFallback(symbol) {
-  const endpoints = [
-    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`,
-    `https://query2.finance.yahoo.com/v8/finance/chart/${symbol.ticker}?interval=1d&range=5d`,
-  ];
+// Yahoo's chart endpoint doesn't send CORS headers permitting browser-origin fetches from
+// GitHub Pages, so this can never work called directly from the client - it never did.
+// Fixed version: a GitHub Actions job (fetch-yahoo.yml) fetches these server-side, where
+// CORS doesn't apply, and commits them to data/pulse.json. This just reads that file.
+const YAHOO_KEY_MAP = {
+  'ES=F': 'es', 'NQ=F': 'nq', 'YM=F': 'ym', 'RTY=F': 'rty',
+  '^VIX': 'vix_spot', '^TNX': 'tnx', 'DX-Y.NYB': 'dxy_spot', 'CL=F': 'cl'
+};
 
-  for (const url of endpoints) {
-    try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) continue;
-      const json = await res.json();
-      const result = json.chart?.result?.[0];
-      if (!result) continue;
-
-      const meta = result.meta;
-      const current = meta.regularMarketPrice || meta.previousClose || meta.chartPreviousClose;
-      const prev = meta.previousClose || meta.chartPreviousClose || meta.regularMarketPreviousClose;
-      if (!current || !prev) continue;
-
-      const change = ((current - prev) / prev) * 100;
-      return {
-        name: symbol.name, ticker: symbol.ticker, current, previous: prev, change,
-        weight: symbol.weight, invert: symbol.invert, decimals: symbol.decimals, id: symbol.id,
-        _source: 'yahoo', _timestamp: new Date().toISOString()
-      };
-    } catch (e) {
-      continue;
-    }
+async function loadPulseData() {
+  try {
+    const res = await fetch('data/pulse.json', { cache: 'no-store' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn('pulse.json load failed', e);
+    return null;
   }
-  return null;
 }
 
 function computeBiasScore(data) {
@@ -532,16 +527,18 @@ function computeBiasScore(data) {
   return { score: Math.round(normalized), direction, strength, raw: rawScore };
 }
 
-function updatePulseUI(data, hasErrors) {
+function updatePulseUI(data, hasErrors, lastUpdated) {
   const statusEl = document.getElementById('pulseStatus');
   if (data.length === 0) {
-    statusEl.textContent = 'unavailable — Yahoo Finance may be blocking requests';
+    statusEl.textContent = 'unavailable — data/pulse.json missing or empty. Check the "Fetch Yahoo Premarket Data" workflow in Actions.';
     statusEl.className = 'pulse-status error';
     return;
   }
 
-  statusEl.textContent = 'live — ' + data.length + '/' + PREMARKET_SYMBOLS.length + ' symbols loaded';
-  statusEl.className = 'pulse-status live';
+  const age = lastUpdated ? hoursAgo(lastUpdated) : 9999;
+  const ageTxt = !lastUpdated ? 'age unknown' : age < (1/60) ? 'just now' : age < 1 ? Math.round(age * 60) + 'm ago' : Math.round(age) + 'h ago';
+  statusEl.textContent = data.length + '/' + PREMARKET_SYMBOLS.length + ' symbols · updated ' + ageTxt;
+  statusEl.className = 'pulse-status ' + (age < 1 ? 'live' : 'error');
 
   data.forEach(d => {
     const el = document.getElementById(d.id);
@@ -613,23 +610,32 @@ function updateBiasBar(bias) {
 }
 
 async function fetchRealtime() {
+  const pulseData = await loadPulseData();
   const results = [];
-  for (const s of PREMARKET_SYMBOLS) {
-    const data = await fetchYahooWithFallback(s);
-    if (data) results.push(data);
+
+  if (pulseData) {
+    PREMARKET_SYMBOLS.forEach(s => {
+      const key = YAHOO_KEY_MAP[s.ticker];
+      const d = pulseData[key];
+      if (!d || d.current == null || d.previous == null) return;
+      const change = ((d.current - d.previous) / d.previous) * 100;
+      results.push({
+        name: s.name, ticker: s.ticker, current: d.current, previous: d.previous, change,
+        weight: s.weight, invert: s.invert, decimals: s.decimals, id: s.id
+      });
+    });
+    yahooLastUpdated = pulseData._lastUpdated || null;
   }
 
-  updatePulseUI(results, results.length < PREMARKET_SYMBOLS.length);
+  updatePulseUI(results, results.length < PREMARKET_SYMBOLS.length, yahooLastUpdated);
 
   if (results.length > 0) {
     const bias = computeBiasScore(results);
     updateBiasBar(bias);
-    yahooLastUpdated = new Date().toISOString();
   } else {
-    // Show bias bar as unavailable
     document.getElementById('biasBadge').textContent = 'unavailable';
     document.getElementById('biasBadge').className = 'bias-badge bias-badge-neutral';
-    document.getElementById('biasAction').textContent = 'Yahoo Finance data unavailable — check connection or try refreshing';
+    document.getElementById('biasAction').textContent = 'pulse data unavailable — check data/pulse.json / Actions tab';
   }
 
   document.getElementById('pulseBar').classList.add('open');
@@ -796,6 +802,19 @@ const DEMO_INDICATORS = [
       { label: 'derisk', val: 'rapid QT + market stress', color: 'red', next: 'already draining liquidity - repo crisis risk. next: QT slows or pauses -> watch' }
     ],
     zonePos: 0.20, desc: 'The Federal Reserve continues quantitative tightening (QT), allowing Treasury and MBS holdings to roll off. Balance sheet reduction removes liquidity from the financial system. The Sep 2019 repo crisis occurred when QT went too far.'
+  },
+  {
+    id: 'm2', cat: 'macro', title: 'M2 Money Supply', subtitle: 'broad money supply',
+    value: '$21.9T', change: '+0.2%', changeDir: 'up', severity: 'med', severityLabel: 'watch',
+    date: 'jun 2026', sparkline: [21.5,21.6,21.6,21.7,21.7,21.8,21.8,21.8,21.9,21.9,21.9,21.9,21.9,21.9,21.9],
+    chartData: [21.0,21.1,21.2,21.3,21.4,21.5,21.6,21.6,21.7,21.7,21.8,21.8,21.8,21.9,21.9,21.9,21.9,21.9,21.9],
+    sourceUrl: 'https://fred.stlouisfed.org/series/M2SL', sourceName: 'FRED / Fed',
+    zones: [
+      { label: 'accumulate', val: 'M2 growing steadily', color: 'green', next: 'already liquidity supportive. next: M2 growth stalls -> watch' },
+      { label: 'watch', val: 'M2 flat / slow growth', color: 'yellow', next: 'next up: growth reaccelerates -> accumulate. next down: M2 contracts -> derisk' },
+      { label: 'derisk', val: 'M2 contracting y/y', color: 'red', next: 'already liquidity drain - historically rare and disinflationary/deflationary. next: M2 resumes growth -> watch' }
+    ],
+    zonePos: 0.30, desc: 'M2 measures cash, checking/savings deposits, and money market funds - the broad liquidity available to the economy. Sustained M2 growth is historically supportive of asset prices; M2 contraction (as briefly happened in 2022-23, the first since the 1930s) is a genuine liquidity-drain warning sign.'
   },
   {
     id: 'consumer', cat: 'macro', title: 'Consumer Confidence', subtitle: 'Conference Board',
