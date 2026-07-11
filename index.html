@@ -7,160 +7,128 @@
 <style>
   :root {
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --bg: #0f1115;
-    --card-bg: #16181d;
-    --border: #2a2d35;
-    --text-primary: #e8e8e8;
-    --text-secondary: #a0a3a8;
-    --text-muted: #6b6f78;
-    --green: #22c55e;
-    --green-dim: rgba(34,197,94,0.12);
-    --yellow: #f59e0b;
-    --yellow-dim: rgba(245,158,11,0.12);
-    --red: #ef4444;
-    --red-dim: rgba(239,68,68,0.12);
-    --blue: #3b82f6;
-    --blue-dim: rgba(59,130,246,0.12);
+    --bg: #0a0c10; --card-bg: #111318; --border: #1e2128;
+    --text-primary: #e8e8e8; --text-secondary: #9ca3af; --text-muted: #6b7280;
+    --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
+    --yellow: #f59e0b; --yellow-dim: rgba(245,158,11,0.1);
+    --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+    --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.1);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--font); background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px 16px; }
-
-  /* Header */
-  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; }
-  .brand svg { width: 24px; height: 24px; color: var(--text-primary); }
-  .last-update { font-size: 12px; color: var(--text-muted); }
-
-  /* Signal Bar */
-  .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; }
+  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+  .brand-icon { width: 26px; height: 26px; }
+  .last-update { font-size: 11px; color: var(--text-muted); }
+  .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
   .signal-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .signal-badge { font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
-  .badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
-  .badge-orange { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.35); }
-  .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
-  .signal-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+  .signal-badge { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+  .badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+  .badge-orange { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+  .signal-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; }
   .signal-text strong { color: var(--text-primary); font-weight: 600; }
   .signal-right { display: flex; align-items: center; gap: 14px; }
   .signal-score { text-align: right; }
-  .signal-score-num { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
-  .signal-score-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
-  .signal-meter { width: 180px; height: 10px; background: #22252c; border-radius: 5px; overflow: hidden; position: relative; }
+  .signal-score-num { font-size: 32px; font-weight: 800; line-height: 1; }
+  .signal-score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+  .signal-meter { width: 180px; height: 10px; background: #1a1d24; border-radius: 5px; overflow: hidden; }
   .signal-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .tab { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.15s; }
-  .tab:hover { background: #1e2128; color: var(--text-primary); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.15s; }
+  .tab:hover { background: #1a1d24; color: var(--text-secondary); }
   .tab.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
-
-  /* Framework Panel */
-  .framework-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+  .framework-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; display: none; }
   .framework-panel.open { display: block; }
-  .fw-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .fw-title svg { width: 18px; height: 18px; }
-  .fw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
-  .fw-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
-  .fw-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .fw-card-title { font-size: 14px; font-weight: 600; }
+  .fw-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+  .fw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+  .fw-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .fw-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .fw-card-title { font-size: 14px; font-weight: 700; }
   .fw-zones { display: flex; flex-direction: column; gap: 6px; }
-  .fw-zone { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 5px 8px; border-radius: 6px; }
+  .fw-zone { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 7px 10px; border-radius: 6px; }
   .fw-zone-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .fw-zone-label { font-weight: 600; min-width: 80px; }
-  .fw-zone-val { color: var(--text-secondary); }
-  .fw-zone-arrow { margin-left: auto; font-size: 11px; color: var(--text-muted); }
-  .fw-legend { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; font-size: 12px; }
-  .fw-legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  .fw-zone-label { font-weight: 700; min-width: 85px; }
+  .fw-zone-val { color: var(--text-secondary); flex: 1; }
+  .fw-zone-arrow { font-size: 11px; color: var(--text-muted); font-style: italic; max-width: 180px; text-align: right; }
+  .fw-legend { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--border); }
+  .fw-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
   .fw-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .fw-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 12px; }
+  .fw-note { font-size: 12px; color: var(--text-muted); margin-top: 16px; line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
   .fw-note strong { color: var(--text-secondary); }
-
-  /* Grid */
+  .fw-note code { background: #1a1d24; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; position: relative; overflow: hidden; }
-  .card:hover { border-color: #3a3d45; transform: translateY(-1px); }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; overflow: hidden; }
+  .card:hover { border-color: #2a2d35; transform: translateY(-1px); }
   .card.hidden { display: none; }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
   .card-title-wrap { display: flex; align-items: center; gap: 8px; }
   .card-icon { width: 18px; height: 18px; color: var(--text-muted); flex-shrink: 0; }
-  .card-title { font-size: 14px; font-weight: 600; }
+  .card-title { font-size: 14px; font-weight: 700; }
   .card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .card-value-row { display: flex; align-items: baseline; gap: 10px; margin: 8px 0; }
-  .card-value { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .card-change { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 3px; }
+  .card-value { font-size: 30px; font-weight: 800; line-height: 1.1; }
+  .card-change { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
   .card-change svg { width: 14px; height: 14px; }
   .card-sparkline { width: 100%; height: 36px; margin-top: 4px; }
-
-  /* Threshold Strip */
   .th-strip { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 12px; margin-bottom: 4px; position: relative; }
-  .th-green-bg { background: var(--green); opacity: 0.25; flex: 1; }
-  .th-yellow-bg { background: var(--yellow); opacity: 0.25; flex: 1; }
-  .th-red-bg { background: var(--red); opacity: 0.25; flex: 1; }
-  .th-marker { position: absolute; top: -3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--card-bg); transform: translateX(-50%); box-shadow: 0 0 4px rgba(0,0,0,0.3); transition: left 0.5s ease; }
-  .th-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .th-green-bg { background: var(--green); opacity: 0.2; flex: 1; }
+  .th-yellow-bg { background: var(--yellow); opacity: 0.2; flex: 1; }
+  .th-red-bg { background: var(--red); opacity: 0.2; flex: 1; }
+  .th-marker { position: absolute; top: -3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--card-bg); transform: translateX(-50%); transition: left 0.5s ease; }
+  .th-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
   .th-current { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
-  .th-current strong { color: var(--text-primary); }
-
+  .th-current strong { color: var(--text-primary); font-weight: 600; }
   .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
-  .severity { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; }
+  .severity { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; }
   .sev-low { background: var(--green-dim); color: var(--green); }
   .sev-med { background: var(--yellow-dim); color: var(--yellow); }
   .sev-high { background: var(--red-dim); color: var(--red); }
-  .source-link { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; transition: color 0.15s; }
+  .source-link { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; }
   .source-link:hover { color: var(--blue); }
   .source-link svg { width: 12px; height: 12px; }
-
-  .change-up { color: var(--green); }
-  .change-down { color: var(--red); }
-  .change-neutral { color: var(--text-muted); }
-
-  /* FOMC Banner */
+  .change-up { color: var(--green); } .change-down { color: var(--red); } .change-neutral { color: var(--text-muted); }
   .fomc { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
   .fomc-left { display: flex; align-items: center; gap: 12px; }
-  .fomc-icon { width: 32px; height: 32px; color: var(--text-primary); }
-  .fomc-title { font-size: 15px; font-weight: 600; }
+  .fomc-icon { width: 32px; height: 32px; }
+  .fomc-title { font-size: 15px; font-weight: 700; }
   .fomc-sub { font-size: 12px; color: var(--text-muted); }
   .countdown { display: flex; gap: 14px; align-items: center; }
   .cd-box { text-align: center; min-width: 52px; }
-  .cd-num { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .cd-num { font-size: 26px; font-weight: 800; line-height: 1; }
   .cd-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
   .cd-sep { font-size: 22px; color: var(--text-muted); font-weight: 300; margin-top: -8px; }
-
-  /* Detail Panel */
   .detail { grid-column: 1 / -1; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 4px; display: none; }
   .detail.open { display: block; }
   .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .detail-title { font-size: 17px; font-weight: 600; }
-  .detail-close { cursor: pointer; padding: 6px; border-radius: 8px; color: var(--text-muted); transition: color 0.15s, background 0.15s; }
-  .detail-close:hover { color: var(--text-primary); background: #1e2128; }
+  .detail-title { font-size: 17px; font-weight: 700; }
+  .detail-close { cursor: pointer; padding: 6px; border-radius: 8px; color: var(--text-muted); }
+  .detail-close:hover { color: var(--text-primary); background: #1a1d24; }
   .detail-close svg { width: 20px; height: 20px; }
-  .detail-chart { width: 100%; height: 180px; border-radius: 8px; background: #0f1115; }
+  .detail-chart { width: 100%; height: 180px; border-radius: 8px; background: #0a0c10; }
   .detail-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-top: 14px; }
   .detail-source { margin-top: 10px; font-size: 12px; }
   .detail-source a { color: var(--blue); text-decoration: none; }
   .detail-source a:hover { text-decoration: underline; }
   .detail-zones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-  .dz-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); }
-  .dz-row { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; }
+  .dz-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .dz-row { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 6px; padding: 7px 12px; border-radius: 6px; }
   .dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .dz-label { font-weight: 600; min-width: 100px; }
+  .dz-label { font-weight: 700; min-width: 100px; }
   .dz-val { color: var(--text-secondary); flex: 1; }
   .dz-next { font-size: 11px; color: var(--text-muted); font-style: italic; }
-
-  /* API Setup Banner */
-  .api-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.25); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
-  .api-text { font-size: 13px; color: var(--text-secondary); }
-  .api-text strong { color: var(--blue); }
-  .api-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--blue); background: transparent; color: var(--blue); transition: all 0.15s; }
-  .api-btn:hover { background: var(--blue); color: var(--bg); }
-
+  .info-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+  .info-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .info-text strong { color: var(--blue); }
+  .info-text a { color: var(--blue); text-decoration: none; }
+  .info-text a:hover { text-decoration: underline; }
   @media (max-width: 640px) {
-    .grid { grid-template-columns: 1fr; }
-    .card-value { font-size: 26px; }
+    .grid { grid-template-columns: 1fr; } .card-value { font-size: 26px; }
     .signal-bar { flex-direction: column; align-items: flex-start; }
     .signal-right { width: 100%; justify-content: space-between; }
-    .fw-grid { grid-template-columns: 1fr; }
+    .fw-grid { grid-template-columns: 1fr; } .signal-meter { width: 140px; }
   }
 </style>
 </head>
@@ -168,28 +136,24 @@
 <div class="container">
   <div class="header">
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
       Market Shock Monitor
     </div>
-    <div class="last-update" id="lastUpdate">last updated: just now</div>
+    <div class="last-update" id="lastUpdate">demo mode - static data</div>
   </div>
-
   <div class="signal-bar">
     <div class="signal-left">
       <span class="signal-badge badge-orange" id="mainBadge">reduce risk</span>
-      <span class="signal-text">composite shock score <strong id="mainScore">58</strong> — <strong id="mainAction">raise cash to 20–30%, avoid new equity positions</strong></span>
+      <span class="signal-text">composite shock score <strong id="mainScore">58</strong> - <strong id="mainAction">raise cash to 20-30%, avoid new equity positions</strong></span>
     </div>
     <div class="signal-right">
       <div class="signal-score">
         <div class="signal-score-num" id="mainNum">58</div>
         <div class="signal-score-label">shock score</div>
       </div>
-      <div class="signal-meter">
-        <div class="signal-fill" id="mainFill" style="width:58%;background:var(--yellow)"></div>
-      </div>
+      <div class="signal-meter"><div class="signal-fill" id="mainFill" style="width:58%;background:var(--yellow)"></div></div>
     </div>
   </div>
-
   <div class="tabs">
     <button class="tab active" data-cat="all">all indicators</button>
     <button class="tab" data-cat="sentiment">sentiment</button>
@@ -199,11 +163,10 @@
     <button class="tab" data-cat="commodities">commodities</button>
     <button class="tab" data-cat="framework" style="margin-left:auto;">signal framework</button>
   </div>
-
   <div class="framework-panel" id="frameworkPanel">
     <div class="fw-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      signal framework — how to read this dashboard
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--text-secondary)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      signal framework - how to read this dashboard
     </div>
     <div class="fw-grid" id="fwGrid"></div>
     <div class="fw-legend">
@@ -212,31 +175,27 @@
       <div class="fw-legend-item"><span class="fw-legend-dot" style="background:var(--red)"></span>red zone = derisk / sell</div>
     </div>
     <div class="fw-note">
-      <strong>composite score methodology:</strong> each indicator is scored 0–100 based on its zone position, then weighted by historical predictive power. 
-      sentiment & credit spreads (30%), rates & fed (25%), macro (25%), fiscal (15%), commodities (5%). 
-      score &lt; 35 = green (accumulate), 35–55 = yellow (maintain), 55–70 = orange (reduce), &gt; 70 = red (derisk).<br><br>
-      <strong>how to read the threshold strip:</strong> each card shows a green/yellow/red bar. the colored dot shows where the indicator currently sits. 
-      if the dot is near a boundary, watch for a breakout — that is your early warning. the "next level" text tells you exactly what data point would push the indicator into the adjacent zone.
+      <strong>composite score methodology:</strong> each indicator is scored 0-100 based on its zone position, then weighted by historical predictive power:
+      sentiment & credit spreads (30%), rates & fed (25%), macro (25%), fiscal (15%), commodities (5%).<br><br>
+      <strong>score thresholds:</strong> &lt; 35 = green (accumulate), 35-55 = yellow (maintain), 55-70 = orange (reduce), &gt; 70 = red (derisk).<br><br>
+      <strong>how to read the threshold strip:</strong> each card shows a green/yellow/red bar. the colored dot shows where the indicator currently sits.
+      if the dot is near a boundary, watch for a breakout - that is your early warning. click any card to see the "next level" text telling you exactly what data point would push it into the adjacent zone.
     </div>
   </div>
-
   <div class="grid" id="grid">
-    <div class="api-banner" id="apiBanner">
-      <div class="api-text"><strong>live data mode:</strong> add your free FRED API key to pull real-time data. <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank" style="color:var(--blue)">get key here</a></div>
-      <button class="api-btn" onclick="document.getElementById('apiKeyInput').style.display='flex'">add API key</button>
+    <div class="info-banner" id="infoBanner">
+      <div class="info-text">
+        <strong>standalone dashboard - works out of the box.</strong> this file is fully self-contained with demo data.
+        to add live data, you need a <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank">free FRED API key</a> + a simple proxy server
+        (browsers block direct API calls due to CORS). see the <strong>signal framework</strong> tab for setup instructions.
+      </div>
     </div>
-    <div id="apiKeyInput" style="grid-column:1/-1;display:none;gap:8px;align-items:center;margin-bottom:8px;">
-      <input type="text" id="fredKey" placeholder="paste FRED API key here" style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-primary);font-size:13px;">
-      <button class="api-btn" onclick="loadLiveData()">load live data</button>
-      <button class="api-btn" onclick="document.getElementById('apiKeyInput').style.display='none'" style="border-color:var(--text-muted);color:var(--text-muted);">cancel</button>
-    </div>
-
     <div class="fomc" data-cat="rates">
       <div class="fomc-left">
         <svg class="fomc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         <div>
           <div class="fomc-title">next FOMC meeting</div>
-          <div class="fomc-sub">federal reserve policy decision — jul 29–30, 2026</div>
+          <div class="fomc-sub">federal reserve policy decision - jul 29-30, 2026</div>
         </div>
       </div>
       <div class="countdown" id="fomcCountdown">
@@ -248,7 +207,6 @@
       </div>
     </div>
   </div>
-
   <div class="detail" id="detailPanel">
     <div class="detail-header">
       <div class="detail-title" id="detailTitle">indicator detail</div>
@@ -260,11 +218,7 @@
     <div class="detail-zones" id="detailZones"></div>
   </div>
 </div>
-
 <script>
-// ============================================
-// INDICATOR DATA CONFIGURATION
-// ============================================
 const indicators = [
   {
     id: 'vix', cat: 'sentiment', title: 'CBOE VIX', subtitle: 'volatility index',
@@ -272,11 +226,10 @@ const indicators = [
     date: 'jul 11, 2026', sparkline: [14,15,14.5,15.2,16,15.8,16.5,17,16.8,17.5,18,17.8,18.2,18.5,18.42],
     chartData: [12,13,14,13.5,14.2,15,14.8,15.5,16,15.8,16.5,17,16.8,17.5,18,17.8,18.2,18.5,18.42],
     sourceUrl: 'https://fred.stlouisfed.org/series/VIXCLS', sourceName: 'FRED / CBOE',
-    fredSeries: 'VIXCLS',
     zones: [
-      { label: 'accumulate', val: 'VIX > 30', color: 'green', nextUp: 'already max fear — contrarian buy signal', nextDown: 'VIX drops below 20 → watch zone' },
-      { label: 'watch', val: 'VIX 20 – 30', color: 'yellow', nextUp: 'VIX spikes above 30 → accumulate', nextDown: 'VIX drops below 15 → derisk' },
-      { label: 'derisk', val: 'VIX < 15', color: 'red', nextUp: 'VIX rises above 20 → watch zone', nextDown: 'already complacency — sell signal' }
+      { label: 'accumulate', val: 'VIX > 30', color: 'green', next: 'already max fear - contrarian buy signal. next: VIX drops below 20 -> watch zone' },
+      { label: 'watch', val: 'VIX 20 - 30', color: 'yellow', next: 'next up: VIX spikes above 30 -> accumulate. next down: VIX drops below 15 -> derisk' },
+      { label: 'derisk', val: 'VIX < 15', color: 'red', next: 'already complacency - sell signal. next: VIX rises above 20 -> watch zone' }
     ],
     zonePos: 0.55, desc: 'The CBOE Volatility Index measures market expectations of near-term volatility conveyed by S&P 500 option prices. Values above 20 signal elevated fear; above 30 indicates high anxiety. Low VIX (<15) often signals complacency and elevated crash risk.'
   },
@@ -286,13 +239,12 @@ const indicators = [
     date: 'jul 11, 2026', sparkline: [55,54,52,50,48,49,47,48,46,47,48,47,46,47,47],
     chartData: [65,62,58,55,54,52,50,48,49,47,48,46,47,48,47,46,47,47,47],
     sourceUrl: 'https://www.cnn.com/markets/fear-and-greed', sourceName: 'CNN Business',
-    fredSeries: null,
     zones: [
-      { label: 'accumulate', val: 'score < 20 (extreme fear)', color: 'green', nextUp: 'already extreme fear — buy signal', nextDown: 'score rises above 20 → watch zone' },
-      { label: 'watch', val: 'score 20–40 or 60–80', color: 'yellow', nextUp: 'score drops below 20 → accumulate', nextDown: 'score rises above 80 → derisk' },
-      { label: 'derisk', val: 'score > 80 (extreme greed)', color: 'red', nextUp: 'score drops below 60 → watch zone', nextDown: 'already extreme greed — sell signal' }
+      { label: 'accumulate', val: 'score < 20 (extreme fear)', color: 'green', next: 'already extreme fear - buy signal. next: score rises above 20 -> watch' },
+      { label: 'watch', val: 'score 20-40 or 60-80', color: 'yellow', next: 'next down: score < 20 -> accumulate. next up: score > 80 -> derisk' },
+      { label: 'derisk', val: 'score > 80 (extreme greed)', color: 'red', next: 'already extreme greed - sell signal. next: score drops below 60 -> watch' }
     ],
-    zonePos: 0.45, desc: 'CNN's Fear & Greed Index ranges from 0 (Extreme Fear) to 100 (Extreme Greed). It combines seven indicators: market momentum, stock price strength, stock price breadth, put/call ratio, market volatility, safe haven demand, and junk bond demand.'
+    zonePos: 0.45, desc: 'CNN Fear & Greed Index ranges from 0 (Extreme Fear) to 100 (Extreme Greed). It combines seven indicators: market momentum, stock price strength, stock price breadth, put/call ratio, market volatility, safe haven demand, and junk bond demand.'
   },
   {
     id: 'dxy', cat: 'macro', title: 'US Dollar Index', subtitle: 'broad trade-weighted (DTWEXBGS)',
@@ -300,27 +252,25 @@ const indicators = [
     date: 'jul 11, 2026', sparkline: [104.5,104.3,104.1,103.9,103.8,103.7,103.9,103.85,103.8,103.9,103.85,103.82,103.85,103.9,103.85],
     chartData: [105,104.8,104.5,104.3,104.1,103.9,103.8,103.7,103.9,103.85,103.8,103.9,103.85,103.82,103.85,103.9,103.85,103.8,103.85],
     sourceUrl: 'https://fred.stlouisfed.org/series/DTWEXBGS', sourceName: 'FRED / Fed Board',
-    fredSeries: 'DTWEXBGS',
     zones: [
-      { label: 'accumulate', val: 'DXY < 100', color: 'green', nextUp: 'already weak dollar — buy signal', nextDown: 'DXY rises above 100 → watch zone' },
-      { label: 'watch', val: 'DXY 100 – 108', color: 'yellow', nextUp: 'DXY drops below 100 → accumulate', nextDown: 'DXY rises above 108 → derisk' },
-      { label: 'derisk', val: 'DXY > 110', color: 'red', nextUp: 'DXY drops below 108 → watch zone', nextDown: 'already strong dollar — EM/commodity stress' }
+      { label: 'accumulate', val: 'DXY < 100', color: 'green', next: 'already weak dollar - buy signal. next: DXY rises above 100 -> watch' },
+      { label: 'watch', val: 'DXY 100 - 108', color: 'yellow', next: 'next down: DXY < 100 -> accumulate. next up: DXY > 108 -> derisk' },
+      { label: 'derisk', val: 'DXY > 110', color: 'red', next: 'already strong dollar - EM/commodity stress. next: DXY drops below 108 -> watch' }
     ],
     zonePos: 0.35, desc: 'The Nominal Broad US Dollar Index tracks the greenback against a basket of 26 currencies weighted by trade. A weaker dollar boosts US exports and multinational earnings; a very strong dollar (>110) stresses emerging markets and commodity prices.'
   },
   {
-    id: 'yield10y2y', cat: 'rates', title: 'Yield Curve (10Y–2Y)', subtitle: 'recession predictor',
+    id: 'yield10y2y', cat: 'rates', title: 'Yield Curve (10Y-2Y)', subtitle: 'recession predictor',
     value: '-0.42%', change: '+0.03%', changeDir: 'up', severity: 'high', severityLabel: 'inverted',
     date: 'jul 11, 2026', sparkline: [-0.55,-0.52,-0.5,-0.48,-0.45,-0.44,-0.43,-0.42,-0.41,-0.42,-0.43,-0.42,-0.41,-0.42,-0.42],
     chartData: [-0.8,-0.75,-0.7,-0.65,-0.6,-0.55,-0.52,-0.5,-0.48,-0.45,-0.44,-0.43,-0.42,-0.41,-0.42,-0.43,-0.42,-0.41,-0.42],
     sourceUrl: 'https://fred.stlouisfed.org/series/T10Y2Y', sourceName: 'FRED / Treasury',
-    fredSeries: 'T10Y2Y',
     zones: [
-      { label: 'accumulate', val: 'spread > +1.0%', color: 'green', nextUp: 'already steep — growth signal', nextDown: 'spread flattens below +1.0% → watch' },
-      { label: 'watch', val: 'spread 0 to –0.5%', color: 'yellow', nextUp: 'spread steepens above 0% → accumulate', nextDown: 'spread inverts below –0.5% → derisk' },
-      { label: 'derisk', val: 'spread < –0.5%', color: 'red', nextUp: 'spread rises above –0.5% → watch', nextDown: 'already deeply inverted — recession risk' }
+      { label: 'accumulate', val: 'spread > +1.0%', color: 'green', next: 'already steep - growth signal. next: spread flattens below +1.0% -> watch' },
+      { label: 'watch', val: 'spread 0 to -0.5%', color: 'yellow', next: 'next up: spread steepens above 0% -> accumulate. next down: spread < -0.5% -> derisk' },
+      { label: 'derisk', val: 'spread < -0.5%', color: 'red', next: 'already deeply inverted - recession risk. next: spread rises above -0.5% -> watch' }
     ],
-    zonePos: 0.85, desc: 'The 10-Year minus 2-Year Treasury yield spread is the most reliable recession predictor. An inverted curve (negative) has preceded every US recession since 1955 with a 12–18 month lag. Current inversion has persisted for 18+ months.'
+    zonePos: 0.85, desc: 'The 10-Year minus 2-Year Treasury yield spread is the most reliable recession predictor. An inverted curve (negative) has preceded every US recession since 1955 with a 12-18 month lag. Current inversion has persisted for 18+ months.'
   },
   {
     id: 'oil', cat: 'commodities', title: 'WTI Crude Oil', subtitle: 'per barrel',
@@ -328,11 +278,10 @@ const indicators = [
     date: 'jul 11, 2026', sparkline: [68,68.5,69,69.5,70,70.5,71,71.2,71.5,71.8,72,72.1,72.15,72.2,72.18],
     chartData: [65,66,67,68,68.5,69,69.5,70,70.5,71,71.2,71.5,71.8,72,72.1,72.15,72.2,72.18,72.15],
     sourceUrl: 'https://fred.stlouisfed.org/series/DCOILWTICO', sourceName: 'FRED / EIA',
-    fredSeries: 'DCOILWTICO',
     zones: [
-      { label: 'accumulate', val: '$55 – $75', color: 'green', nextUp: 'already in sweet spot', nextDown: 'price rises above $75 → watch' },
-      { label: 'watch', val: '$75 – $90', color: 'yellow', nextUp: 'price drops below $75 → accumulate', nextDown: 'price rises above $90 → derisk' },
-      { label: 'derisk', val: '> $100 or < $40', color: 'red', nextUp: 'price returns to $75–$90 → watch', nextDown: 'extreme shock — demand collapse or supply crisis' }
+      { label: 'accumulate', val: '$55 - $75', color: 'green', next: 'already in sweet spot. next: price rises above $75 -> watch' },
+      { label: 'watch', val: '$75 - $90', color: 'yellow', next: 'next down: price < $75 -> accumulate. next up: price > $90 -> derisk' },
+      { label: 'derisk', val: '> $100 or < $40', color: 'red', next: 'extreme shock - demand collapse or supply crisis. next: returns to $75-$90 -> watch' }
     ],
     zonePos: 0.25, desc: 'West Texas Intermediate (WTI) crude oil is the key US benchmark. Supply disruptions, geopolitical tensions, and OPEC+ decisions can cause rapid spikes. Prices above $100 shock energy-intensive sectors; below $40 signal demand collapse.'
   },
@@ -342,11 +291,10 @@ const indicators = [
     date: 'jul 11, 2026', sparkline: [35.2,35.3,35.4,35.5,35.6,35.7,35.8,35.9,36.0,36.05,36.1,36.15,36.18,36.2,36.2],
     chartData: [34,34.5,35,35.2,35.3,35.4,35.5,35.6,35.7,35.8,35.9,36.0,36.05,36.1,36.15,36.18,36.2,36.2,36.21],
     sourceUrl: 'https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/', sourceName: 'US Treasury',
-    fredSeries: 'GFDEBTN',
     zones: [
-      { label: 'accumulate', val: 'debt/GDP < 80%', color: 'green', nextUp: 'already sustainable', nextDown: 'debt/GDP rises above 80% → watch' },
-      { label: 'watch', val: 'debt/GDP 80% – 100%', color: 'yellow', nextUp: 'debt/GDP drops below 80% → accumulate', nextDown: 'debt/GDP rises above 100% → derisk' },
-      { label: 'derisk', val: 'debt/GDP > 120%', color: 'red', nextUp: 'debt/GDP drops below 100% → watch', nextDown: 'already unsustainable — default/downgrade risk' }
+      { label: 'accumulate', val: 'debt/GDP < 80%', color: 'green', next: 'already sustainable. next: debt/GDP rises above 80% -> watch' },
+      { label: 'watch', val: 'debt/GDP 80% - 100%', color: 'yellow', next: 'next down: debt/GDP < 80% -> accumulate. next up: debt/GDP > 100% -> derisk' },
+      { label: 'derisk', val: 'debt/GDP > 120%', color: 'red', next: 'already unsustainable - default/downgrade risk. next: debt/GDP drops below 100% -> watch' }
     ],
     zonePos: 0.90, desc: 'The US national debt has surpassed $36 trillion. Rising interest rates have pushed debt service costs above $1 trillion annually. Debt ceiling negotiations and rating agency downgrades remain acute market risks.'
   },
@@ -356,11 +304,10 @@ const indicators = [
     date: 'fy 2026 ytd', sparkline: [3.4,3.45,3.5,3.55,3.6,3.65,3.7,3.73,3.76,3.78,3.8,3.82,3.83,3.84,3.84],
     chartData: [3.2,3.3,3.4,3.45,3.5,3.55,3.6,3.65,3.7,3.73,3.76,3.78,3.8,3.82,3.83,3.84,3.84,3.85,3.84],
     sourceUrl: 'https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/', sourceName: 'US Treasury',
-    fredSeries: 'W007RC1Q027SBEA',
     zones: [
-      { label: 'accumulate', val: 'spending/GDP < 20%', color: 'green', nextUp: 'already fiscally sound', nextDown: 'spending/GDP rises above 20% → watch' },
-      { label: 'watch', val: 'spending/GDP 20% – 25%', color: 'yellow', nextUp: 'spending/GDP drops below 20% → accumulate', nextDown: 'spending/GDP rises above 25% → derisk' },
-      { label: 'derisk', val: 'spending/GDP > 25%', color: 'red', nextUp: 'spending/GDP drops below 25% → watch', nextDown: 'already crowding out — inflation/currency risk' }
+      { label: 'accumulate', val: 'spending/GDP < 20%', color: 'green', next: 'already fiscally sound. next: spending/GDP rises above 20% -> watch' },
+      { label: 'watch', val: 'spending/GDP 20% - 25%', color: 'yellow', next: 'next down: spending/GDP < 20% -> accumulate. next up: > 25% -> derisk' },
+      { label: 'derisk', val: 'spending/GDP > 25%', color: 'red', next: 'already crowding out - inflation/currency risk. next: drops below 25% -> watch' }
     ],
     zonePos: 0.60, desc: 'Federal government spending year-to-date is running 8.2% above prior year. Defense, Medicare, and interest on the debt are the largest drivers. Spending growth outpacing revenue growth continues to widen the deficit.'
   },
@@ -370,13 +317,12 @@ const indicators = [
     date: 'jun 2026', sparkline: [3.0,3.1,3.1,3.2,3.15,3.2,3.18,3.2,3.22,3.2,3.19,3.2,3.21,3.2,3.2],
     chartData: [2.8,2.9,3.0,3.1,3.1,3.2,3.15,3.2,3.18,3.2,3.22,3.2,3.19,3.2,3.21,3.2,3.2,3.2,3.2],
     sourceUrl: 'https://fred.stlouisfed.org/series/CPIAUCSL', sourceName: 'FRED / BLS',
-    fredSeries: 'CPIAUCSL',
     zones: [
-      { label: 'accumulate', val: 'CPI < 2.5%', color: 'green', nextUp: 'already near target', nextDown: 'CPI rises above 2.5% → watch' },
-      { label: 'watch', val: 'CPI 2.5% – 3.5%', color: 'yellow', nextUp: 'CPI drops below 2.5% → accumulate', nextDown: 'CPI rises above 4.0% → derisk' },
-      { label: 'derisk', val: 'CPI > 4.0%', color: 'red', nextUp: 'CPI drops below 3.5% → watch', nextDown: 'already runaway — fed forced to hike aggressively' }
+      { label: 'accumulate', val: 'CPI < 2.5%', color: 'green', next: 'already near target. next: CPI rises above 2.5% -> watch' },
+      { label: 'watch', val: 'CPI 2.5% - 3.5%', color: 'yellow', next: 'next down: CPI < 2.5% -> accumulate. next up: CPI > 4.0% -> derisk' },
+      { label: 'derisk', val: 'CPI > 4.0%', color: 'red', next: 'already runaway - fed forced to hike. next: CPI drops below 3.5% -> watch' }
     ],
-    zonePos: 0.50, desc: 'Consumer Price Index inflation remains above the Fed's 2% target. Shelter and services costs are the primary stickiness drivers. Persistent inflation forces the Fed to maintain higher rates for longer, pressuring equities and bonds.'
+    zonePos: 0.50, desc: 'Consumer Price Index inflation remains above the Fed 2% target. Shelter and services costs are the primary stickiness drivers. Persistent inflation forces the Fed to maintain higher rates for longer, pressuring equities and bonds.'
   },
   {
     id: 'unemployment', cat: 'macro', title: 'Unemployment Rate', subtitle: 'civilian labor force',
@@ -384,13 +330,12 @@ const indicators = [
     date: 'jun 2026', sparkline: [3.7,3.75,3.8,3.85,3.9,3.95,4.0,4.05,4.1,4.08,4.1,4.12,4.1,4.1,4.1],
     chartData: [3.5,3.6,3.7,3.75,3.8,3.85,3.9,3.95,4.0,4.05,4.1,4.08,4.1,4.12,4.1,4.1,4.1,4.1,4.1],
     sourceUrl: 'https://fred.stlouisfed.org/series/UNRATE', sourceName: 'FRED / BLS',
-    fredSeries: 'UNRATE',
     zones: [
-      { label: 'accumulate', val: 'UE < 3.5%', color: 'green', nextUp: 'already full employment', nextDown: 'UE rises above 3.5% → watch' },
-      { label: 'watch', val: 'UE 3.5% – 4.5%', color: 'yellow', nextUp: 'UE drops below 3.5% → accumulate', nextDown: 'UE rises above 4.5% → derisk' },
-      { label: 'derisk', val: 'UE > 5.0% or Sahm triggered', color: 'red', nextUp: 'UE drops below 4.5% → watch', nextDown: 'already recession — layoffs accelerating' }
+      { label: 'accumulate', val: 'UE < 3.5%', color: 'green', next: 'already full employment. next: UE rises above 3.5% -> watch' },
+      { label: 'watch', val: 'UE 3.5% - 4.5%', color: 'yellow', next: 'next down: UE < 3.5% -> accumulate. next up: UE > 5.0% -> derisk' },
+      { label: 'derisk', val: 'UE > 5.0% or Sahm triggered', color: 'red', next: 'already recession - layoffs accelerating. next: UE drops below 4.5% -> watch' }
     ],
-    zonePos: 0.40, desc: 'The unemployment rate has ticked up from cycle lows but remains moderate. The Sahm Rule triggers when unemployment rises 0.5% above its 3-month low — currently at 0.3%, not yet signaling recession. Watch 4.5% as the critical threshold.'
+    zonePos: 0.40, desc: 'The unemployment rate has ticked up from cycle lows but remains moderate. The Sahm Rule triggers when unemployment rises 0.5% above its 3-month low - currently at 0.3%, not yet signaling recession. Watch 4.5% as the critical threshold.'
   },
   {
     id: 'margin', cat: 'sentiment', title: 'Margin Debt', subtitle: 'NYSE investor borrowing',
@@ -398,27 +343,25 @@ const indicators = [
     date: 'may 2026', sparkline: [780,775,770,765,760,755,750,748,745,743,742,741,742,742,742],
     chartData: [800,790,780,775,770,765,760,755,750,748,745,743,742,741,742,742,742,742,742],
     sourceUrl: 'https://www.finra.org/investors/insights/margin-statistics', sourceName: 'FINRA',
-    fredSeries: null,
     zones: [
-      { label: 'accumulate', val: 'declining from peak', color: 'green', nextUp: 'already deleveraging — safer entry', nextDown: 'debt stabilizes near highs → watch' },
-      { label: 'watch', val: 'flat near highs', color: 'yellow', nextUp: 'debt declines → accumulate', nextDown: 'debt rises rapidly + market highs → derisk' },
-      { label: 'derisk', val: 'rising rapidly + market highs', color: 'red', nextUp: 'debt flattens or declines → watch', nextDown: 'already max leverage — forced selling risk' }
+      { label: 'accumulate', val: 'declining from peak', color: 'green', next: 'already deleveraging - safer entry. next: debt stabilizes near highs -> watch' },
+      { label: 'watch', val: 'flat near highs', color: 'yellow', next: 'next down: debt declines -> accumulate. next up: debt rises rapidly + highs -> derisk' },
+      { label: 'derisk', val: 'rising rapidly + market highs', color: 'red', next: 'already max leverage - forced selling risk. next: debt flattens or declines -> watch' }
     ],
     zonePos: 0.45, desc: 'NYSE margin debt has declined from peak levels as higher rates increase borrowing costs. Falling margin debt reduces forced-liquidation risk. Rising margin debt + market highs = classic late-cycle leverage buildup.'
   },
   {
-    id: 'credit', cat: 'rates', title: 'Credit Spreads', subtitle: 'BBB–10Y Treasury',
+    id: 'credit', cat: 'rates', title: 'Credit Spreads', subtitle: 'BBB-10Y Treasury',
     value: '1.42%', change: '+0.08%', changeDir: 'up', severity: 'med', severityLabel: 'widening',
     date: 'jul 11, 2026', sparkline: [1.2,1.22,1.25,1.28,1.3,1.32,1.35,1.38,1.4,1.41,1.42,1.43,1.42,1.42,1.42],
     chartData: [1.0,1.05,1.1,1.15,1.2,1.22,1.25,1.28,1.3,1.32,1.35,1.38,1.4,1.41,1.42,1.43,1.42,1.42,1.42],
     sourceUrl: 'https://fred.stlouisfed.org/series/BAMLC0A0CM', sourceName: 'FRED / ICE BofA',
-    fredSeries: 'BAMLC0A0CM',
     zones: [
-      { label: 'accumulate', val: 'spreads < 1.5%', color: 'green', nextUp: 'already tight — risk-on', nextDown: 'spreads widen above 1.5% → watch' },
-      { label: 'watch', val: 'spreads 1.5% – 2.5%', color: 'yellow', nextUp: 'spreads tighten below 1.5% → accumulate', nextDown: 'spreads widen above 2.5% → derisk' },
-      { label: 'derisk', val: 'spreads > 3.5%', color: 'red', nextUp: 'spreads drop below 2.5% → watch', nextDown: 'already crisis mode — credit freeze risk' }
+      { label: 'accumulate', val: 'spreads < 1.5%', color: 'green', next: 'already tight - risk-on. next: spreads widen above 1.5% -> watch' },
+      { label: 'watch', val: 'spreads 1.5% - 2.5%', color: 'yellow', next: 'next down: spreads tighten below 1.5% -> accumulate. next up: spreads > 3.5% -> derisk' },
+      { label: 'derisk', val: 'spreads > 3.5%', color: 'red', next: 'already crisis mode - credit freeze risk. next: spreads drop below 2.5% -> watch' }
     ],
-    zonePos: 0.30, desc: 'Corporate credit spreads measure the extra yield investors demand for riskier bonds over Treasuries. Widening spreads signal rising default fears and typically precede equity market stress by 3–6 months.'
+    zonePos: 0.30, desc: 'Corporate credit spreads measure the extra yield investors demand for riskier bonds over Treasuries. Widening spreads signal rising default fears and typically precede equity market stress by 3-6 months.'
   },
   {
     id: 'fedbal', cat: 'rates', title: 'Fed Balance Sheet', subtitle: 'total assets',
@@ -426,11 +369,10 @@ const indicators = [
     date: 'jul 9, 2026', sparkline: [7.5,7.45,7.4,7.35,7.3,7.25,7.2,7.15,7.12,7.1,7.08,7.1,7.09,7.1,7.1],
     chartData: [8.0,7.8,7.6,7.5,7.45,7.4,7.35,7.3,7.25,7.2,7.15,7.12,7.1,7.08,7.1,7.09,7.1,7.1,7.1],
     sourceUrl: 'https://fred.stlouisfed.org/series/WALCL', sourceName: 'FRED / Fed',
-    fredSeries: 'WALCL',
     zones: [
-      { label: 'accumulate', val: 'stable or expanding', color: 'green', nextUp: 'already liquidity supportive', nextDown: 'QT accelerates → watch' },
-      { label: 'watch', val: 'gradual QT', color: 'yellow', nextUp: 'balance sheet stabilizes → accumulate', nextDown: 'QT accelerates + market stress → derisk' },
-      { label: 'derisk', val: 'rapid QT + market stress', color: 'red', nextUp: 'QT slows or pauses → watch', nextDown: 'already draining liquidity — repo crisis risk' }
+      { label: 'accumulate', val: 'stable or expanding', color: 'green', next: 'already liquidity supportive. next: QT accelerates -> watch' },
+      { label: 'watch', val: 'gradual QT', color: 'yellow', next: 'next up: balance sheet stabilizes -> accumulate. next down: QT accelerates + stress -> derisk' },
+      { label: 'derisk', val: 'rapid QT + market stress', color: 'red', next: 'already draining liquidity - repo crisis risk. next: QT slows or pauses -> watch' }
     ],
     zonePos: 0.20, desc: 'The Federal Reserve continues quantitative tightening (QT), allowing Treasury and MBS holdings to roll off. Balance sheet reduction removes liquidity from the financial system. The Sep 2019 repo crisis occurred when QT went too far.'
   },
@@ -440,11 +382,10 @@ const indicators = [
     date: 'jun 2026', sparkline: [105,104,103,102,101,100,99,98.5,98,98.2,98.4,98.3,98.4,98.4,98.4],
     chartData: [110,108,106,105,104,103,102,101,100,99,98.5,98,98.2,98.4,98.3,98.4,98.4,98.4,98.4],
     sourceUrl: 'https://www.conference-board.org/topics/consumer-confidence', sourceName: 'Conference Board',
-    fredSeries: 'UMCSENT',
     zones: [
-      { label: 'accumulate', val: 'index > 110', color: 'green', nextUp: 'already optimistic', nextDown: 'index drops below 110 → watch' },
-      { label: 'watch', val: 'index 90 – 110', color: 'yellow', nextUp: 'index rises above 110 → accumulate', nextDown: 'index drops below 90 → derisk' },
-      { label: 'derisk', val: 'index < 80', color: 'red', nextUp: 'index rises above 90 → watch', nextDown: 'already pessimistic — recession signal' }
+      { label: 'accumulate', val: 'index > 110', color: 'green', next: 'already optimistic. next: index drops below 110 -> watch' },
+      { label: 'watch', val: 'index 90 - 110', color: 'yellow', next: 'next up: index rises above 110 -> accumulate. next down: index < 80 -> derisk' },
+      { label: 'derisk', val: 'index < 80', color: 'red', next: 'already pessimistic - recession signal. next: index rises above 90 -> watch' }
     ],
     zonePos: 0.35, desc: 'Consumer confidence measures household optimism about economic conditions. Declining confidence precedes reduced spending, which drives ~70% of US GDP. Readings below 100 suggest contractionary sentiment.'
   },
@@ -454,85 +395,52 @@ const indicators = [
     date: 'jul 2026', sparkline: [120,122,125,128,130,132,135,138,140,141,142,143,142,142,142],
     chartData: [100,105,110,115,120,122,125,128,130,132,135,138,140,141,142,143,142,142,142],
     sourceUrl: 'https://www.matteoiacoviello.com/geopolitical_risk.htm', sourceName: 'Fed / Iacoviello',
-    fredSeries: null,
     zones: [
-      { label: 'accumulate', val: 'index < 100', color: 'green', nextUp: 'already calm', nextDown: 'index rises above 100 → watch' },
-      { label: 'watch', val: 'index 100 – 150', color: 'yellow', nextUp: 'index drops below 100 → accumulate', nextDown: 'index rises above 150 → derisk' },
-      { label: 'derisk', val: 'index > 200', color: 'red', nextUp: 'index drops below 150 → watch', nextDown: 'already crisis — war/shock risk' }
+      { label: 'accumulate', val: 'index < 100', color: 'green', next: 'already calm. next: index rises above 100 -> watch' },
+      { label: 'watch', val: 'index 100 - 150', color: 'yellow', next: 'next down: index < 100 -> accumulate. next up: index > 150 -> derisk' },
+      { label: 'derisk', val: 'index > 200', color: 'red', next: 'already crisis - war/shock risk. next: index drops below 150 -> watch' }
     ],
     zonePos: 0.55, desc: 'The Caldara-Iacoviello Geopolitical Risk Index tracks newspaper coverage of adverse geopolitical events. Elevated readings correlate with higher oil prices, safe-haven flows, and equity volatility. Major wars typically push this above 200.'
   }
 ];
 
-// ============================================
-// UTILITIES
-// ============================================
 const COLORS = { green: 'var(--green)', yellow: 'var(--yellow)', red: 'var(--red)' };
 const SEV = { low: { cls: 'sev-low', color: 'var(--green)' }, med: { cls: 'sev-med', color: 'var(--yellow)' }, high: { cls: 'sev-high', color: 'var(--red)' } };
 
-function buildSparkline(data, w, h) { const min = Math.min(...data), max = Math.max(...data), range = max - min || 1, step = w / (data.length - 1); let p = `M0,${h - ((data[0] - min) / range) * h}`; for (let i = 1; i < data.length; i++) p += ` L${i * step},${h - ((data[i] - min) / range) * h}`; return p; }
-function buildSparkArea(data, w, h) { const min = Math.min(...data), max = Math.max(...data), range = max - min || 1, step = w / (data.length - 1); let p = `M0,${h} L0,${h - ((data[0] - min) / range) * h}`; for (let i = 1; i < data.length; i++) p += ` L${i * step},${h - ((data[i] - min) / range) * h}`; p += ` L${w},${h} Z`; return p; }
+function buildSparkline(data, w, h) { const min = Math.min(...data), max = Math.max(...data), range = max - min || 1, step = w / (data.length - 1); let p = 'M0,' + (h - ((data[0] - min) / range) * h); for (let i = 1; i < data.length; i++) p += ' L' + (i * step) + ',' + (h - ((data[i] - min) / range) * h); return p; }
+function buildSparkArea(data, w, h) { const min = Math.min(...data), max = Math.max(...data), range = max - min || 1, step = w / (data.length - 1); let p = 'M0,' + h + ' L0,' + (h - ((data[0] - min) / range) * h); for (let i = 1; i < data.length; i++) p += ' L' + (i * step) + ',' + (h - ((data[i] - min) / range) * h); p += ' L' + w + ',' + h + ' Z'; return p; }
+
 const upArrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>';
 const downArrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>';
 const linkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
-// ============================================
-// RENDER CARDS
-// ============================================
 function renderCards() {
   const grid = document.getElementById('grid');
   grid.querySelectorAll('.indicator-card').forEach(c => c.remove());
-
   indicators.forEach(ind => {
     const arrow = ind.changeDir === 'up' ? upArrow : ind.changeDir === 'down' ? downArrow : '';
     let finalClass = 'change-neutral';
     if (ind.changeDir === 'up') finalClass = (ind.cat === 'sentiment' && ind.id !== 'margin') ? 'change-down' : 'change-up';
     else if (ind.changeDir === 'down') finalClass = (ind.cat === 'sentiment' && ind.id !== 'margin') ? 'change-up' : 'change-down';
     if (ind.id === 'yield10y2y') finalClass = ind.changeDir === 'up' ? 'change-up' : 'change-down';
-
     const sparkPath = buildSparkline(ind.sparkline, 240, 36);
     const areaPath = buildSparkArea(ind.sparkline, 240, 36);
     const sev = SEV[ind.severity] || SEV.med;
     const markerColor = COLORS[ind.zones[1].color] || 'var(--yellow)';
-
+    const currentZone = ind.zones.find(z => {
+      if (ind.zonePos < 0.33) return z.color === 'green';
+      if (ind.zonePos < 0.66) return z.color === 'yellow';
+      return z.color === 'red';
+    });
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'card indicator-card';
     card.dataset.cat = ind.cat;
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-title-wrap">
-          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-          <div><div class="card-title">${ind.title}</div><div class="card-sub">${ind.subtitle}</div></div>
-        </div>
-      </div>
-      <div class="card-value-row">
-        <div class="card-value">${ind.value}</div>
-        <div class="card-change ${finalClass}">${arrow} ${ind.change}</div>
-      </div>
-      <svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none">
-        <defs><linearGradient id="g-${ind.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${sev.color}" stop-opacity="0.2"/><stop offset="100%" stop-color="${sev.color}" stop-opacity="0"/></linearGradient></defs>
-        <path d="${areaPath}" fill="url(#g-${ind.id})" stroke="none"/>
-        <path d="${sparkPath}" fill="none" stroke="${sev.color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="th-strip">
-        <div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div>
-        <div class="th-marker" style="left:${ind.zonePos * 100}%;background:${markerColor}"></div>
-      </div>
-      <div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>
-      <div class="th-current">current zone: <strong>${ind.zones.find(z => z.color === (ind.zonePos < 0.33 ? 'green' : ind.zonePos < 0.66 ? 'yellow' : 'red')).label}</strong></div>
-      <div class="card-footer">
-        <span class="severity ${sev.cls}">${ind.severityLabel}</span>
-        <a class="source-link" href="${ind.sourceUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${linkSvg} ${ind.sourceName}</a>
-      </div>
-    `;
+    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div><div class="th-current">current zone: <strong>' + currentZone.label + '</strong> - ' + currentZone.next.split('.')[0] + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
     card.onclick = () => openDetail(ind);
     grid.appendChild(card);
   });
 }
 
-// ============================================
-// RENDER FRAMEWORK PANEL
-// ============================================
 function renderFramework() {
   const grid = document.getElementById('fwGrid');
   indicators.forEach(ind => {
@@ -540,87 +448,61 @@ function renderFramework() {
     card.className = 'fw-card';
     let zonesHtml = '';
     ind.zones.forEach(z => {
-      const nextText = z.nextUp || z.nextDown || '';
-      zonesHtml += `<div class="fw-zone" style="background:${COLORS[z.color].replace(')', ',0.08)')}">
-        <span class="fw-zone-dot" style="background:${COLORS[z.color]}"></span>
-        <span class="fw-zone-label" style="color:${COLORS[z.color]}">${z.label}</span>
-        <span class="fw-zone-val">${z.val}</span>
-        <span class="fw-zone-arrow">${nextText}</span>
-      </div>`;
+      const bg = z.color === 'green' ? 'rgba(34,197,94,0.06)' : z.color === 'yellow' ? 'rgba(245,158,11,0.06)' : 'rgba(239,68,68,0.06)';
+      zonesHtml += '<div class="fw-zone" style="background:' + bg + '"><span class="fw-zone-dot" style="background:' + COLORS[z.color] + '"></span><span class="fw-zone-label" style="color:' + COLORS[z.color] + '">' + z.label + '</span><span class="fw-zone-val">' + z.val + '</span><span class="fw-zone-arrow">' + z.next + '</span></div>';
     });
-    card.innerHTML = `
-      <div class="fw-card-header">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-        <span class="fw-card-title">${ind.title}</span>
-      </div>
-      <div class="fw-zones">${zonesHtml}</div>
-    `;
+    card.innerHTML = '<div class="fw-card-header"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="fw-card-title">' + ind.title + '</span></div><div class="fw-zones">' + zonesHtml + '</div>';
     grid.appendChild(card);
   });
 }
 
-// ============================================
-// DETAIL PANEL
-// ============================================
 function openDetail(ind) {
   const panel = document.getElementById('detailPanel');
   document.getElementById('detailTitle').textContent = ind.title;
   document.getElementById('detailDesc').textContent = ind.desc;
-  document.getElementById('detailSource').innerHTML = `source: <a href="${ind.sourceUrl}" target="_blank" rel="noopener">${ind.sourceName}</a>`;
-
-  let zonesHtml = '<div class="dz-title">threshold zones — what to watch for</div>';
+  document.getElementById('detailSource').innerHTML = 'source: <a href="' + ind.sourceUrl + '" target="_blank" rel="noopener">' + ind.sourceName + '</a>';
+  let zonesHtml = '<div class="dz-title">threshold zones - what to watch for</div>';
   ind.zones.forEach(z => {
     const isActive = (ind.zonePos < 0.33 && z.color === 'green') || (ind.zonePos >= 0.33 && ind.zonePos < 0.66 && z.color === 'yellow') || (ind.zonePos >= 0.66 && z.color === 'red');
-    const bg = isActive ? `background:${COLORS[z.color].replace(')', ',0.1)')};border:1px solid ${COLORS[z.color].replace(')', ',0.3)')}` : '';
-    zonesHtml += `<div class="dz-row" style="${bg}">
-      <span class="dz-dot" style="background:${COLORS[z.color]}"></span>
-      <span class="dz-label" style="color:${COLORS[z.color]}">${z.label}</span>
-      <span class="dz-val">${z.val}</span>
-      <span class="dz-next">${z.nextUp || z.nextDown}</span>
-    </div>`;
+    const bg = isActive ? (z.color === 'green' ? 'rgba(34,197,94,0.08)' : z.color === 'yellow' ? 'rgba(245,158,11,0.08)' : 'rgba(239,68,68,0.08)') : '';
+    const border = isActive ? 'border:1px solid ' + (z.color === 'green' ? 'rgba(34,197,94,0.2)' : z.color === 'yellow' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)') : '';
+    zonesHtml += '<div class="dz-row" style="' + bg + ';' + border + '"><span class="dz-dot" style="background:' + COLORS[z.color] + '"></span><span class="dz-label" style="color:' + COLORS[z.color] + '">' + z.label + '</span><span class="dz-val">' + z.val + '</span><span class="dz-next">' + z.next + '</span></div>';
   });
   document.getElementById('detailZones').innerHTML = zonesHtml;
-
   const chart = document.getElementById('detailChart');
   const data = ind.chartData;
   const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
   const w = 600, h = 180, pad = 24, ch = h - pad * 2, cw = w - pad * 2, step = cw / (data.length - 1);
   const color = SEV[ind.severity]?.color || 'var(--blue)';
-  let path = `M${pad},${pad + ch - ((data[0] - min) / range) * ch}`;
-  let area = `M${pad},${pad + ch} L${pad},${pad + ch - ((data[0] - min) / range) * ch}`;
-  for (let i = 1; i < data.length; i++) { const x = pad + i * step, y = pad + ch - ((data[i] - min) / range) * ch; path += ` L${x},${y}`; area += ` L${x},${y}`; }
-  area += ` L${pad + cw},${pad + ch} Z`;
+  let path = 'M' + pad + ',' + (pad + ch - ((data[0] - min) / range) * ch);
+  let area = 'M' + pad + ',' + (pad + ch) + ' L' + pad + ',' + (pad + ch - ((data[0] - min) / range) * ch);
+  for (let i = 1; i < data.length; i++) { const x = pad + i * step, y = pad + ch - ((data[i] - min) / range) * ch; path += ' L' + x + ',' + y; area += ' L' + x + ',' + y; }
+  area += ' L' + (pad + cw) + ',' + (pad + ch) + ' Z';
   let gridLines = '';
-  for (let i = 0; i <= 4; i++) { const y = pad + (ch / 4) * i; gridLines += `<line x1="${pad}" y1="${y}" x2="${w - pad}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`; }
-  chart.innerHTML = `<defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.15"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>${gridLines}<path d="${area}" fill="url(#dg)" stroke="none"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${pad + cw}" cy="${pad + ch - ((data[data.length-1] - min) / range) * ch}" r="5" fill="${color}" stroke="var(--card-bg)" stroke-width="3"/>`;
-
+  for (let i = 0; i <= 4; i++) { const y = pad + (ch / 4) * i; gridLines += '<line x1="' + pad + '" y1="' + y + '" x2="' + (w - pad) + '" y2="' + y + '" stroke="var(--border)" stroke-width="0.5"/>'; }
+  chart.innerHTML = '<defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + color + '" stop-opacity="0.15"/><stop offset="100%" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs>' + gridLines + '<path d="' + area + '" fill="url(#dg)" stroke="none"/><path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="' + (pad + cw) + '" cy="' + (pad + ch - ((data[data.length-1] - min) / range) * ch) + '" r="5" fill="' + color + '" stroke="var(--card-bg)" stroke-width="3"/>';
   panel.classList.add('open');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); }
 
-// ============================================
-// TABS & FILTERING
-// ============================================
 function filterCategory(cat) {
-  const cards = document.querySelectorAll('.card');
+  const cards = document.querySelectorAll('.indicator-card');
   const fomc = document.querySelector('.fomc');
   const fw = document.getElementById('frameworkPanel');
-  const api = document.getElementById('apiBanner');
+  const info = document.getElementById('infoBanner');
   const detail = document.getElementById('detailPanel');
-
   if (cat === 'framework') {
     cards.forEach(c => c.classList.add('hidden'));
     fomc.style.display = 'none';
-    api.style.display = 'none';
+    info.style.display = 'none';
     fw.classList.add('open');
     detail.classList.remove('open');
     return;
   }
-
   fw.classList.remove('open');
-  api.style.display = 'flex';
+  info.style.display = 'block';
   cards.forEach(c => { if (cat === 'all' || c.dataset.cat === cat) c.classList.remove('hidden'); else c.classList.add('hidden'); });
   fomc.style.display = (cat === 'all' || cat === 'rates') ? '' : 'none';
 }
@@ -629,9 +511,6 @@ document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); filterCategory(tab.dataset.cat); };
 });
 
-// ============================================
-// FOMC COUNTDOWN
-// ============================================
 function updateFOMC() {
   const nextFOMC = new Date('2026-07-29T14:00:00-04:00');
   const now = new Date();
@@ -643,9 +522,6 @@ function updateFOMC() {
   } else { document.getElementById('cdDays').textContent = '0'; document.getElementById('cdHours').textContent = '00'; document.getElementById('cdMins').textContent = '00'; }
 }
 
-// ============================================
-// COMPOSITE SCORE
-// ============================================
 function calcComposite() {
   const weights = { low: 25, med: 50, high: 75, crit: 95 };
   let total = 0;
@@ -654,12 +530,10 @@ function calcComposite() {
   document.getElementById('mainScore').textContent = avg;
   document.getElementById('mainNum').textContent = avg;
   document.getElementById('mainFill').style.width = avg + '%';
-
-  let badge = 'reduce risk', action = 'raise cash to 20–30%, avoid new equity', cls = 'badge-orange', color = 'var(--yellow)';
+  let badge = 'reduce risk', action = 'raise cash to 20-30%, avoid new equity', cls = 'badge-orange', color = 'var(--yellow)';
   if (avg < 35) { badge = 'accumulate'; action = 'overweight equities, buy dips aggressively'; cls = 'badge-green'; color = 'var(--green)'; }
   else if (avg < 55) { badge = 'maintain'; action = 'hold positions, add hedges (puts/vix calls)'; cls = 'badge-yellow'; color = 'var(--yellow)'; }
   else if (avg >= 70) { badge = 'derisk'; action = 'sell aggressively, raise cash > 50%, go defensive'; cls = 'badge-red'; color = 'var(--red)'; }
-
   const b = document.getElementById('mainBadge');
   b.textContent = badge;
   b.className = 'signal-badge ' + cls;
@@ -667,66 +541,6 @@ function calcComposite() {
   document.getElementById('mainFill').style.background = color;
 }
 
-// ============================================
-// LIVE DATA (FRED API)
-// ============================================
-async function loadLiveData() {
-  const key = document.getElementById('fredKey').value.trim();
-  if (!key) { alert('Please enter a FRED API key'); return; }
-
-  document.getElementById('apiBanner').style.display = 'none';
-  document.getElementById('apiKeyInput').style.display = 'none';
-  document.getElementById('lastUpdate').textContent = 'loading live data...';
-
-  const fredIndicators = indicators.filter(i => i.fredSeries);
-
-  for (const ind of fredIndicators) {
-    try {
-      const res = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${ind.fredSeries}&api_key=${key}&file_type=json&limit=30&sort_order=desc`);
-      const data = await res.json();
-      if (data.observations && data.observations.length > 0) {
-        const latest = data.observations[0];
-        const prev = data.observations[1];
-        const val = parseFloat(latest.value);
-        const prevVal = parseFloat(prev?.value || 0);
-
-        // Update value display
-        if (!isNaN(val)) {
-          ind.value = ind.id === 'debt' ? '$' + (val / 1000).toFixed(1) + 'T' :
-                      ind.id === 'fedbal' ? '$' + (val / 1000).toFixed(1) + 'T' :
-                      ind.id === 'spending' ? '$' + (val / 1000).toFixed(2) + 'T' :
-                      ind.id === 'margin' ? '$' + (val / 1000).toFixed(0) + 'B' :
-                      ind.id === 'oil' ? '$' + val.toFixed(2) :
-                      ind.id === 'vix' ? val.toFixed(2) :
-                      ind.id === 'dxy' ? val.toFixed(2) :
-                      ind.id === 'yield10y2y' ? (val * 100).toFixed(2) + '%' :
-                      ind.id === 'credit' ? val.toFixed(2) + '%' :
-                      ind.id === 'cpi' ? val.toFixed(1) + '%' :
-                      ind.id === 'unemployment' ? val.toFixed(1) + '%' :
-                      ind.id === 'consumer' ? val.toFixed(1) :
-                      val.toFixed(2);
-
-          const change = prevVal ? ((val - prevVal) / Math.abs(prevVal) * 100) : 0;
-          ind.change = (change >= 0 ? '+' : '') + change.toFixed(1) + (ind.id === 'yield10y2y' || ind.id === 'credit' || ind.id === 'cpi' || ind.id === 'unemployment' ? '%' : '%');
-          ind.changeDir = change >= 0 ? 'up' : 'down';
-          ind.date = latest.date;
-
-          // Update sparkline from real data
-          const obs = data.observations.slice(0, 20).reverse();
-          ind.sparkline = obs.map(o => parseFloat(o.value) || 0).filter(v => !isNaN(v));
-        }
-      }
-    } catch (e) { console.error('FRED fetch failed for', ind.fredSeries, e); }
-  }
-
-  renderCards();
-  calcComposite();
-  document.getElementById('lastUpdate').textContent = 'last updated: ' + new Date().toLocaleString();
-}
-
-// ============================================
-// INIT
-// ============================================
 renderCards();
 renderFramework();
 calcComposite();
