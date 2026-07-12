@@ -22,6 +22,7 @@
   .brand { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; }
   .brand-icon { width: 26px; height: 26px; }
   .last-update { font-size: 13px; color: var(--text-muted); }
+  .page-loaded-at { font-size: 13px; color: var(--text-muted); padding-right: 10px; border-right: 1px solid var(--border); cursor: help; }
   .refresh-btn { font-size: 13px; color: var(--blue); cursor: pointer; background: none; border: 1px solid rgba(59,130,246,0.2); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
   .refresh-btn:hover { background: var(--blue-dim); }
   .refresh-btn.spinning { animation: spin 1s linear infinite; }
@@ -306,6 +307,7 @@
       US Market Shock Monitor
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
+      <div class="page-loaded-at" id="pageLoadedAt" title="When this page was last loaded/refreshed in your browser - not the same as how fresh the underlying data is, see each panel's own status for that">loading...</div>
       <div class="last-update" id="lastUpdate">loading...</div>
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh all data">↻ Refresh</button>
     </div>
@@ -1826,7 +1828,26 @@ async function manualRefresh() {
 // =========================================================
 // INITIALIZATION
 // =========================================================
+// Records when this page was actually loaded in the browser and keeps a relative
+// "X min ago" display ticking - distinct from each panel's own data-freshness status,
+// since a page can be sitting open for hours showing data that loaded once.
+let pageLoadedAt = null;
+function setPageLoadedTimestamp() {
+  pageLoadedAt = new Date();
+  renderPageLoadedTimestamp();
+  setInterval(renderPageLoadedTimestamp, 30000);
+}
+function renderPageLoadedTimestamp() {
+  const el = document.getElementById('pageLoadedAt');
+  if (!pageLoadedAt || !el) return;
+  const mins = Math.floor((Date.now() - pageLoadedAt.getTime()) / 60000);
+  const timeStr = pageLoadedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const agoStr = mins < 1 ? 'just now' : mins === 1 ? '1 min ago' : mins < 60 ? mins + ' min ago' : Math.floor(mins / 60) + 'h ago';
+  el.textContent = 'Page loaded ' + timeStr + ' (' + agoStr + ')';
+}
+
 (async function init() {
+  setPageLoadedTimestamp();
   await loadFREDData();
   await loadBreadthData();
   await loadNAAIMData();
