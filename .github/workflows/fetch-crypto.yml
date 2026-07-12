@@ -1,24 +1,22 @@
-name: Fetch Gold Data
+name: Fetch Bitcoin Data
 
-# REFERENCE POINT ONLY - see conversation record: backtested gold against three known
-# stress events (2018 Q4, COVID, 2022) and found it worked as a hedge in only 1 of 3
-# (2018), went flat-to-down in COVID's liquidity panic, and fell in the 2022 rate-driven
-# selloff. Not reliable enough to be a signpost input. This is a plain price + trend
-# display only - it does NOT feed calcComposite/computeSignposts.
+# REFERENCE POINT ONLY - see conversation record: backtested BTC-USD against the same
+# three stress events as gold (2018 Q4, COVID, 2022). Unlike gold, BTC fell HARDER than
+# SPY in every single one (-38.1% vs SPY -19.7% in 2018 Q4, -33.4% vs -34.1% in COVID,
+# -58.8% vs -25.4% in 2022). This is not a hedge or contrarian signal - it behaves like
+# a high-beta risk asset, often amplifying the same risk-off move equities make. Shown
+# here as a reference point only. It does NOT feed calcComposite/computeSignposts, and
+# should never be read as a safe-haven confirmation the way gold sometimes can be.
 #
-# Uses GC=F (COMEX gold futures), not the GLD ETF - futures trade ~23hrs/day, which
-# actually reflects overnight moves relevant to Part II's premarket question. GLD only
-# trades during equity market hours, so it would miss exactly the overnight move that
-# matters for "is today likely to open higher or lower."
+# BTC-USD trades 24/7, so unlike gold (which needed switching from GLD to GC=F futures
+# to cover overnight moves), no ticker swap was needed here for Part II relevance.
 #
-# TO REMOVE: delete this file, delete data/gold.json (optional), and in index.html
-# delete the block between "GOLD SECTION START" and "GOLD SECTION END" (CSS/HTML/JS
+# TO REMOVE: delete this file, delete data/bitcoin.json (optional), and in index.html
+# delete the block between "BITCOIN SECTION START" and "BITCOIN SECTION END" (CSS/HTML/JS
 # each bracketed the same way). Nothing else depends on this.
 
 on:
   schedule:
-    # Twice daily: once covering the pre-market window (matches Part II's other feeds),
-    # once after US close for the Part I daily-context reading.
     - cron: '0 12 * * 1-5'
     - cron: '30 21 * * 1-5'
   workflow_dispatch:
@@ -31,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch gold futures (GC=F) price data
+      - name: Fetch BTC-USD price data
         run: |
           mkdir -p data
           python3 << 'PYEOF'
@@ -40,7 +38,7 @@ jobs:
           import datetime
 
           HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; MarketShockMonitor/1.0)"}
-          URL = "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1mo"
+          URL = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?interval=1d&range=1mo"
 
           try:
               req = urllib.request.Request(URL, headers=HEADERS)
@@ -72,17 +70,17 @@ jobs:
                   "change5d": change_n_days_ago(5),
                   "change20d": change_n_days_ago(20),
                   "_lastUpdated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                  "_source": "Yahoo Finance (GC=F, COMEX gold futures)",
+                  "_source": "Yahoo Finance (BTC-USD)",
                   "_fetchFailed": False,
               }
-              print(f"OK: GC=F = {current:.2f}, day {change_pct:+.2f}%, 5d {out['change5d']}, 20d {out['change20d']}")
+              print(f"OK: BTC-USD = {current:.2f}, day {change_pct:+.2f}%, 5d {out['change5d']}, 20d {out['change20d']}")
 
           except Exception as e:
               print(f"FETCH FAILED: {e}")
               out = {"_fetchFailed": True, "_fetchError": str(e),
                      "_lastUpdated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 
-          with open("data/gold.json", "w") as f:
+          with open("data/bitcoin.json", "w") as f:
               json.dump(out, f, indent=2)
           PYEOF
 
@@ -90,6 +88,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/gold.json
-          git diff --cached --quiet || git commit -m "Update gold futures data [$(date -u +%Y-%m-%d)]"
+          git add data/bitcoin.json
+          git diff --cached --quiet || git commit -m "Update Bitcoin data [$(date -u +%Y-%m-%d)]"
           git push
