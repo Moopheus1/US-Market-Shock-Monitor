@@ -89,6 +89,13 @@
   .moo-field input { background: #eef0f3; border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); padding: 7px 8px; font-size: 15px; font-family: var(--font); width: 100%; }
   .moo-field input:focus { outline: none; border-color: var(--blue); }
   .moo-btn { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.3); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; height: 33px; }
+  .moo-paste-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; }
+  .moo-paste-textarea { flex: 1; background: #0a0c10; border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); padding: 8px 10px; font-size: 13px; font-family: var(--font); resize: vertical; min-height: 44px; }
+  .moo-paste-textarea:focus { outline: none; border-color: var(--blue); }
+  .moo-paste-row .moo-btn { height: auto; align-self: stretch; }
+  .moo-paste-error { font-size: 12px; color: var(--red); margin: -4px 0 8px 0; min-height: 0; }
+  .moo-paste-note { font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.4; }
+  @media (max-width: 640px) { .moo-paste-row { flex-direction: column; } }
   .moo-btn:hover { background: rgba(59,130,246,0.2); }
   @media (max-width: 640px) { .moo-grid { grid-template-columns: repeat(2, 1fr); } .moo-btn { grid-column: 1 / -1; } }
 
@@ -255,11 +262,12 @@
 
   .info-banner { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; }
   .glance-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
-  .glance-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; display: flex; flex-direction: column; gap: 4px; min-height: 84px; }
+  .glance-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; display: flex; flex-direction: column; gap: 5px; min-height: 92px; }
   .glance-card:hover { border-color: var(--blue); transform: translateY(-1px); }
-  .glance-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
-  .glance-value { font-size: 19px; font-weight: 800; line-height: 1.1; }
-  .glance-sub { font-size: 11px; font-weight: 600; }
+  .glance-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  .glance-question { text-transform: none; font-weight: 400; letter-spacing: normal; color: var(--text-muted); }
+  .glance-value { font-size: 21px; font-weight: 800; line-height: 1.1; }
+  .glance-sub { font-size: 13px; font-weight: 600; }
   @media (max-width: 900px) { .glance-row { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 560px) { .glance-row { grid-template-columns: repeat(2, 1fr); } }
   .back-to-top-btn { position: fixed; bottom: 24px; right: 24px; z-index: 100; background: var(--blue); color: #fff; border: none; border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.15s; }
@@ -305,12 +313,12 @@
 
   <div class="glance-row" id="glanceRow">
     <div class="glance-card" onclick="scrollToSection('partIHeading')">
-      <span class="glance-label">Part I</span>
+      <span class="glance-label">Part I <span class="glance-question">— is macro cracking?</span></span>
       <span class="glance-value" id="glancePartIValue">--</span>
       <span class="glance-sub" id="glancePartIBadge">loading</span>
     </div>
     <div class="glance-card" onclick="scrollToSection('partIIHeading')">
-      <span class="glance-label">Part II</span>
+      <span class="glance-label">Part II <span class="glance-question">— red day?</span></span>
       <span class="glance-value" id="glancePartIIValue">--</span>
       <span class="glance-sub" id="glancePartIIBadge">loading</span>
     </div>
@@ -329,6 +337,27 @@
       <span class="glance-value" id="glanceBtcValue">--</span>
       <span class="glance-sub" id="glanceBtcSub">loading</span>
     </div>
+  </div>
+
+  <!-- MOO IMBALANCE — manual entry, not auto-fetched. See index.html comments for why. -->
+  <div class="moo-bar" id="mooBar">
+    <div class="moo-title-row">
+      <span class="moo-title">MOO imbalance <span class="moo-sub">(paste the whole block from your source, ~9:20-9:30am ET / ~9:20-9:30pm SGT — feeds bias score)</span></span>
+      <span class="moo-status" id="mooStatus">not entered yet</span>
+    </div>
+    <div class="moo-paste-row">
+      <textarea id="moo-paste-input" class="moo-paste-textarea" rows="2" placeholder="Paste the whole block here, e.g.&#10;S&P 500: 1616.2 MLN  Nasdaq 100: 816.4 MLN  Dow 30: 720.6 MLN  Mag 7: 300.9 MLN"></textarea>
+      <button class="moo-btn" onclick="parseMOOPaste()">Paste → fill &amp; update</button>
+    </div>
+    <div class="moo-paste-error" id="mooPasteError"></div>
+    <div class="moo-grid">
+      <div class="moo-field"><label>S&P 500 (mln)</label><input type="number" step="0.1" id="moo-sp500" placeholder="e.g. 164.5"></div>
+      <div class="moo-field"><label>Nasdaq 100 (mln)</label><input type="number" step="0.1" id="moo-ndx" placeholder="e.g. -42.7"></div>
+      <div class="moo-field"><label>Dow 30 (mln)</label><input type="number" step="0.1" id="moo-dow" placeholder="e.g. -22.1"></div>
+      <div class="moo-field"><label>Mag 7 (mln)</label><input type="number" step="0.1" id="moo-mag7" placeholder="e.g. -41.4"></div>
+      <button class="moo-btn" onclick="updateMOOImbalance()">Update &amp; recalc bias</button>
+    </div>
+    <div class="moo-paste-note">The fields above still work individually if you'd rather type them, or if paste parsing misreads something — check the numbers landed correctly before hitting "Update".</div>
   </div>
 
   <div class="info-banner" id="infoBanner">
@@ -462,20 +491,6 @@
     </div>
   </div>
 
-  <!-- MOO IMBALANCE — manual entry, not auto-fetched. See index.html comments for why. -->
-  <div class="moo-bar" id="mooBar">
-    <div class="moo-title-row">
-      <span class="moo-title">MOO imbalance <span class="moo-sub">(paste from your source, ~9:20-9:30am ET / ~9:20-9:30pm SGT — feeds bias score)</span></span>
-      <span class="moo-status" id="mooStatus">not entered yet</span>
-    </div>
-    <div class="moo-grid">
-      <div class="moo-field"><label>S&P 500 (mln)</label><input type="number" step="0.1" id="moo-sp500" placeholder="e.g. 164.5"></div>
-      <div class="moo-field"><label>Nasdaq 100 (mln)</label><input type="number" step="0.1" id="moo-ndx" placeholder="e.g. -42.7"></div>
-      <div class="moo-field"><label>Dow 30 (mln)</label><input type="number" step="0.1" id="moo-dow" placeholder="e.g. -22.1"></div>
-      <div class="moo-field"><label>Mag 7 (mln)</label><input type="number" step="0.1" id="moo-mag7" placeholder="e.g. -41.4"></div>
-      <button class="moo-btn" onclick="updateMOOImbalance()">Update &amp; recalc bias</button>
-    </div>
-  </div>
 
   <!-- BUY/SELL VOLUME PROXY — fully automated, no manual entry. See fetch-breadth.yml.
        Method: 1-min bars for SPY/QQQ/DIA/IWM classified up/down by close vs prior close.
@@ -1154,6 +1169,51 @@ const MOO_SP500_EXTREME_MLN = 1500;
 const MOO_WEIGHT = 12; // comparable order of magnitude to VIX(15)/ES futures(25) weights
 
 let manualMOOEntry = null; // { sp500, ndx, dow, mag7, enteredAt } or null if not yet entered
+
+// Parses a pasted block like:
+//   S&P 500: 1616.2 MLN   Nasdaq 100: 816.4 MLN   Dow 30: 720.6 MLN   Mag 7: 300.9 MLN
+// (works whether it's labeled MOO or MOC - some sources post both with identical
+// formatting, and this only cares about the 4 numbers, not which session they're for -
+// you're responsible for pasting the actual MOO block, not a MOC one, since this can't
+// tell the difference from the label alone). Tolerant of line breaks, extra spacing,
+// and negative values. Fills the 4 fields below and triggers the same recalc as
+// clicking "Update & recalc bias" manually.
+function parseMOOPaste() {
+  const text = document.getElementById('moo-paste-input').value;
+  const errorEl = document.getElementById('mooPasteError');
+  errorEl.textContent = '';
+
+  const extract = (regex) => {
+    const m = text.match(regex);
+    return m ? parseFloat(m[1].replace(/,/g, '')) : null;
+  };
+
+  const sp500 = extract(/S\s*&?\s*P\s*500[:\s]+(-?[\d,.]+)\s*MLN/i);
+  const ndx = extract(/NASDAQ\s*100[:\s]+(-?[\d,.]+)\s*MLN/i);
+  const dow = extract(/DOW\s*30[:\s]+(-?[\d,.]+)\s*MLN/i);
+  const mag7 = extract(/MAG\s*7[:\s]+(-?[\d,.]+)\s*MLN/i);
+
+  if (sp500 === null) {
+    errorEl.textContent = 'Could not find an "S&P 500: ___ MLN" line in the pasted text - check the format matches and try again, or just fill the fields below manually.';
+    return;
+  }
+
+  document.getElementById('moo-sp500').value = sp500;
+  if (ndx !== null) document.getElementById('moo-ndx').value = ndx;
+  if (dow !== null) document.getElementById('moo-dow').value = dow;
+  if (mag7 !== null) document.getElementById('moo-mag7').value = mag7;
+
+  const missing = [];
+  if (ndx === null) missing.push('Nasdaq 100');
+  if (dow === null) missing.push('Dow 30');
+  if (mag7 === null) missing.push('Mag 7');
+  if (missing.length) {
+    errorEl.textContent = 'S&P 500 filled. Could not find: ' + missing.join(', ') + ' - check those fields manually before updating.';
+  }
+
+  document.getElementById('moo-paste-input').value = '';
+  updateMOOImbalance();
+}
 
 function updateMOOImbalance() {
   const sp500 = parseFloat(document.getElementById('moo-sp500').value);
