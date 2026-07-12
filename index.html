@@ -253,7 +253,24 @@
   .dz-methodology { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; padding: 10px 12px; background: #eef0f3; border-radius: 6px; border-left: 3px solid var(--blue); }
   .dz-legend { font-size: 13px; color: var(--text-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
 
-  .info-banner { grid-column: 1 / -1; background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+  .info-banner { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; }
+  .glance-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+  .glance-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; display: flex; flex-direction: column; gap: 4px; min-height: 84px; }
+  .glance-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+  .glance-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  .glance-value { font-size: 19px; font-weight: 800; line-height: 1.1; }
+  .glance-sub { font-size: 11px; font-weight: 600; }
+  @media (max-width: 900px) { .glance-row { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .glance-row { grid-template-columns: repeat(2, 1fr); } }
+  .back-to-top-btn { position: fixed; bottom: 24px; right: 24px; z-index: 100; background: var(--blue); color: #fff; border: none; border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.15s; }
+  .back-to-top-btn.visible { opacity: 1; pointer-events: auto; }
+  .back-to-top-btn:hover { transform: translateY(-2px); }
+  .back-to-top-btn svg { width: 20px; height: 20px; }
+  .section-heading { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 12px 0; }
+  .section-heading:first-of-type { margin-top: 4px; }
+  .section-heading h2 { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-primary); margin: 0; }
+  .section-heading .section-heading-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; text-transform: none; }
+  .section-heading .section-heading-line { flex: 1; height: 1px; background: var(--border); }
   .info-text { font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
   .info-text strong { color: var(--blue); }
   .info-text a { color: var(--blue); text-decoration: none; }
@@ -286,44 +303,44 @@
     </div>
   </div>
 
-  <!-- Shared reference points for both Part I and Part II - see conversation record for why these live above both sections instead of inside one -->
-  <!-- GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. -->
-  <div class="gold-bar" id="goldBar">
-    <div class="gold-title-row">
-      <span class="gold-title">gold futures (GC=F) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/GC=F/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/GC=F</a></span>
-      <span class="gold-status" id="goldStatus">loading...</span>
+  <div class="glance-row" id="glanceRow">
+    <div class="glance-card" onclick="scrollToSection('partIHeading')">
+      <span class="glance-label">Part I</span>
+      <span class="glance-value" id="glancePartIValue">--</span>
+      <span class="glance-sub" id="glancePartIBadge">loading</span>
     </div>
-    <div class="gold-body">
-      <div class="gold-price" id="goldPrice">--</div>
-      <div class="gold-change" id="goldChange">--</div>
-      <div class="gold-trend-row">
-        <span id="gold5d">5d: --</span>
-        <span id="gold20d">20d: --</span>
-      </div>
+    <div class="glance-card" onclick="scrollToSection('partIIHeading')">
+      <span class="glance-label">Part II</span>
+      <span class="glance-value" id="glancePartIIValue">--</span>
+      <span class="glance-sub" id="glancePartIIBadge">loading</span>
     </div>
-    <div class="gold-note">Futures (not the GLD ETF) so overnight moves show up for Part II's "today" question, not just US market-hours moves. Backtested against 2018 Q4, COVID, and 2022: gold worked as a hedge in only 1 of those 3 stress events (rallied +6.6% in 2018, but fell in both COVID's liquidity panic and the 2022 rate-driven selloff). Not reliable enough to score as a signpost — shown here as context for both Part I and Part II, not signal.</div>
+    <div class="glance-card" onclick="scrollToSection('naaimBar')">
+      <span class="glance-label">NAAIM</span>
+      <span class="glance-value" id="glanceNaaimValue">--</span>
+      <span class="glance-sub" id="glanceNaaimSub">loading</span>
+    </div>
+    <div class="glance-card" onclick="scrollToSection('goldBar')">
+      <span class="glance-label">Gold (GC=F)</span>
+      <span class="glance-value" id="glanceGoldValue">--</span>
+      <span class="glance-sub" id="glanceGoldSub">loading</span>
+    </div>
+    <div class="glance-card" onclick="scrollToSection('btcBar')">
+      <span class="glance-label">Bitcoin</span>
+      <span class="glance-value" id="glanceBtcValue">--</span>
+      <span class="glance-sub" id="glanceBtcSub">loading</span>
+    </div>
   </div>
-  <!-- GOLD SECTION END -->
 
-  <!-- BITCOIN SECTION START — informational only, not scored. See fetch-crypto.yml header for removal. -->
-  <div class="gold-bar" id="btcBar">
-    <div class="gold-title-row">
-      <span class="gold-title">bitcoin (BTC-USD) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/BTC-USD/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/BTC-USD</a></span>
-      <span class="gold-status" id="btcStatus">loading...</span>
+  <div class="info-banner" id="infoBanner">
+    <div class="info-text">
+      <strong>Part I answers: "Are we in a risky macro regime?"</strong> — Use for strategic positioning (cash, hedges) over 2–4 weeks. FRED data has 1-day lag.<br>
+      <strong>Part II answers: "Is today likely to open higher or lower?"</strong> — Use for tactical entry/exit timing. Real-time data from Yahoo Finance.<br>
+      Click any card to see its signal framework. Data refreshes automatically.
     </div>
-    <div class="gold-body">
-      <div class="gold-price" id="btcPrice">--</div>
-      <div class="gold-change" id="btcChange">--</div>
-      <div class="gold-trend-row">
-        <span id="btc5d">5d: --</span>
-        <span id="btc20d">20d: --</span>
-      </div>
-    </div>
-    <div class="gold-note">Trades 24/7, so this reflects true overnight moves for Part II too. Backtested against the same 3 stress events as gold: BTC fell HARDER than SPY in every single one (-38.1% vs SPY -19.7% in 2018 Q4, -33.4% vs -34.1% in COVID, -58.8% vs -25.4% in 2022). This is not a hedge — it behaves like a high-beta risk asset that often amplifies the same move equities make. Shown as reference only; never read this as a safe-haven confirmation the way gold sometimes can be.</div>
   </div>
-  <!-- BITCOIN SECTION END -->
 
-  <!-- PART I: MACRO REGIME -->
+
+  <div class="section-heading" id="partIHeading"><h2>Part I — Macro Regime</h2><span class="section-heading-sub">strategic, 2-4 week horizon — FRED data, 1-day lag</span><div class="section-heading-line"></div></div>
   <div class="signal-bar" id="signalBar">
     <div class="signal-left">
       <span class="signal-badge badge-orange" id="mainBadge">reduce risk</span>
@@ -339,6 +356,39 @@
   </div>
 
   <div class="signpost-list" id="signpostList"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-cat="all">all indicators</button>
+    <button class="tab" data-cat="sentiment">sentiment</button>
+    <button class="tab" data-cat="rates">rates & fed</button>
+    <button class="tab" data-cat="macro">macro</button>
+    <button class="tab" data-cat="fiscal">fiscal</button>
+    <button class="tab" data-cat="commodities">commodities</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="fomc" data-cat="rates">
+      <div class="fomc-left">
+        <svg class="fomc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div>
+          <div class="fomc-title">next FOMC meeting</div>
+          <div class="fomc-sub">federal reserve policy decision — jul 29-30, 2026</div>
+          <div class="fomc-links">
+            <a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> FOMC calendar &amp; statements</a>
+            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> rate decision probabilities (CME FedWatch)</a>
+          </div>
+        </div>
+      </div>
+      <div class="countdown" id="fomcCountdown">
+        <div class="cd-box"><div class="cd-num" id="cdDays">--</div><div class="cd-label">days</div></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-box"><div class="cd-num" id="cdHours">--</div><div class="cd-label">hours</div></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-box"><div class="cd-num" id="cdMins">--</div><div class="cd-label">mins</div></div>
+      </div>
+    </div>
+  </div>
+
 
   <div class="framework-box open" id="frameworkPartI" onclick="toggleFramework('frameworkPartI')">
     <div class="framework-toggle">
@@ -359,31 +409,9 @@
     </div>
   </div>
 
-  <!-- NAAIM SECTION START — see fetch-naaim.yml header for full removal instructions -->
-  <div class="naaim-bar" id="naaimBar">
-    <div class="naaim-title-row">
-      <span class="naaim-title">NAAIM active manager positioning <span class="naaim-sub">(weekly, contrarian read — auto, free until Aug 1 2026)</span> <a class="panel-source-link" href="https://naaim.org/programs/naaim-exposure-index/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> naaim.org</a></span>
-      <span class="naaim-status" id="naaimStatus">loading...</span>
-    </div>
-    <div class="naaim-body">
-      <div>
-        <div class="naaim-value" id="naaimValue">--</div>
-        <div class="naaim-value-label">avg equity exposure</div>
-        <div class="naaim-value-label" id="naaimTrend" style="margin-top:4px;"></div>
-        <div class="naaim-how-to-read" id="naaimHowToRead">↑ = more crowded/bullish positioning. Read this LIKE VIX, not like a normal risk gauge: extreme HIGH = euphoria = contrarian derisk warning. Extreme LOW = capitulation = contrarian buy signal. The MIDDLE is calm, not either extreme.</div>
-      </div>
-      <div class="naaim-zone-bar">
-        <div class="naaim-zone-track" id="naaimZoneTrack">
-          <div class="naaim-zone-green"></div><div class="naaim-zone-yellow"></div><div class="naaim-zone-red"></div>
-          <div class="naaim-zone-marker" id="naaimMarker" style="left:50%"></div>
-        </div>
-        <div class="naaim-zone-labels"><span>defensive (contrarian buy)</span><span>normal</span><span>euphoric (contrarian derisk)</span></div>
-      </div>
-    </div>
-    <div class="naaim-deprecation-note">NAAIM announced this data moves to subscription access on Aug 1, 2026 — this panel will show "unavailable" after that date unless a paid source replaces it.</div>
-  </div>
-  <!-- NAAIM SECTION END -->
 
+
+  <div class="section-heading" id="partIIHeading"><h2>Part II — Pre-Market Bias</h2><span class="section-heading-sub">tactical, today's session — Yahoo Finance, near-real-time</span><div class="section-heading-line"></div></div>
 
   <div class="bias-bar" id="biasBar">
     <div class="bias-left">
@@ -471,44 +499,83 @@
   </div>
 
 
-  <div class="tabs">
-    <button class="tab active" data-cat="all">all indicators</button>
-    <button class="tab" data-cat="sentiment">sentiment</button>
-    <button class="tab" data-cat="rates">rates & fed</button>
-    <button class="tab" data-cat="macro">macro</button>
-    <button class="tab" data-cat="fiscal">fiscal</button>
-    <button class="tab" data-cat="commodities">commodities</button>
-  </div>
-
-  <div class="grid" id="grid">
-    <div class="info-banner" id="infoBanner">
-      <div class="info-text">
-        <strong>Part I answers: "Are we in a risky macro regime?"</strong> — Use for strategic positioning (cash, hedges) over 2–4 weeks. FRED data has 1-day lag.<br>
-        <strong>Part II answers: "Is today likely to open higher or lower?"</strong> — Use for tactical entry/exit timing. Real-time data from Yahoo Finance.<br>
-        Click any card to see its signal framework. Data refreshes automatically.
+  <div class="section-heading"><h2>Reference Points</h2><span class="section-heading-sub">informational only — NAAIM, gold, and bitcoin below are context, not scored into Part I or Part II</span><div class="section-heading-line"></div></div>
+  <!-- NAAIM SECTION START — see fetch-naaim.yml header for full removal instructions -->
+  <div class="naaim-bar" id="naaimBar">
+    <div class="naaim-title-row">
+      <span class="naaim-title">NAAIM active manager positioning <span class="naaim-sub">(weekly, contrarian read — auto, free until Aug 1 2026)</span> <a class="panel-source-link" href="https://naaim.org/programs/naaim-exposure-index/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> naaim.org</a></span>
+      <span class="naaim-status" id="naaimStatus">loading...</span>
+    </div>
+    <div class="naaim-body">
+      <div>
+        <div class="naaim-value" id="naaimValue">--</div>
+        <div class="naaim-value-label">avg equity exposure</div>
+        <div class="naaim-value-label" id="naaimTrend" style="margin-top:4px;"></div>
+        <div class="naaim-how-to-read" id="naaimHowToRead">↑ = more crowded/bullish positioning. Read this LIKE VIX, not like a normal risk gauge: extreme HIGH = euphoria = contrarian derisk warning. Extreme LOW = capitulation = contrarian buy signal. The MIDDLE is calm, not either extreme.</div>
+      </div>
+      <div class="naaim-zone-bar">
+        <div class="naaim-zone-track" id="naaimZoneTrack">
+          <div class="naaim-zone-green"></div><div class="naaim-zone-yellow"></div><div class="naaim-zone-red"></div>
+          <div class="naaim-zone-marker" id="naaimMarker" style="left:50%"></div>
+        </div>
+        <div class="naaim-zone-labels"><span>&lt;20 defensive</span><span>20–100 normal</span><span>&gt;100 euphoric</span></div>
       </div>
     </div>
-    <div class="fomc" data-cat="rates">
-      <div class="fomc-left">
-        <svg class="fomc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <div>
-          <div class="fomc-title">next FOMC meeting</div>
-          <div class="fomc-sub">federal reserve policy decision — jul 29-30, 2026</div>
-          <div class="fomc-links">
-            <a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> FOMC calendar &amp; statements</a>
-            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> rate decision probabilities (CME FedWatch)</a>
-          </div>
+
+    <div class="framework-box open" id="frameworkNAAIM" onclick="toggleFramework('frameworkNAAIM')">
+      <div class="framework-toggle">
+        <span class="framework-toggle-label">▸ signal framework — how to read this number</span>
+        <span class="framework-toggle-arrow">▾</span>
+      </div>
+      <div class="framework-body">
+        <div class="framework-row"><span class="framework-range" style="color:var(--green)">below 20</span><span class="framework-meaning">Managers defensive/net short. Contrarian BUY signal — capitulation, pessimism extreme.</span></div>
+        <div class="framework-row"><span class="framework-range" style="color:var(--yellow)">20 – 100</span><span class="framework-meaning">Normal range. Not informative either direction — most historical readings sit here.</span></div>
+        <div class="framework-row"><span class="framework-range" style="color:var(--red)">above 100</span><span class="framework-meaning">Managers heavily long/crowded. Contrarian DERISK signal — euphoria, everyone's already in.</span></div>
+        <div class="framework-arrow-note">
+          This is NOT a monotonic risk gauge like VIX-level or credit spreads elsewhere in this dashboard, where higher always means more danger. It's U-shaped: risk reads come from either EXTREME, not from the number simply going up. A reading of 83 is in the normal 20–100 band — elevated within that band, but not the euphoric extreme (&gt;100) that would trigger a contrarian derisk read.
+          Thresholds (20 / 100) are a judgment call based on NAAIM's own historical range (all-time low ≈ -3.6, all-time high ≈ 120.6, mean ≈ 65) — not backtested the way Part I's signposts were.
         </div>
       </div>
-      <div class="countdown" id="fomcCountdown">
-        <div class="cd-box"><div class="cd-num" id="cdDays">--</div><div class="cd-label">days</div></div>
-        <span class="cd-sep">:</span>
-        <div class="cd-box"><div class="cd-num" id="cdHours">--</div><div class="cd-label">hours</div></div>
-        <span class="cd-sep">:</span>
-        <div class="cd-box"><div class="cd-num" id="cdMins">--</div><div class="cd-label">mins</div></div>
+    </div>
+    <div class="naaim-deprecation-note">NAAIM announced this data moves to subscription access on Aug 1, 2026 — this panel will show "unavailable" after that date unless a paid source replaces it.</div>
+  </div>
+  <!-- NAAIM SECTION END -->
+
+  <!-- GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. -->
+  <div class="gold-bar" id="goldBar">
+    <div class="gold-title-row">
+      <span class="gold-title">gold futures (GC=F) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/GC=F/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/GC=F</a></span>
+      <span class="gold-status" id="goldStatus">loading...</span>
+    </div>
+    <div class="gold-body">
+      <div class="gold-price" id="goldPrice">--</div>
+      <div class="gold-change" id="goldChange">--</div>
+      <div class="gold-trend-row">
+        <span id="gold5d">5d: --</span>
+        <span id="gold20d">20d: --</span>
       </div>
     </div>
+    <div class="gold-note">Futures (not the GLD ETF) so overnight moves show up for Part II's "today" question, not just US market-hours moves. Backtested against 2018 Q4, COVID, and 2022: gold worked as a hedge in only 1 of those 3 stress events (rallied +6.6% in 2018, but fell in both COVID's liquidity panic and the 2022 rate-driven selloff). Not reliable enough to score as a signpost — shown here as context for both Part I and Part II, not signal.</div>
   </div>
+  <!-- GOLD SECTION END -->
+
+  <!-- BITCOIN SECTION START — informational only, not scored. See fetch-crypto.yml header for removal. -->
+  <div class="gold-bar" id="btcBar">
+    <div class="gold-title-row">
+      <span class="gold-title">bitcoin (BTC-USD) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/BTC-USD/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/BTC-USD</a></span>
+      <span class="gold-status" id="btcStatus">loading...</span>
+    </div>
+    <div class="gold-body">
+      <div class="gold-price" id="btcPrice">--</div>
+      <div class="gold-change" id="btcChange">--</div>
+      <div class="gold-trend-row">
+        <span id="btc5d">5d: --</span>
+        <span id="btc20d">20d: --</span>
+      </div>
+    </div>
+    <div class="gold-note">Trades 24/7, so this reflects true overnight moves for Part II too. Backtested against the same 3 stress events as gold: BTC fell HARDER than SPY in every single one (-38.1% vs SPY -19.7% in 2018 Q4, -33.4% vs -34.1% in COVID, -58.8% vs -25.4% in 2022). This is not a hedge — it behaves like a high-beta risk asset that often amplifies the same move equities make. Shown as reference only; never read this as a safe-haven confirmation the way gold sometimes can be.</div>
+  </div>
+  <!-- BITCOIN SECTION END -->
 
   <div class="detail" id="detailPanel">
     <div class="detail-header">
@@ -809,6 +876,52 @@ function updatePulseUI(data, hasErrors, lastUpdated) {
   });
 }
 
+// Populates the top glance row from whatever's already rendered in the full detailed
+// sections below - reads existing DOM values rather than recomputing anything, so it
+// can never diverge from what the detailed sections actually show. Called at the end
+// of calcComposite, updateBiasBar, loadNAAIMData, loadGoldData, and loadBTCData -
+// safe to call multiple times as each data source finishes loading independently.
+function updateGlanceRow() {
+  const mainScore = document.getElementById('mainScore');
+  const mainBadge = document.getElementById('mainBadge');
+  if (mainScore && mainBadge && mainBadge.textContent !== 'loading') {
+    document.getElementById('glancePartIValue').textContent = mainScore.textContent;
+    document.getElementById('glancePartIBadge').textContent = mainBadge.textContent;
+    document.getElementById('glancePartIBadge').style.color = getComputedStyle(mainBadge).color;
+  }
+
+  const biasScore = document.getElementById('biasScore');
+  const biasBadge = document.getElementById('biasBadge');
+  if (biasScore && biasBadge && biasBadge.textContent !== 'loading') {
+    document.getElementById('glancePartIIValue').textContent = biasScore.textContent;
+    document.getElementById('glancePartIIBadge').textContent = biasBadge.textContent;
+    document.getElementById('glancePartIIBadge').style.color = getComputedStyle(biasBadge).color;
+  }
+
+  const naaimValue = document.getElementById('naaimValue');
+  if (naaimValue && naaimValue.textContent !== '--') {
+    document.getElementById('glanceNaaimValue').textContent = naaimValue.textContent;
+    const naaimNum = parseFloat(naaimValue.textContent);
+    document.getElementById('glanceNaaimSub').textContent = naaimNum > 100 ? 'euphoric' : naaimNum < 20 ? 'defensive' : 'normal';
+  }
+
+  const goldPrice = document.getElementById('goldPrice');
+  const goldChange = document.getElementById('goldChange');
+  if (goldPrice && goldPrice.textContent !== '--') {
+    document.getElementById('glanceGoldValue').textContent = goldPrice.textContent;
+    document.getElementById('glanceGoldSub').textContent = goldChange.textContent;
+    document.getElementById('glanceGoldSub').style.color = goldChange.style.color;
+  }
+
+  const btcPrice = document.getElementById('btcPrice');
+  const btcChange = document.getElementById('btcChange');
+  if (btcPrice && btcPrice.textContent !== '--') {
+    document.getElementById('glanceBtcValue').textContent = btcPrice.textContent;
+    document.getElementById('glanceBtcSub').textContent = btcChange.textContent;
+    document.getElementById('glanceBtcSub').style.color = btcChange.style.color;
+  }
+}
+
 function updateBiasBar(bias) {
   const bar = document.getElementById('biasBar');
   const badge = document.getElementById('biasBadge');
@@ -848,6 +961,7 @@ function updateBiasBar(bias) {
     badge.textContent = 'neutral'; badge.className = 'bias-badge bias-badge-neutral';
     actionEl.textContent = 'mixed signals — wait for first hour confirmation before sizing';
   }
+  updateGlanceRow();
 }
 
 // =========================================================
@@ -916,6 +1030,7 @@ async function loadNAAIMData() {
   document.getElementById('naaimMarker').style.left = pct + '%';
   const marker = document.getElementById('naaimMarker');
   marker.style.background = data.current > NAAIM_ZONE_YELLOW_MAX ? 'var(--red)' : data.current < NAAIM_ZONE_GREEN_MAX ? 'var(--green)' : 'var(--text-primary)';
+  updateGlanceRow();
 }
 // NAAIM SECTION END
 
@@ -949,6 +1064,7 @@ async function loadGoldData() {
 
   document.getElementById('gold5d').textContent = '5d: ' + (data.change5d !== null && data.change5d !== undefined ? (data.change5d >= 0 ? '+' : '') + data.change5d.toFixed(1) + '%' : '--');
   document.getElementById('gold20d').textContent = '20d: ' + (data.change20d !== null && data.change20d !== undefined ? (data.change20d >= 0 ? '+' : '') + data.change20d.toFixed(1) + '%' : '--');
+  updateGlanceRow();
 }
 // GOLD SECTION END
 
@@ -982,6 +1098,7 @@ async function loadBTCData() {
 
   document.getElementById('btc5d').textContent = '5d: ' + (data.change5d !== null && data.change5d !== undefined ? (data.change5d >= 0 ? '+' : '') + data.change5d.toFixed(1) + '%' : '--');
   document.getElementById('btc20d').textContent = '20d: ' + (data.change20d !== null && data.change20d !== undefined ? (data.change20d >= 0 ? '+' : '') + data.change20d.toFixed(1) + '%' : '--');
+  updateGlanceRow();
 }
 // BITCOIN SECTION END
 
@@ -1447,6 +1564,21 @@ function openDetail(ind, cardEl) {
 
 function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); openDetailIndId = null; }
 
+function scrollToSection(id) {
+  if (id === null) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTopBtn');
+  if (window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+
 function toggleFramework(id) {
   document.getElementById(id).classList.toggle('open');
 }
@@ -1607,6 +1739,7 @@ function calcComposite() {
   document.getElementById('mainFill').style.background = color;
 
   renderSignpostList(signposts);
+  updateGlanceRow();
 }
 
 // =========================================================
@@ -1647,5 +1780,8 @@ async function manualRefresh() {
   document.getElementById('loader').classList.add('done');
 })();
 </script>
+  <button class="back-to-top-btn" id="backToTopBtn" onclick="scrollToSection(null)" title="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+  </button>
 </body>
 </html>
