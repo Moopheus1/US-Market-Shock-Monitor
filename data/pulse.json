@@ -31,7 +31,7 @@
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
-    "current": 100.952,
+    "current": 100.965,
     "previous": 101.14
   },
   "cl": {
@@ -39,6 +39,6 @@
     "current": 71.41,
     "previous": 70.44
   },
-  "_lastUpdated": "2026-07-12T17:15:19Z",
+  "_lastUpdated": "2026-07-12T17:30:36Z",
   "_failedSymbols": []
 }
