@@ -138,6 +138,7 @@
   .naaim-body { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
   .naaim-value { font-size: 32px; font-weight: 800; }
   .naaim-value-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .naaim-how-to-read { font-size: 11px; color: var(--text-primary); margin-top: 8px; max-width: 260px; line-height: 1.5; padding: 6px 8px; background: rgba(59,130,246,0.06); border-left: 2px solid var(--blue); border-radius: 3px; }
   .naaim-zone-bar { flex: 1; min-width: 200px; }
   .naaim-zone-track { position: relative; height: 8px; border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 6px; }
   .naaim-zone-green { background: var(--green); flex: 35; }
@@ -285,6 +286,43 @@
     </div>
   </div>
 
+  <!-- Shared reference points for both Part I and Part II - see conversation record for why these live above both sections instead of inside one -->
+  <!-- GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. -->
+  <div class="gold-bar" id="goldBar">
+    <div class="gold-title-row">
+      <span class="gold-title">gold futures (GC=F) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/GC=F/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/GC=F</a></span>
+      <span class="gold-status" id="goldStatus">loading...</span>
+    </div>
+    <div class="gold-body">
+      <div class="gold-price" id="goldPrice">--</div>
+      <div class="gold-change" id="goldChange">--</div>
+      <div class="gold-trend-row">
+        <span id="gold5d">5d: --</span>
+        <span id="gold20d">20d: --</span>
+      </div>
+    </div>
+    <div class="gold-note">Futures (not the GLD ETF) so overnight moves show up for Part II's "today" question, not just US market-hours moves. Backtested against 2018 Q4, COVID, and 2022: gold worked as a hedge in only 1 of those 3 stress events (rallied +6.6% in 2018, but fell in both COVID's liquidity panic and the 2022 rate-driven selloff). Not reliable enough to score as a signpost — shown here as context for both Part I and Part II, not signal.</div>
+  </div>
+  <!-- GOLD SECTION END -->
+
+  <!-- BITCOIN SECTION START — informational only, not scored. See fetch-crypto.yml header for removal. -->
+  <div class="gold-bar" id="btcBar">
+    <div class="gold-title-row">
+      <span class="gold-title">bitcoin (BTC-USD) <span class="gold-sub">— reference point for both parts, not scored</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/BTC-USD/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/BTC-USD</a></span>
+      <span class="gold-status" id="btcStatus">loading...</span>
+    </div>
+    <div class="gold-body">
+      <div class="gold-price" id="btcPrice">--</div>
+      <div class="gold-change" id="btcChange">--</div>
+      <div class="gold-trend-row">
+        <span id="btc5d">5d: --</span>
+        <span id="btc20d">20d: --</span>
+      </div>
+    </div>
+    <div class="gold-note">Trades 24/7, so this reflects true overnight moves for Part II too. Backtested against the same 3 stress events as gold: BTC fell HARDER than SPY in every single one (-38.1% vs SPY -19.7% in 2018 Q4, -33.4% vs -34.1% in COVID, -58.8% vs -25.4% in 2022). This is not a hedge — it behaves like a high-beta risk asset that often amplifies the same move equities make. Shown as reference only; never read this as a safe-haven confirmation the way gold sometimes can be.</div>
+  </div>
+  <!-- BITCOIN SECTION END -->
+
   <!-- PART I: MACRO REGIME -->
   <div class="signal-bar" id="signalBar">
     <div class="signal-left">
@@ -332,6 +370,7 @@
         <div class="naaim-value" id="naaimValue">--</div>
         <div class="naaim-value-label">avg equity exposure</div>
         <div class="naaim-value-label" id="naaimTrend" style="margin-top:4px;"></div>
+        <div class="naaim-how-to-read" id="naaimHowToRead">↑ = more crowded/bullish positioning. Read this LIKE VIX, not like a normal risk gauge: extreme HIGH = euphoria = contrarian derisk warning. Extreme LOW = capitulation = contrarian buy signal. The MIDDLE is calm, not either extreme.</div>
       </div>
       <div class="naaim-zone-bar">
         <div class="naaim-zone-track" id="naaimZoneTrack">
@@ -341,27 +380,10 @@
         <div class="naaim-zone-labels"><span>defensive (contrarian buy)</span><span>normal</span><span>euphoric (contrarian derisk)</span></div>
       </div>
     </div>
-    <div class="naaim-deprecation-note">NAAIM announced this data moves to subscription access on Aug 1, 2026 — this panel will show "unavailable" after that date unless a paid source replaces it. Contrarian read: high manager exposure historically precedes weakness, very low/negative exposure historically precedes strength — the opposite of how you'd read most sentiment gauges at face value.</div>
+    <div class="naaim-deprecation-note">NAAIM announced this data moves to subscription access on Aug 1, 2026 — this panel will show "unavailable" after that date unless a paid source replaces it.</div>
   </div>
   <!-- NAAIM SECTION END -->
 
-  <!-- GOLD SECTION START — informational only, not scored. See fetch-gold.yml header for removal. -->
-  <div class="gold-bar" id="goldBar">
-    <div class="gold-title-row">
-      <span class="gold-title">gold (GLD) <span class="gold-sub">— informational only, not part of the signpost score</span> <a class="panel-source-link" href="https://finance.yahoo.com/quote/GLD/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> finance.yahoo.com/GLD</a></span>
-      <span class="gold-status" id="goldStatus">loading...</span>
-    </div>
-    <div class="gold-body">
-      <div class="gold-price" id="goldPrice">--</div>
-      <div class="gold-change" id="goldChange">--</div>
-      <div class="gold-trend-row">
-        <span id="gold5d">5d: --</span>
-        <span id="gold20d">20d: --</span>
-      </div>
-    </div>
-    <div class="gold-note">Backtested against 2018 Q4, COVID, and 2022: gold worked as a hedge in only 1 of those 3 stress events (rallied +6.6% in 2018, but fell in both COVID's liquidity panic and the 2022 rate-driven selloff). Not reliable enough to score as a signpost — shown here as context only, not signal.</div>
-  </div>
-  <!-- GOLD SECTION END -->
 
   <div class="bias-bar" id="biasBar">
     <div class="bias-left">
@@ -929,6 +951,39 @@ async function loadGoldData() {
   document.getElementById('gold20d').textContent = '20d: ' + (data.change20d !== null && data.change20d !== undefined ? (data.change20d >= 0 ? '+' : '') + data.change20d.toFixed(1) + '%' : '--');
 }
 // GOLD SECTION END
+
+// BITCOIN SECTION START — informational only, not scored. See fetch-crypto.yml for removal.
+async function loadBTCData() {
+  const statusEl = document.getElementById('btcStatus');
+  let data = null;
+  try {
+    const res = await fetch('data/bitcoin.json', { cache: 'no-store' });
+    if (res.ok) data = await res.json();
+  } catch (e) { data = null; }
+
+  if (!data || data._fetchFailed || data.price === undefined) {
+    statusEl.textContent = 'unavailable — data/bitcoin.json missing or fetch failed';
+    statusEl.className = 'gold-status error';
+    document.getElementById('btcPrice').textContent = '--';
+    document.getElementById('btcChange').textContent = '--';
+    return;
+  }
+
+  const age = hoursAgo(data._lastFetched || data._lastUpdated);
+  const ageTxt = age < 24 ? Math.round(age) + 'h ago' : Math.round(age / 24) + 'd ago';
+  statusEl.textContent = 'updated ' + ageTxt;
+  statusEl.className = 'gold-status ' + (age < 24 ? 'live' : 'error'); // BTC trades 24/7, tighter staleness bar than gold futures
+
+  document.getElementById('btcPrice').textContent = '$' + data.price.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const changeEl = document.getElementById('btcChange');
+  const chg = data.changePct;
+  changeEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% today';
+  changeEl.style.color = chg > 0 ? 'var(--green)' : chg < 0 ? 'var(--red)' : 'var(--text-muted)';
+
+  document.getElementById('btc5d').textContent = '5d: ' + (data.change5d !== null && data.change5d !== undefined ? (data.change5d >= 0 ? '+' : '') + data.change5d.toFixed(1) + '%' : '--');
+  document.getElementById('btc20d').textContent = '20d: ' + (data.change20d !== null && data.change20d !== undefined ? (data.change20d >= 0 ? '+' : '') + data.change20d.toFixed(1) + '%' : '--');
+}
+// BITCOIN SECTION END
 
 async function loadBreadthData() {
   const statusEl = document.getElementById('breadthStatus');
@@ -1566,6 +1621,7 @@ async function manualRefresh() {
   await loadBreadthData();
   await loadNAAIMData();
   await loadGoldData();
+  await loadBTCData();
   await fetchRealtime();
   renderCards();
   calcComposite();
@@ -1582,6 +1638,7 @@ async function manualRefresh() {
   await loadBreadthData();
   await loadNAAIMData();
   await loadGoldData();
+  await loadBTCData();
   await fetchRealtime();
   renderCards();
   calcComposite();
