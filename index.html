@@ -625,7 +625,16 @@ const FRED_CONFIG = {
   consumer: { file: 'consumer.json', decimals: 1, prefix: '', suffix: '', zones: { green: [110, 150], yellow: [80, 110], red: [0, 80] } },
   treasury10y: { file: 'treasury10y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 4.25], yellow: [4.25, 5.25], red: [5.25, 10.0] } },
   treasury2y: { file: 'treasury2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [0, 4.0], yellow: [4.0, 5.0], red: [5.0, 10.0] } },
-  m2: { file: 'm2.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000, zones: { green: [22, 100], yellow: [18, 22], red: [0, 18] } }
+  m2: { file: 'm2.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000, zones: { green: [22, 100], yellow: [18, 22], red: [0, 18] } },
+  // Value here is a PERCENTILE RANK (0-100) computed server-side in fetch-cot.yml, not
+  // a raw price/level - "how crowded is net long S&P 500 futures positioning relative
+  // to its own 16-year history." Backtested: >=90th percentile sat at the 98th
+  // percentile right before the 2018 Q4 selloff, the one stress event nothing else in
+  // this dashboard's signpost model has ever caught. Did NOT flag COVID (67th
+  // percentile beforehand) - expected, COVID was an exogenous shock, not a positioning
+  // unwind. This is a slower, multi-week/quarter signal (forward-return test showed
+  // real predictive value at 12 weeks, not 4) - don't expect it to move often.
+  cot: { file: 'cot.json', decimals: 0, prefix: '', suffix: 'th %ile', zones: { green: [0, 75], yellow: [75, 90], red: [90, 100] } }
 };
 // NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
 // NOT mapped here. They're index price levels, not risk-zone metrics - the green/yellow/red
@@ -1497,6 +1506,19 @@ const DEMO_INDICATORS = [
       { label: 'derisk', val: 'M2 contracting y/y', color: 'red', next: 'already liquidity drain - historically rare and disinflationary/deflationary. next: M2 resumes growth -> watch' }
     ],
     zonePos: 0.30, desc: 'M2 measures cash, checking/savings deposits, and money market funds - the broad liquidity available to the economy. Sustained M2 growth is historically supportive of asset prices; M2 contraction (as briefly happened in 2022-23, the first since the 1930s) is a genuine liquidity-drain warning sign.'
+  },
+  {
+    id: 'cot', cat: 'macro', title: 'CFTC Positioning', subtitle: 'S&P 500 futures, speculative crowding',
+    value: '35th %ile', change: 'n/a', changeDir: 'neutral', severity: 'low', severityLabel: 'not crowded',
+    date: 'weekly (CFTC)', sparkline: [58,52,48,41,39,37,35,38,42,45,41,39,36,38,35],
+    chartData: [65,61,58,54,52,49,48,44,41,42,39,37,35,38,42,45,41,39,36,38,35],
+    sourceUrl: 'https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm', sourceName: 'CFTC (Commitments of Traders)',
+    zones: [
+      { label: 'accumulate', val: 'positioning not crowded (<75th %ile)', color: 'green', next: 'room for positioning to build either direction. next: crowding builds -> watch' },
+      { label: 'watch', val: 'positioning elevated (75-89th %ile)', color: 'yellow', next: 'getting crowded. next up: extreme crowding -> derisk. next down: unwinds -> accumulate' },
+      { label: 'derisk', val: 'extreme crowded-long (>=90th %ile)', color: 'red', next: 'historically precedes corrections over a multi-week/quarter horizon (98th %ile preceded the 2018 Q4 selloff) - NOT a fast signal, crowded positioning can get more crowded before it reverts, so do not expect an immediate move' }
+    ],
+    zonePos: 0.15, desc: 'Net speculative (non-commercial) positioning in S&P 500 futures as a percentile rank of its own 16-year history - are traders crowded into one side of the trade? Backtested: extreme crowded-long readings preceded the 2018 Q4 selloff (98th percentile beforehand) but did NOT precede COVID (67th percentile, an exogenous shock this signal was never going to catch). Weekly data, released Fridays for the prior Tuesday.'
   },
   {
     id: 'consumer', cat: 'macro', title: 'Consumer Confidence', subtitle: 'Conference Board',
