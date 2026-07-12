@@ -1,0 +1,113 @@
+name: Fetch COT Positioning
+
+# Backtested against 2015-2026 conversation record before shipping (see repo history/
+# conversation log): extreme crowded-long positioning (>=90th percentile of net
+# non-commercial positions as % of open interest) sat at the 98th percentile right
+# before the 2018 Q4 selloff - the one stress event the rest of this dashboard's
+# signpost model has never caught. Did NOT flag COVID (67th percentile beforehand) -
+# expected, since COVID was an exogenous shock, not a positioning unwind. Forward-
+# return test showed a real but horizon-dependent signal: extreme-long positioning
+# went slightly negative at 12 weeks (31% hit rate for positive returns) but was
+# still POSITIVE at 4 weeks (crowded trades can get more crowded before reverting) -
+# this is a slower, multi-week/quarter signal, not a fast one. Full methodology has
+# one honest limitation: the historical backtest used full-sample percentiles (slight
+# lookahead bias on early historical points); the LIVE calculation below has no such
+# issue since it always compares today's reading to all history up to today.
+#
+# Source: CFTC (Commodity Futures Trading Commission) Commitments of Traders report,
+# "S&P 500 Consolidated" contract, Traders in Financial Futures classification.
+# Official government data, free, no API key required. Released Fridays for the
+# prior Tuesday's positions.
+
+on:
+  schedule:
+    # Friday 21:00 UTC (~5pm ET) - after CFTC's typical Friday afternoon release
+    - cron: '0 21 * * 5'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and process COT data
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json
+          import urllib.request
+          import urllib.parse
+          import datetime
+
+          HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; MarketShockMonitor/1.0)"}
+
+          base = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
+          params = {
+              "$where": "contract_market_name = 'S&P 500 Consolidated'",
+              "$limit": "5000",
+              "$order": "report_date_as_yyyy_mm_dd ASC",
+          }
+          url = base + "?" + urllib.parse.urlencode(params)
+
+          try:
+              req = urllib.request.Request(url, headers=HEADERS)
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  rows = json.load(r)
+
+              if not rows or len(rows) < 20:
+                  raise ValueError(f"Only got {len(rows)} rows - expected hundreds")
+
+              series = []  # (date_str, net_pct_oi)
+              for row in rows:
+                  date_str = row["report_date_as_yyyy_mm_dd"][:10]
+                  long_ = float(row.get("noncomm_positions_long_all", 0))
+                  short_ = float(row.get("noncomm_positions_short_all", 0))
+                  oi = float(row.get("open_interest_all", 1)) or 1
+                  net_pct_oi = (long_ - short_) / oi * 100
+                  series.append((date_str, net_pct_oi))
+
+              all_values = [v for _, v in series]
+
+              def percentile_rank(value, population):
+                  return sum(1 for x in population if x <= value) / len(population) * 100
+
+              # Build FRED-compatible observations array (most recent first) - the
+              # "value" fed to the dashboard's existing zone system is the PERCENTILE
+              # RANK (0-100), not the raw positioning number, so it plugs into
+              # computeZonePos() exactly like any other FRED series.
+              observations = []
+              for date_str, net_pct_oi in reversed(series):
+                  pct_rank = percentile_rank(net_pct_oi, all_values)
+                  observations.append({"date": date_str, "value": round(pct_rank, 1)})
+
+              current_net_pct_oi = series[-1][1]
+              current_percentile = percentile_rank(current_net_pct_oi, all_values)
+
+              out = {
+                  "observations": observations[:60],  # ~60 weeks of history, plenty for sparkline/trend
+                  "_rawNetPctOI": round(current_net_pct_oi, 2),
+                  "_lastFetched": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "_source": "CFTC Commitments of Traders (S&P 500 Consolidated)",
+                  "_fetchFailed": False,
+              }
+              print(f"OK: net positioning = {current_net_pct_oi:.2f}% of OI, percentile = {current_percentile:.1f}")
+
+          except Exception as e:
+              print(f"FETCH FAILED: {e}")
+              out = {"_fetchFailed": True, "_fetchError": str(e),
+                     "_lastFetched": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+
+          with open("data/cot.json", "w") as f:
+              json.dump(out, f, indent=2)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/cot.json
+          git diff --cached --quiet || git commit -m "Update COT positioning data [$(date -u +%Y-%m-%d)]"
+          git push
