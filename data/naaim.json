@@ -13,7 +13,7 @@
       "postedLabel": "Thursday, July 16, 2026"
     }
   ],
-  "_lastFetched": "2026-07-17T11:00:33Z",
+  "_lastFetched": "2026-07-17T16:14:24Z",
   "_source": "https://naaim.org/programs/naaim-exposure-index/",
   "_fetchFailed": false,
   "_deprecationNote": "NAAIM stated this moves to subscription access effective Aug 1, 2026. If _fetchFailed is true after that date, this is why - see this workflow's file header for removal instructions."
