@@ -1,0 +1,63 @@
+name: Fetch National Debt Data
+
+on:
+  schedule:
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # NOTE: this API uses bracket query params like page[size]=... which curl's
+      # shell-style URL globbing misinterprets as a range pattern ("bad range in
+      # URL"). Using Python requests instead of curl avoids that entirely.
+      - name: Fetch Debt to the Penny
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json, sys
+          import requests
+
+          url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/"
+                 "v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=200"
+                 "&fields=record_date,tot_pub_debt_out_amt")
+          try:
+              r = requests.get(url, timeout=30)
+              r.raise_for_status()
+              rows = r.json().get("data", [])
+              if not rows:
+                  raise ValueError("empty data array from Treasury API")
+              observations = [
+                  {"date": row["record_date"], "value": row["tot_pub_debt_out_amt"]}
+                  for row in rows
+              ]
+              json.dump({"observations": observations}, open("data/debt.json", "w"))
+              print(f"OK: {len(observations)} observations, latest {observations[0]}")
+          except Exception as e:
+              print(f"FETCH FAILED: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/debt.json
+          git diff --cached --quiet || git commit -m "Update national debt data [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done

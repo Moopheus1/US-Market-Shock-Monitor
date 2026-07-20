@@ -1,0 +1,74 @@
+name: Fetch Govt Spending Data
+
+on:
+  schedule:
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch Monthly Treasury Statement (YTD outlays)
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json, sys
+          import requests
+
+          # Table 1 of the Monthly Treasury Statement. record_type_cd=SL and
+          # classification_desc=Year-to-Date alone match TWO rows per date (the
+          # current fiscal year's YTD line AND a prior-fiscal-year comparison
+          # line) - line_code_nbr:280 disambiguates to just the current-FY row.
+          # Verified against 136 months of history: this filter alone produced a
+          # monotonically-increasing-within-fiscal-year series with no gaps.
+          url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/"
+                 "v1/accounting/mts/mts_table_1?sort=-record_date&page[size]=200"
+                 "&filter=record_type_cd:eq:SL,classification_desc:eq:Year-to-Date,line_code_nbr:eq:280"
+                 "&fields=record_date,current_month_gross_outly_amt")
+          try:
+              r = requests.get(url, timeout=30)
+              r.raise_for_status()
+              rows = r.json().get("data", [])
+              seen = set()
+              observations = []
+              for row in rows:
+                  d = row["record_date"]
+                  val = row.get("current_month_gross_outly_amt")
+                  if d in seen or val in (None, "null"):
+                      continue
+                  seen.add(d)
+                  observations.append({"date": d, "value": val})
+              if not observations:
+                  raise ValueError("no Year-to-Date rows returned from Treasury API")
+              json.dump({"observations": observations}, open("data/spending.json", "w"))
+              print(f"OK: {len(observations)} observations, latest {observations[0]}")
+              print("NOTE: this is a fiscal-year-to-date figure - it resets each Oct 1, "
+                    "so the sparkline will show a sawtooth pattern. That's expected, not a bug.")
+          except Exception as e:
+              print(f"FETCH FAILED: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/spending.json
+          git diff --cached --quiet || git commit -m "Update govt spending data [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done

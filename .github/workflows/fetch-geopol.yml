@@ -1,0 +1,70 @@
+name: Fetch Geopolitical Risk Index
+
+on:
+  schedule:
+    # GPR "daily recent" file updates every Monday - checking daily is harmless,
+    # the workflow only commits when content actually changes.
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install xlrd==2.0.1
+
+      - name: Fetch and parse Caldara-Iacoviello GPR daily index
+        run: |
+          mkdir -p data
+          curl -sL -o /tmp/gpr.xls "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.xls"
+          python3 << 'PYEOF'
+          import json, sys
+          import xlrd
+
+          try:
+              wb = xlrd.open_workbook("/tmp/gpr.xls")
+              ws = wb.sheet_by_index(0)
+              headers = ws.row_values(0)
+              day_col = headers.index("DAY")
+              gprd_col = headers.index("GPRD")
+
+              observations = []
+              for r in range(1, ws.nrows):
+                  row = ws.row_values(r)
+                  day_raw, gprd = row[day_col], row[gprd_col]
+                  if day_raw in (None, "") or gprd in (None, ""):
+                      continue
+                  day_str = str(int(day_raw))  # e.g. 20260713
+                  date = f"{day_str[0:4]}-{day_str[4:6]}-{day_str[6:8]}"
+                  observations.append({"date": date, "value": gprd})
+
+              if not observations:
+                  raise ValueError("no rows parsed from GPR workbook - column layout may have changed")
+              observations.sort(key=lambda o: o["date"], reverse=True)
+              json.dump({"observations": observations[:400]}, open("data/geopol.json", "w"))
+              print(f"OK: {len(observations[:400])} observations, latest {observations[0]}")
+          except Exception as e:
+              print(f"PARSE FAILED: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/geopol.json
+          git diff --cached --quiet || git commit -m "Update geopolitical risk index [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done
