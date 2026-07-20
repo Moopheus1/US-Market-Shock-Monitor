@@ -642,7 +642,11 @@ const FRED_CONFIG = {
   debt: { file: 'debt.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000000000, zones: { green: [0, 25], yellow: [25, 35], red: [35, 45] } },
   spending: { file: 'spending.json', decimals: 2, prefix: '$', suffix: 'T', divide: 1000000000000, zones: { green: [0, 3.5], yellow: [3.5, 5.5], red: [5.5, 8.0] } },
   margin: { file: 'margin.json', decimals: 2, prefix: '$', suffix: 'T', divide: 1000000, zones: { green: [0, 0.9], yellow: [0.9, 1.3], red: [1.3, 2.0] } },
-  geopol: { file: 'geopol.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 100], yellow: [100, 150], red: [150, 400] } }
+  geopol: { file: 'geopol.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 100], yellow: [100, 150], red: [150, 400] } },
+  // CNN's undocumented internal endpoint - more fragile than the other 4 live tiles
+  // (no public API contract, CNN can change shape/block access without notice).
+  // Zones cleanly partition 0-100 unlike the original demo's overlapping text.
+  feargreed: { file: 'feargreed.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 25], yellow: [25, 75], red: [75, 100] } }
 };
 // NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
 // NOT mapped here. They're index price levels, not risk-zone metrics - the green/yellow/red
@@ -1373,11 +1377,11 @@ const DEMO_INDICATORS = [
     chartData: [65,62,58,55,54,52,50,48,49,47,48,46,47,48,47,46,47,47,47],
     sourceUrl: 'https://www.cnn.com/markets/fear-and-greed', sourceName: 'CNN Business',
     zones: [
-      { label: 'accumulate', val: 'score < 20 (extreme fear)', color: 'green', next: 'already extreme fear - buy signal. next: score rises above 20 -> watch' },
-      { label: 'watch', val: 'score 20-40 or 60-80', color: 'yellow', next: 'next down: score < 20 -> accumulate. next up: score > 80 -> derisk' },
-      { label: 'derisk', val: 'score > 80 (extreme greed)', color: 'red', next: 'already extreme greed - sell signal. next: score drops below 60 -> watch' }
+      { label: 'accumulate', val: 'score 0-25 (fear)', color: 'green', next: 'already fear zone - buy signal. next: score rises above 25 -> watch' },
+      { label: 'watch', val: 'score 25-75 (neutral)', color: 'yellow', next: 'next down: score < 25 -> accumulate. next up: score > 75 -> derisk' },
+      { label: 'derisk', val: 'score 75-100 (greed)', color: 'red', next: 'already greed zone - sell signal. next: score drops below 75 -> watch' }
     ],
-    zonePos: 0.45, desc: 'CNN Fear & Greed Index ranges from 0 (Extreme Fear) to 100 (Extreme Greed). It combines seven indicators: market momentum, stock price strength, stock price breadth, put/call ratio, market volatility, safe haven demand, and junk bond demand.'
+    zonePos: 0.45, desc: 'CNN Fear & Greed Index ranges from 0 (Extreme Fear) to 100 (Extreme Greed). It combines seven indicators: market momentum, stock price strength, stock price breadth, put/call ratio, market volatility, safe haven demand, and junk bond demand. Live data via CNN\'s internal endpoint - undocumented, so this tile is more fragile than the FRED-backed ones.'
   },
   {
     id: 'dxy', cat: 'macro', title: 'US Dollar Index', subtitle: 'broad trade-weighted (DTWEXBGS)',

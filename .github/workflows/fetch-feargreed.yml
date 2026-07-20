@@ -1,0 +1,83 @@
+name: Fetch CNN Fear & Greed Index
+
+on:
+  schedule:
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # This hits CNN's internal endpoint (production.dataviz.cnn.io) that powers
+      # their own site's Fear & Greed widget - it is UNDOCUMENTED, not a published
+      # API. CNN can change its shape or block it at any time without notice. If
+      # this workflow starts failing, that's the most likely reason - check
+      # whether the URL/response shape below still matches before assuming
+      # something else broke.
+      - name: Fetch CNN Fear & Greed Index
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json, sys, datetime
+          import requests
+
+          headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+          url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+          try:
+              r = requests.get(url, headers=headers, timeout=30)
+              r.raise_for_status()
+              data = r.json()
+
+              current = data.get("fear_and_greed", {})
+              hist = data.get("fear_and_greed_historical", {}).get("data", [])
+              if not current or not hist:
+                  raise ValueError("missing fear_and_greed or historical data - response shape may have changed")
+
+              observations = []
+              seen_dates = set()
+
+              today = current["timestamp"][:10]
+              observations.append({"date": today, "value": current["score"]})
+              seen_dates.add(today)
+
+              for point in hist:
+                  d = datetime.datetime.utcfromtimestamp(point["x"] / 1000).strftime("%Y-%m-%d")
+                  if d in seen_dates:
+                      continue
+                  seen_dates.add(d)
+                  observations.append({"date": d, "value": point["y"]})
+
+              observations.sort(key=lambda o: o["date"], reverse=True)
+              if not observations:
+                  raise ValueError("parsed zero observations")
+
+              json.dump({"observations": observations}, open("data/feargreed.json", "w"))
+              print(f"OK: {len(observations)} observations, latest {observations[0]}")
+          except Exception as e:
+              print(f"FETCH FAILED: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/feargreed.json
+          git diff --cached --quiet || git commit -m "Update Fear & Greed index [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done
