@@ -60,6 +60,11 @@ jobs:
           fetch_series "M2SL"          "m2"
           fetch_series "SP500"         "sp500"
           fetch_series "NASDAQCOM"     "nasdaq"
+          # Added per accuracy review: NFCI (Chicago Fed National Financial Conditions
+          # Index, weekly Wed) and ICSA (weekly initial jobless claims, Thu) - the two
+          # standard weekly-frequency stress/macro series this dashboard lacked.
+          fetch_series "NFCI"          "nfci"
+          fetch_series "ICSA"          "claims"
 
           echo "Fetched: $((TOTAL_COUNT-FAIL_COUNT))/${TOTAL_COUNT}. Failed: ${FAILED_SERIES:-none}"
 

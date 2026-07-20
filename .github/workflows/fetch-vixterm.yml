@@ -1,0 +1,71 @@
+name: Fetch VIX Term Structure
+
+on:
+  schedule:
+    # Twice daily on business days, matching the gold/bitcoin cadence:
+    # pre-market window + after US close
+    - cron: '0 12 * * 1-5'
+    - cron: '30 21 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # VIX/VIX3M ratio - the standard term-structure inversion read. Contango
+      # (ratio < 1) is normal; backwardation (ratio > 1) means near-term vol is
+      # bid above 3-month vol, which historically only happens under real stress.
+      # Both series from Yahoo's unofficial v8 chart API (same source and fragility
+      # class as fetch-gold/fetch-crypto - if those break, this breaks too).
+      - name: Fetch VIX and VIX3M, compute ratio
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json, sys, datetime, urllib.request
+
+          HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+
+          def yahoo(sym):
+              url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1d&range=3mo"
+              req = urllib.request.Request(url, headers=HEADERS)
+              with urllib.request.urlopen(req, timeout=15) as r:
+                  d = json.load(r)
+              res = d["chart"]["result"][0]
+              out = {}
+              for t, c in zip(res["timestamp"], res["indicators"]["quote"][0]["close"]):
+                  if c is not None:
+                      out[datetime.datetime.utcfromtimestamp(t).strftime("%Y-%m-%d")] = c
+              return out
+
+          try:
+              vix = yahoo("%5EVIX")
+              vix3m = yahoo("%5EVIX3M")
+              obs = []
+              for d in sorted(set(vix) & set(vix3m), reverse=True):
+                  if vix3m[d] > 0:
+                      obs.append({"date": d, "value": round(vix[d] / vix3m[d], 4)})
+              obs = obs[:60]
+              if len(obs) < 5:
+                  raise ValueError(f"only {len(obs)} overlapping observations - source shape may have changed")
+              json.dump({"observations": obs}, open("data/vixterm.json", "w"))
+              print(f"OK: {len(obs)} obs, latest {obs[0]}")
+          except Exception as e:
+              print(f"FETCH FAILED: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/vixterm.json
+          git diff --cached --quiet || git commit -m "Update VIX term structure [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done

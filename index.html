@@ -651,7 +651,14 @@ const FRED_CONFIG = {
   // CNN's undocumented internal endpoint - more fragile than the other 4 live tiles
   // (no public API contract, CNN can change shape/block access without notice).
   // Zones cleanly partition 0-100 unlike the original demo's overlapping text.
-  feargreed: { file: 'feargreed.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 25], yellow: [25, 75], red: [75, 100] } }
+  feargreed: { file: 'feargreed.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 25], yellow: [25, 75], red: [75, 100] } },
+  // Added per accuracy review (see conversation record). Zone thresholds are standard
+  // practitioner reference points, NOT backtested against this dashboard's history -
+  // all four are context-only (excluded from the signpost count) until backtested.
+  vixterm: { file: 'vixterm.json', decimals: 2, prefix: '', suffix: '', zones: { green: [0, 0.9], yellow: [0.9, 1.0], red: [1.0, 1.4] } },
+  nfci: { file: 'nfci.json', decimals: 2, prefix: '', suffix: '', zones: { green: [-1.0, 0], yellow: [0, 0.5], red: [0.5, 3.0] } },
+  claims: { file: 'claims.json', decimals: 0, prefix: '', suffix: 'K', divide: 1000, zones: { green: [0, 300], yellow: [300, 400], red: [400, 700] } },
+  putcall: { file: 'putcall.json', decimals: 2, prefix: '', suffix: '', zones: { green: [0, 0.9], yellow: [0.9, 1.1], red: [1.1, 1.6] } }
 };
 // NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
 // NOT mapped here. They're index price levels, not risk-zone metrics - the green/yellow/red
@@ -1569,6 +1576,58 @@ const DEMO_INDICATORS = [
       { label: 'derisk', val: 'index > 200', color: 'red', next: 'already crisis - war/shock risk. next: index drops below 150 -> watch' }
     ],
     zonePos: 0.55, desc: 'The Caldara-Iacoviello Geopolitical Risk Index tracks newspaper coverage of adverse geopolitical events. Elevated readings correlate with higher oil prices, safe-haven flows, and equity volatility. Major wars typically push this above 200.'
+  },
+  {
+    id: 'vixterm', cat: 'sentiment', title: 'VIX Term Structure', subtitle: 'VIX / VIX3M ratio',
+    value: '0.91', change: '+0.02', changeDir: 'up', severity: 'med', severityLabel: 'normal',
+    date: 'jul 20, 2026', sparkline: [0.88,0.89,0.87,0.9,0.91,0.89,0.9,0.92,0.91,0.9,0.89,0.9,0.91,0.9,0.91],
+    chartData: [0.85,0.86,0.88,0.89,0.87,0.9,0.91,0.89,0.9,0.92,0.91,0.9,0.89,0.9,0.91,0.9,0.91],
+    sourceUrl: 'https://finance.yahoo.com/quote/%5EVIX3M/', sourceName: 'CBOE via Yahoo',
+    zones: [
+      { label: 'accumulate', val: 'ratio < 0.90 (contango)', color: 'green', next: 'normal upward-sloping vol curve. next: ratio rises above 0.90 -> watch' },
+      { label: 'watch', val: 'ratio 0.90 - 1.00 (flattening)', color: 'yellow', next: 'next down: ratio < 0.90 -> accumulate. next up: ratio > 1.00 -> derisk' },
+      { label: 'derisk', val: 'ratio > 1.00 (backwardation)', color: 'red', next: 'near-term vol bid above 3-month - historically only happens under real stress. next: ratio drops below 1.00 -> watch' }
+    ],
+    zonePos: 0.4, desc: 'Ratio of spot VIX to 3-month VIX futures index (VIX3M). In calm markets the vol curve slopes upward (contango, ratio below 1). Inversion (backwardation, ratio above 1) means traders are paying more for near-term protection than 3-month protection - a stronger and earlier stress signal than the VIX level alone, which is why volatility desks watch the curve shape rather than the spot number. Context tile - not in the signpost count until backtested.'
+  },
+  {
+    id: 'nfci', cat: 'rates', title: 'Financial Conditions', subtitle: 'Chicago Fed NFCI',
+    value: '-0.54', change: '-0.01', changeDir: 'down', severity: 'low', severityLabel: 'loose',
+    date: 'jul 10, 2026', sparkline: [-0.5,-0.51,-0.5,-0.52,-0.51,-0.52,-0.53,-0.52,-0.53,-0.54,-0.53,-0.52,-0.51,-0.52,-0.54],
+    chartData: [-0.45,-0.47,-0.48,-0.5,-0.51,-0.5,-0.52,-0.51,-0.52,-0.53,-0.52,-0.53,-0.54,-0.53,-0.52,-0.51,-0.52,-0.54],
+    sourceUrl: 'https://fred.stlouisfed.org/series/NFCI', sourceName: 'FRED / Chicago Fed',
+    zones: [
+      { label: 'accumulate', val: 'NFCI < 0 (loose)', color: 'green', next: 'conditions looser than average. next: NFCI rises above 0 -> watch' },
+      { label: 'watch', val: 'NFCI 0 - 0.5 (tightening)', color: 'yellow', next: 'next down: NFCI < 0 -> accumulate. next up: NFCI > 0.5 -> derisk' },
+      { label: 'derisk', val: 'NFCI > 0.5 (stressed)', color: 'red', next: 'conditions meaningfully tighter than average - 2008 peaked ~3, COVID ~0.6. next: NFCI drops below 0.5 -> watch' }
+    ],
+    zonePos: 0.1, desc: 'The Chicago Fed National Financial Conditions Index summarizes 105 measures of risk, credit, and leverage into one weekly number. Zero = average conditions since 1971; positive = tighter than average, negative = looser. The closest free equivalent to the proprietary financial-conditions indices used on bank desks (GS FCI, Bloomberg FCI), and directly targets the credit/liquidity stress gap in this dashboard. Weekly, published Wednesdays. Context tile - not in the signpost count until backtested.'
+  },
+  {
+    id: 'claims', cat: 'macro', title: 'Initial Jobless Claims', subtitle: 'weekly, seasonally adjusted',
+    value: '208K', change: '-8K', changeDir: 'down', severity: 'low', severityLabel: 'stable',
+    date: 'jul 11, 2026', sparkline: [230,228,225,222,220,218,221,219,217,215,216,214,217,216,208],
+    chartData: [240,238,235,232,230,228,225,222,220,218,221,219,217,215,216,214,217,216,208],
+    sourceUrl: 'https://fred.stlouisfed.org/series/ICSA', sourceName: 'FRED / Dept of Labor',
+    zones: [
+      { label: 'accumulate', val: 'claims < 300K', color: 'green', next: 'healthy labor market. next: claims rise above 300K -> watch' },
+      { label: 'watch', val: 'claims 300K - 400K', color: 'yellow', next: 'next down: claims < 300K -> accumulate. next up: claims > 400K -> derisk' },
+      { label: 'derisk', val: 'claims > 400K', color: 'red', next: 'recession-consistent layoffs underway. next: claims drop below 400K -> watch' }
+    ],
+    zonePos: 0.2, desc: 'New unemployment insurance filings each week - the canonical high-frequency US labor market datapoint, released every Thursday. Rises here lead the monthly unemployment rate by weeks to months, making this the fastest official read on labor market deterioration. Sustained moves above 300K historically precede growth scares; above 400K is recession territory. Context tile - not in the signpost count until backtested.'
+  },
+  {
+    id: 'putcall', cat: 'sentiment', title: 'Put/Call Ratio', subtitle: 'CBOE total, all products',
+    value: '0.97', change: '+0.05', changeDir: 'up', severity: 'med', severityLabel: 'neutral',
+    date: 'jul 17, 2026', sparkline: [0.85,0.88,0.92,0.9,0.87,0.91,0.94,0.9,0.93,0.95,0.92,0.94,0.96,0.95,0.97],
+    chartData: [0.82,0.85,0.88,0.92,0.9,0.87,0.91,0.94,0.9,0.93,0.95,0.92,0.94,0.96,0.95,0.97],
+    sourceUrl: 'https://www.cboe.com/us/options/market_statistics/daily/', sourceName: 'CBOE',
+    zones: [
+      { label: 'accumulate', val: 'ratio < 0.90 (calm)', color: 'green', next: 'normal hedging activity. next: ratio rises above 0.90 -> watch' },
+      { label: 'watch', val: 'ratio 0.90 - 1.10 (hedging up)', color: 'yellow', next: 'next down: ratio < 0.90 -> accumulate. next up: ratio > 1.10 -> derisk' },
+      { label: 'derisk', val: 'ratio > 1.10 (fear extreme)', color: 'red', next: 'heavy put buying - panic hedging. Note: extremes are often contrarian BUY signals near capitulation lows. next: ratio drops below 1.10 -> watch' }
+    ],
+    zonePos: 0.45, desc: 'Total puts traded divided by total calls traded across all CBOE products each day. Rising ratio = more downside hedging = growing fear. Like VIX, this is partly contrarian at extremes: sustained readings above 1.1 often coincide with capitulation near tradeable lows, while very low readings signal complacency. Read the trend, not one day. Context tile - not in the signpost count until backtested.'
   }
 ];
 
@@ -1595,7 +1654,11 @@ const CADENCE = {
   m2: 'updates monthly',
   cot: 'updates weekly (Fri)',
   consumer: 'updates monthly',
-  geopol: 'updates weekly (Mon)'
+  geopol: 'updates weekly (Mon)',
+  vixterm: 'updates daily (business days)',
+  nfci: 'updates weekly (Wed)',
+  claims: 'updates weekly (Thu)',
+  putcall: 'updates daily (after US close)'
 };
 const SEV = { low: { cls: 'sev-low', color: 'var(--green)' }, med: { cls: 'sev-med', color: 'var(--yellow)' }, high: { cls: 'sev-high', color: 'var(--red)' } };
 
@@ -1798,7 +1861,11 @@ const SIGNPOST_COLLAPSE_WATCH = { treasury10y: 0.15, treasury2y: 0.15 };
 //      composite later - but only after re-running the backtest with them included.
 // Institutional practice (BofA-style signpost counts, GS FCI): keep the scored index
 // fixed to its validated inputs; show everything else as satellite context.
-const SIGNPOST_CONTEXT_ONLY = new Set(['debt', 'spending', 'margin', 'geopol', 'feargreed']);
+// vixterm/nfci/claims/putcall: added per accuracy review as genuine institutional-grade
+// signals, but kept context-only for the same reason as geopol/feargreed - the 20/40/60%
+// action thresholds were calibrated on the original backtested input set. Candidates for
+// promotion into the composite after a re-run backtest.
+const SIGNPOST_CONTEXT_ONLY = new Set(['debt', 'spending', 'margin', 'geopol', 'feargreed', 'vixterm', 'nfci', 'claims', 'putcall']);
 
 function computeSignposts() {
   const results = [];

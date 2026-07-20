@@ -1,0 +1,79 @@
+name: Fetch CBOE Put/Call Ratio
+
+on:
+  schedule:
+    # CBOE publishes the daily stats file after US close; 22:30 UTC catches it
+    # same evening, and the 11:30 UTC run picks up anything late.
+    - cron: '30 22 * * 1-5'
+    - cron: '30 11 * * 2-6'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # CBOE's own CDN behind their daily market statistics page - dated JSON at
+      # /data/us/options/market_statistics/daily/YYYY-MM-DD_daily_options. Not a
+      # documented public API (same fragility class as the CNN Fear & Greed
+      # endpoint). CBOE only retains a rolling window of dated files, so this
+      # workflow MERGES new days into the existing data/putcall.json instead of
+      # rebuilding from scratch - history accumulates locally and survives CBOE's
+      # retention limit.
+      - name: Fetch recent daily ratios and merge
+        run: |
+          mkdir -p data
+          python3 << 'PYEOF'
+          import json, sys, datetime, time, urllib.request
+
+          HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+
+          try:
+              existing = json.load(open("data/putcall.json")).get("observations", [])
+          except Exception:
+              existing = []
+          have = {o["date"] for o in existing}
+
+          added = 0
+          today = datetime.date.today()
+          for i in range(10):
+              d = today - datetime.timedelta(days=i)
+              if d.weekday() >= 5 or d.isoformat() in have:
+                  continue
+              url = f"https://cdn.cboe.com/data/us/options/market_statistics/daily/{d.isoformat()}_daily_options"
+              try:
+                  req = urllib.request.Request(url, headers=HEADERS)
+                  with urllib.request.urlopen(req, timeout=10) as r:
+                      data = json.load(r)
+                  for ratio in data.get("ratios", []):
+                      if ratio.get("name") == "TOTAL PUT/CALL RATIO":
+                          existing.append({"date": d.isoformat(), "value": ratio["value"]})
+                          added += 1
+                          break
+              except Exception:
+                  pass  # holiday or not yet published - expected, skip
+              time.sleep(0.2)
+
+          existing.sort(key=lambda o: o["date"], reverse=True)
+          existing = existing[:120]
+          if not existing:
+              print("FETCH FAILED: no observations at all", file=sys.stderr)
+              sys.exit(1)
+          json.dump({"observations": existing}, open("data/putcall.json", "w"))
+          print(f"OK: merged {added} new day(s), total {len(existing)}, latest {existing[0]}")
+          PYEOF
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/putcall.json
+          git diff --cached --quiet || git commit -m "Update put/call ratio [$(date -u +%Y-%m-%d)]"
+          for i in 1 2 3; do
+            git push && break
+            echo "Push rejected - pulling and retrying ($i/3)..."
+            git pull --rebase origin main
+          done
