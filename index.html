@@ -634,7 +634,15 @@ const FRED_CONFIG = {
   // percentile beforehand) - expected, COVID was an exogenous shock, not a positioning
   // unwind. This is a slower, multi-week/quarter signal (forward-return test showed
   // real predictive value at 12 weeks, not 4) - don't expect it to move often.
-  cot: { file: 'cot.json', decimals: 0, prefix: '', suffix: 'th %ile', zones: { green: [0, 75], yellow: [75, 90], red: [90, 100] } }
+  cot: { file: 'cot.json', decimals: 0, prefix: '', suffix: 'th %ile', zones: { green: [0, 75], yellow: [75, 90], red: [90, 100] } },
+  // Added below: previously demo-only placeholders with zero live data pipeline.
+  // Zone thresholds are our own calibration (dollar-based), NOT the original
+  // demo's debt/GDP-ratio-based thresholds, which used incompatible units against
+  // a raw dollar figure - see conversation record for reasoning.
+  debt: { file: 'debt.json', decimals: 1, prefix: '$', suffix: 'T', divide: 1000000000000, zones: { green: [0, 25], yellow: [25, 35], red: [35, 45] } },
+  spending: { file: 'spending.json', decimals: 2, prefix: '$', suffix: 'T', divide: 1000000000000, zones: { green: [0, 3.5], yellow: [3.5, 5.5], red: [5.5, 8.0] } },
+  margin: { file: 'margin.json', decimals: 2, prefix: '$', suffix: 'T', divide: 1000000, zones: { green: [0, 0.9], yellow: [0.9, 1.3], red: [1.3, 2.0] } },
+  geopol: { file: 'geopol.json', decimals: 0, prefix: '', suffix: '', zones: { green: [0, 100], yellow: [100, 150], red: [150, 400] } }
 };
 // NOTE: sp500.json and nasdaq.json are still fetched by fetch-fred.yml but intentionally
 // NOT mapped here. They're index price levels, not risk-zone metrics - the green/yellow/red
@@ -754,7 +762,14 @@ async function loadFREDData() {
         if (currentVal === null) { failedCount++; return; }
 
         const change = calcChange(currentVal, prevVal, cfg.decimals);
-        const zonePos = computeZonePos(currentVal, cfg.zones, cfg.redUpper);
+        // BUGFIX: zones are defined in the DISPLAYED unit scale (e.g. trillions
+        // for tiles using `divide`), but currentVal is the raw undivided fetch
+        // value. Without this, any tile with `divide` set (m2, fedbal, and the
+        // new debt/spending/margin tiles) would permanently max out at red/0.95
+        // regardless of actual conditions, since the raw value always exceeds
+        // trillion-scale thresholds. Verified against live m2/fedbal data.
+        const zoneCheckVal = cfg.divide ? currentVal / cfg.divide : currentVal;
+        const zonePos = computeZonePos(zoneCheckVal, cfg.zones, cfg.redUpper);
         const markerColor = zonePos < 0.33 ? 'var(--green)' : zonePos < 0.66 ? 'var(--yellow)' : 'var(--red)';
 
         let severity = 'low', severityLabel = 'stable';
@@ -1410,11 +1425,11 @@ const DEMO_INDICATORS = [
     chartData: [34,34.5,35,35.2,35.3,35.4,35.5,35.6,35.7,35.8,35.9,36.0,36.05,36.1,36.15,36.18,36.2,36.2,36.21],
     sourceUrl: 'https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/', sourceName: 'US Treasury',
     zones: [
-      { label: 'accumulate', val: 'debt/GDP < 80%', color: 'green', next: 'already sustainable. next: debt/GDP rises above 80% -> watch' },
-      { label: 'watch', val: 'debt/GDP 80% - 100%', color: 'yellow', next: 'next down: debt/GDP < 80% -> accumulate. next up: debt/GDP > 100% -> derisk' },
-      { label: 'derisk', val: 'debt/GDP > 120%', color: 'red', next: 'already unsustainable - default/downgrade risk. next: debt/GDP drops below 100% -> watch' }
+      { label: 'accumulate', val: 'total debt < $25T', color: 'green', next: 'already contained. next: debt rises above $25T -> watch' },
+      { label: 'watch', val: 'total debt $25T - $35T', color: 'yellow', next: 'next down: debt < $25T -> accumulate. next up: debt > $35T -> derisk' },
+      { label: 'derisk', val: 'total debt > $45T', color: 'red', next: 'already elevated - debt service crowding out other spending. next: debt growth slows -> watch' }
     ],
-    zonePos: 0.90, desc: 'The US national debt has surpassed $36 trillion. Rising interest rates have pushed debt service costs above $1 trillion annually. Debt ceiling negotiations and rating agency downgrades remain acute market risks.'
+    zonePos: 0.90, desc: 'The US national debt has surpassed $39 trillion. Rising interest rates have pushed debt service costs above $1 trillion annually. Debt ceiling negotiations and rating agency downgrades remain acute market risks. NOTE: thresholds here are total dollar amount, not debt/GDP ratio - GDP isn\'t in this dataset, so this tracks the raw balance rather than sustainability relative to the economy.'
   },
   {
     id: 'spending', cat: 'fiscal', title: 'Govt Spending (YTD)', subtitle: 'fiscal year 2026',
@@ -1423,11 +1438,11 @@ const DEMO_INDICATORS = [
     chartData: [3.2,3.3,3.4,3.45,3.5,3.55,3.6,3.65,3.7,3.73,3.76,3.78,3.8,3.82,3.83,3.84,3.84,3.85,3.84],
     sourceUrl: 'https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/', sourceName: 'US Treasury',
     zones: [
-      { label: 'accumulate', val: 'spending/GDP < 20%', color: 'green', next: 'already fiscally sound. next: spending/GDP rises above 20% -> watch' },
-      { label: 'watch', val: 'spending/GDP 20% - 25%', color: 'yellow', next: 'next down: spending/GDP < 20% -> accumulate. next up: > 25% -> derisk' },
-      { label: 'derisk', val: 'spending/GDP > 25%', color: 'red', next: 'already crowding out - inflation/currency risk. next: drops below 25% -> watch' }
+      { label: 'accumulate', val: 'FY YTD outlays < $3.5T', color: 'green', next: 'already contained. next: YTD outlays rise above $3.5T -> watch' },
+      { label: 'watch', val: 'FY YTD outlays $3.5T - $5.5T', color: 'yellow', next: 'next down: < $3.5T -> accumulate. next up: > $5.5T -> derisk' },
+      { label: 'derisk', val: 'FY YTD outlays > $8.0T', color: 'red', next: 'already elevated pace - deficit widening risk. next: pace slows -> watch' }
     ],
-    zonePos: 0.60, desc: 'Federal government spending year-to-date is running 8.2% above prior year. Defense, Medicare, and interest on the debt are the largest drivers. Spending growth outpacing revenue growth continues to widen the deficit.'
+    zonePos: 0.60, desc: 'Federal government spending is tracked as fiscal-year-to-date gross outlays and resets every October 1 (start of the federal fiscal year), so the trend line will show a sawtooth pattern - that is expected, not a data error. Defense, Medicare, and interest on the debt are the largest drivers.'
   },
   {
     id: 'cpi', cat: 'macro', title: 'CPI Inflation', subtitle: 'year-over-year',
@@ -1462,11 +1477,11 @@ const DEMO_INDICATORS = [
     chartData: [800,790,780,775,770,765,760,755,750,748,745,743,742,741,742,742,742,742,742],
     sourceUrl: 'https://www.finra.org/investors/insights/margin-statistics', sourceName: 'FINRA',
     zones: [
-      { label: 'accumulate', val: 'declining from peak', color: 'green', next: 'already deleveraging - safer entry. next: debt stabilizes near highs -> watch' },
-      { label: 'watch', val: 'flat near highs', color: 'yellow', next: 'next down: debt declines -> accumulate. next up: debt rises rapidly + highs -> derisk' },
-      { label: 'derisk', val: 'rising rapidly + market highs', color: 'red', next: 'already max leverage - forced selling risk. next: debt flattens or declines -> watch' }
+      { label: 'accumulate', val: '< $0.9T', color: 'green', next: 'already contained. next: debt rises above $0.9T -> watch' },
+      { label: 'watch', val: '$0.9T - $1.3T', color: 'yellow', next: 'next down: < $0.9T -> accumulate. next up: > $1.3T -> derisk' },
+      { label: 'derisk', val: '> $1.3T', color: 'red', next: 'already elevated leverage - forced-selling risk on a sharp downturn. next: debt declines -> watch' }
     ],
-    zonePos: 0.45, desc: 'NYSE margin debt has declined from peak levels as higher rates increase borrowing costs. Falling margin debt reduces forced-liquidation risk. Rising margin debt + market highs = classic late-cycle leverage buildup.'
+    zonePos: 0.45, desc: 'NYSE margin debt measures investor borrowing against securities. Rising margin debt + market highs is a classic late-cycle leverage buildup - a sharp selloff can trigger forced margin-call liquidations that amplify the move. FINRA publishes this monthly, roughly 3 weeks after month-end, so it always lags current conditions more than the other tiles here. Dollar thresholds are our own calibration against the historical 1997-2026 range (\'97 low ~$103B, current ~$1.5T), not an official benchmark.'
   },
   {
     id: 'credit', cat: 'rates', title: 'Credit Spreads', subtitle: 'BBB-10Y Treasury',
@@ -1745,7 +1760,10 @@ function computeSignposts() {
     const zones = SIGNPOST_STRESS_OVERRIDE_ZONES[ind.id] || cfg.zones;
     // Level check uses the override zone if one exists (recomputed from the raw current
     // value, not ind.zonePos, since ind.zonePos was computed with the card's own zones)
-    const currentRaw = ind.chartData && ind.chartData.length ? ind.chartData[ind.chartData.length - 1] : null;
+    // Same divide-before-zone-check fix as the card display (see loadFREDData) -
+    // chartData holds raw values, zones are defined in displayed-unit scale.
+    const currentRawUndivided = ind.chartData && ind.chartData.length ? ind.chartData[ind.chartData.length - 1] : null;
+    const currentRaw = (currentRawUndivided !== null && cfg.divide) ? currentRawUndivided / cfg.divide : currentRawUndivided;
     const levelTriggered = currentRaw !== null
       ? computeZonePos(currentRaw, zones, cfg.redUpper) >= 0.66
       : ind.zonePos >= 0.66;
@@ -1753,7 +1771,7 @@ function computeSignposts() {
     let trendTriggered = false, trendDelta = null, collapseTriggered = false;
     if (ind.chartData && ind.chartData.length >= SIGNPOST_TREND_LOOKBACK + 1) {
       const series = ind.chartData;
-      const zonePosSeries = series.map(v => computeZonePos(v, zones, cfg.redUpper));
+      const zonePosSeries = series.map(v => computeZonePos(cfg.divide ? v / cfg.divide : v, zones, cfg.redUpper));
       const recent = zonePosSeries[zonePosSeries.length - 1];
       const past = zonePosSeries[zonePosSeries.length - 1 - SIGNPOST_TREND_LOOKBACK];
       trendDelta = recent - past;
