@@ -1641,11 +1641,12 @@ function renderCards() {
     // Data age badge
     const ageBadge = ind._dataAge ? dataAgeBadge(ind._dataAge) : '<span class="data-age">● demo</span>';
     const cadenceNote = CADENCE[ind.id] ? '<span class="cadence-note">(' + CADENCE[ind.id] + ')</span>' : '';
+    const contextTag = (typeof SIGNPOST_CONTEXT_ONLY !== 'undefined' && SIGNPOST_CONTEXT_ONLY.has(ind.id)) ? '<span class="cadence-note">· context, not scored</span>' : '';
 
     const card = document.createElement('div');
     card.className = 'card indicator-card';
     card.dataset.cat = ind.cat;
-    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + cadenceNote + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
+    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + cadenceNote + contextTag + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
     card.onclick = () => {
       if (openDetailIndId === ind.id) closeDetail();
       else openDetail(ind, card);
@@ -1783,11 +1784,28 @@ const SIGNPOST_STRESS_OVERRIDE_ZONES = {
 // independent of which zone the level currently sits in.
 const SIGNPOST_COLLAPSE_WATCH = { treasury10y: 0.15, treasury2y: 0.15 };
 
+// EXCLUDED from the signpost count: these five tiles show zones on their own cards but
+// do NOT feed the composite. Three reasons:
+//   1. debt and margin are structural dollar levels that only grow with the economy /
+//      market cap - both currently sit permanently in their red zones ($39.5T > $35T,
+//      $1.50T > $1.3T). A signpost that is always on is not a signal. spending is YTD
+//      and resets every October, so it climbs into red every summer - a calendar
+//      artifact, not stress.
+//   2. None of the five were in the 2015-2026 backtest that calibrated the 20/40/60%
+//      action thresholds. Adding them silently changes what those thresholds mean and
+//      makes the "backtested" claims in the framework text false.
+//   3. geopol and feargreed ARE mean-reverting and could legitimately join the
+//      composite later - but only after re-running the backtest with them included.
+// Institutional practice (BofA-style signpost counts, GS FCI): keep the scored index
+// fixed to its validated inputs; show everything else as satellite context.
+const SIGNPOST_CONTEXT_ONLY = new Set(['debt', 'spending', 'margin', 'geopol', 'feargreed']);
+
 function computeSignposts() {
   const results = [];
   indicators.forEach(ind => {
     const cfg = FRED_CONFIG[ind.id];
     if (!cfg) return; // indicator without a real zone config - shouldn't happen, skip defensively
+    if (SIGNPOST_CONTEXT_ONLY.has(ind.id)) return; // context tile - displayed but never scored (see set above)
 
     const zones = SIGNPOST_STRESS_OVERRIDE_ZONES[ind.id] || cfg.zones;
     // Level check uses the override zone if one exists (recomputed from the raw current
