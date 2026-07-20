@@ -31,7 +31,7 @@ jobs:
             local file=$2
             TOTAL_COUNT=$((TOTAL_COUNT+1))
             echo "Fetching ${series}..."
-            curl -s "https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${API_KEY}&file_type=json&sort_order=desc&limit=200"               -o "data/${file}.json"
+            curl -s "https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${API_KEY}&file_type=json&sort_order=desc&limit=400"               -o "data/${file}.json"
             if ! python3 -c "import json; json.load(open('data/${file}.json'))" 2>/dev/null; then
               echo "WARNING: ${series} returned invalid JSON, keeping previous file if exists"
               git checkout -- "data/${file}.json" 2>/dev/null || true

@@ -438,8 +438,8 @@
       <div class="framework-row"><span class="framework-range" style="color:var(--red)">60%+ — derisk</span><span class="framework-meaning">Broad-based, majority of signposts triggered. Sell aggressively, raise cash &gt;50%, go defensive.</span></div>
       <div class="framework-arrow-note">
         Each indicator triggers on LEVEL (in its own red zone), TREND (moved fast toward red recently, off real historical FRED values), or for VIX and treasury yields specifically, a third condition tuned for crash detection - see below. Either firing counts as triggered; the number shown is a straight count, not a blended average.
-        <strong style="color:var(--text-primary)">Backtested against 2015-2026 (2,896 trading days, out-of-sample - only data available as of each historical date was used):</strong> VIX's card display deliberately uses contrarian zones (high VIX = accumulate signal, for entry timing). That framing, unmodified, meant the signpost count read VIX=82.69 as calm during the actual COVID crash peak. A separate stress-only VIX zone (used only for signposts, never the card) fixed this - verified peak reading during COVID rose from 45.5% to 72.7% once applied. Treasury yields also got a flight-to-safety collapse check (a fast yield COLLAPSE, not just a rise, is itself a stress signal - 10Y fell 1.88%→0.54% during COVID and was previously invisible to this model). The 60% derisk threshold reflects the actual historical ceiling after these fixes, not a round number.
-        <strong style="color:var(--text-primary)">Known, unfixed limitation:</strong> the 2018 Q4 selloff (~20% SPX drawdown) still only reaches 27.3% under this model, even after the fixes above - that correction wasn't well-represented by any of the 12 available FRED series simultaneously (mostly a growth/rate-fear equity correction, not a classic vol-spike or flight-to-safety event). This is a data-coverage gap, not a threshold problem - closing it would need indicators this dashboard doesn't have yet (credit market breadth, equity positioning, liquidity stress).
+        <strong style="color:var(--text-primary)">Backtested against 2015-2026 (2,902 trading days, re-run July 2026 with publication-lag-aware, as-of-date data):</strong> the composite was re-validated against all 9 SPY drawdowns of 8%+ in the window. Slow, regime-driven events are detected well: 2015-16 growth scare peaked at 46%, COVID at 54%, and the 2022 bear market at 54%, against a calm-day median of 15% - readings of 40%+ occurred on only 0.9% of calm days, and 60%+ never occurred outside a genuine event. This re-run also caught and fixed three scoring bugs the previous version shipped with: CPI was scored on its raw index level against YoY-percentage zones (permanently triggered), the dollar index was scored on the broad DTWEXBGS scale against zones calibrated for ICE DXY (triggered on 94% of all days), and the treasury flight-to-safety collapse check referenced series that were never actually scored (dead code - now live via the two treasury tiles). Membership changes from the re-run: VIX term structure and NFCI promoted into the count (see their cards), credit spreads demoted to context (source data truncated at FRED; NFCI covers the same conditions channel with 50+ years of history), jobless claims and put/call evaluated and rejected (claims LAG equity corrections - 0.4x lift; put/call has a 2019-2026 data hole).
+        <strong style="color:var(--text-primary)">Known, honest limitation:</strong> fast vol-shock corrections - Feb 2018, Q4 2018, Aug 2024, Feb-Apr 2025 - peak at only ~23% under this model. That is not a calibration miss; it is structural. A count of mostly-macro indicators cannot turn red in two weeks. This composite is a REGIME gauge: it tells you when the environment is fragile (2015-16, 2020, 2022 all crossed 40%), not when a crash starts. The two fastest inputs (VIX stress zones, VIX term structure) are the only ones that move intra-correction - watch those cards directly, and Part II below, for anything faster than a regime shift. Prior published figures (72.7% COVID peak, 2,896 days) could not be reproduced under the production scoring logic and are superseded by this run.
         This is a 2–4 week strategic read (FRED data has a 1-day lag) — it answers "are we in a risky regime," not "what happens today." For that, see Part II below.
       </div>
     </div>
@@ -620,7 +620,12 @@
 
 const FRED_CONFIG = {
   vix: { file: 'vix.json', decimals: 2, prefix: '', suffix: '', zones: { green: [30, 100], yellow: [15, 30], red: [0, 15] }, invertChange: true },
-  dxy: { file: 'dxy.json', decimals: 2, prefix: '', suffix: '', zones: { green: [0, 100], yellow: [100, 108], red: [108, 150] } },
+  // Card zones recalibrated 2026-07: the feed is DTWEXBGS (broad trade-weighted index,
+  // ~120 today) but the old zones [100/108] were calibrated for the ICE DXY futures
+  // scale (~100 today) - a different index. Result: card sat permanently red (backtest
+  // showed 93.8% of ALL days triggered). Signposts use YoY change instead (see
+  // SIGNPOST_YOY_ZONES) - backtested lift 2.4x.
+  dxy: { file: 'dxy.json', decimals: 2, prefix: '', suffix: '', zones: { green: [0, 115], yellow: [115, 122], red: [122, 150] } },
   yield10y2y: { file: 'yield10y2y.json', decimals: 2, prefix: '', suffix: '%', zones: { green: [1.0, 5.0], yellow: [-0.5, 1.0], red: [-2.0, -0.5] } },
   oil: { file: 'oil.json', decimals: 2, prefix: '$', suffix: '', zones: { green: [55, 75], yellow: [75, 90], red: [0, 40] }, redUpper: 100 },
   cpi: { file: 'cpi.json', decimals: 1, prefix: '', suffix: '%', yoy: true, zones: { green: [0, 2.5], yellow: [2.5, 4.0], red: [4.0, 10.0] } },
@@ -805,6 +810,19 @@ async function loadFREDData() {
           indicators[idx].chartData = chartData;
           indicators[idx].sourceName = 'FRED / St. Louis Fed';
           indicators[idx]._dataAge = obs[0].date;
+          // Signpost-specific YoY series (backtest 2026-07): cpi zones are in YoY %
+          // but chartData holds the raw index (~332) - comparing raw against [0..10]
+          // zones made CPI a permanently-on signpost. dxy similar unit problem (see
+          // FRED_CONFIG note). Both are scored on YoY via _spChartData; cards unchanged.
+          const yoyStep = cfg.yoy ? 12 : (SIGNPOST_YOY_ZONES[id] ? 252 : 0);
+          if (yoyStep && obs.length > yoyStep + 5) {
+            const yoySeries = [];
+            for (let k = 0; k < Math.min(obs.length - yoyStep, 30); k++) {
+              const prev = obs[k + yoyStep].value;
+              if (prev) yoySeries.push((obs[k].value - prev) / prev * 100);
+            }
+            indicators[idx]._spChartData = yoySeries.reverse();
+          }
           updatedCount++;
         }
       } catch (e) {
@@ -1627,7 +1645,33 @@ const DEMO_INDICATORS = [
       { label: 'watch', val: 'ratio 0.90 - 1.10 (hedging up)', color: 'yellow', next: 'next down: ratio < 0.90 -> accumulate. next up: ratio > 1.10 -> derisk' },
       { label: 'derisk', val: 'ratio > 1.10 (fear extreme)', color: 'red', next: 'heavy put buying - panic hedging. Note: extremes are often contrarian BUY signals near capitulation lows. next: ratio drops below 1.10 -> watch' }
     ],
-    zonePos: 0.45, desc: 'Total puts traded divided by total calls traded across all CBOE products each day. Rising ratio = more downside hedging = growing fear. Like VIX, this is partly contrarian at extremes: sustained readings above 1.1 often coincide with capitulation near tradeable lows, while very low readings signal complacency. Read the trend, not one day. Context tile - not in the signpost count until backtested.'
+    zonePos: 0.45, desc: 'Total puts traded divided by total calls traded across all CBOE products each day. Rising ratio = more downside hedging = growing fear. Like VIX, this is partly contrarian at extremes: sustained readings above 1.1 often coincide with capitulation near tradeable lows, while very low readings signal complacency. Read the trend, not one day. Context tile - backtest verdict: 1.3x lift plus a 2019-2026 data hole at the source; revisit for scoring once ~a year of live history accumulates.'
+  },
+  {
+    id: 'treasury10y', cat: 'rates', title: '10Y Treasury Yield', subtitle: 'benchmark long rate',
+    value: '4.57%', change: '+0.01%', changeDir: 'up', severity: 'med', severityLabel: 'elevated',
+    date: 'jul 16, 2026', sparkline: [4.5,4.52,4.51,4.53,4.55,4.54,4.56,4.55,4.57,4.56,4.55,4.56,4.58,4.57,4.57],
+    chartData: [4.4,4.45,4.48,4.5,4.52,4.51,4.53,4.55,4.54,4.56,4.55,4.57,4.56,4.55,4.56,4.58,4.57,4.57],
+    sourceUrl: 'https://fred.stlouisfed.org/series/DGS10', sourceName: 'FRED / US Treasury',
+    zones: [
+      { label: 'accumulate', val: 'yield < 4.25%', color: 'green', next: 'rates not restrictive for equities. next: yield rises above 4.25% -> watch' },
+      { label: 'watch', val: 'yield 4.25% - 5.25%', color: 'yellow', next: 'next down: yield < 4.25% -> accumulate. next up: yield > 5.25% -> derisk' },
+      { label: 'derisk', val: 'yield > 5.25%', color: 'red', next: 'equity risk premium compressed - valuation pressure. next: yield drops below 5.25% -> watch' }
+    ],
+    zonePos: 0.4, desc: 'The 10-year Treasury yield anchors discount rates for every risky asset. Scored two ways: rising into the red zone pressures equity valuations, and - separately - a fast COLLAPSE (>=15% relative drop in ~a week) triggers the flight-to-safety check, which is itself a stress signal: the 10Y fell 1.88% to 0.54% during the COVID crash. Backtested: the collapse check fired in Feb-Mar 2020 with near-zero false positives (0.9% of all days).'
+  },
+  {
+    id: 'treasury2y', cat: 'rates', title: '2Y Treasury Yield', subtitle: 'Fed policy expectations',
+    value: '4.16%', change: '+0.01%', changeDir: 'up', severity: 'med', severityLabel: 'elevated',
+    date: 'jul 16, 2026', sparkline: [4.1,4.12,4.11,4.13,4.14,4.13,4.15,4.14,4.16,4.15,4.14,4.15,4.17,4.16,4.16],
+    chartData: [4.0,4.05,4.08,4.1,4.12,4.11,4.13,4.14,4.13,4.15,4.14,4.16,4.15,4.14,4.15,4.17,4.16,4.16],
+    sourceUrl: 'https://fred.stlouisfed.org/series/DGS2', sourceName: 'FRED / US Treasury',
+    zones: [
+      { label: 'accumulate', val: 'yield < 4.0%', color: 'green', next: 'policy expectations easing-friendly. next: yield rises above 4.0% -> watch' },
+      { label: 'watch', val: 'yield 4.0% - 5.0%', color: 'yellow', next: 'next down: yield < 4.0% -> accumulate. next up: yield > 5.0% -> derisk' },
+      { label: 'derisk', val: 'yield > 5.0%', color: 'red', next: 'market pricing restrictive Fed policy. next: yield drops below 5.0% -> watch' }
+    ],
+    zonePos: 0.38, desc: 'The 2-year Treasury yield tracks where the market thinks Fed policy is heading - it moves ahead of the Fed itself. Like the 10Y, it carries the flight-to-safety collapse check: a fast 2Y collapse means the market is suddenly pricing emergency cuts, which historically coincides with severe risk-off (fired in 2015-16, COVID, and the 2020 September retest in backtesting).'
   }
 ];
 
@@ -1658,7 +1702,9 @@ const CADENCE = {
   vixterm: 'updates daily (business days)',
   nfci: 'updates weekly (Wed)',
   claims: 'updates weekly (Thu)',
-  putcall: 'updates daily (after US close)'
+  putcall: 'updates daily (after US close)',
+  treasury10y: 'updates daily (business days)',
+  treasury2y: 'updates daily (business days)'
 };
 const SEV = { low: { cls: 'sev-low', color: 'var(--green)' }, med: { cls: 'sev-med', color: 'var(--yellow)' }, high: { cls: 'sev-high', color: 'var(--red)' } };
 
@@ -1847,6 +1893,16 @@ const SIGNPOST_STRESS_OVERRIDE_ZONES = {
 // independent of which zone the level currently sits in.
 const SIGNPOST_COLLAPSE_WATCH = { treasury10y: 0.15, treasury2y: 0.15 };
 
+// Signpost-only YoY scoring (2015-2026 backtest, 2,902 trading days): the broad dollar
+// index drifts structurally upward, so LEVEL zones can't work - a YoY surge is the
+// institutional stress read (dollar spike = global tightening). Backtested lift 2.4x,
+// fired in 2015-16, Q4 2018, COVID, and 2022. Values come from _spChartData (built in
+// loadFREDData); if there isn't enough history to compute YoY yet, dxy is skipped
+// rather than mis-scored on raw levels.
+const SIGNPOST_YOY_ZONES = {
+  dxy: { green: [-10, 4], yellow: [4, 8], red: [8, 30] },
+};
+
 // EXCLUDED from the signpost count: these five tiles show zones on their own cards but
 // do NOT feed the composite. Three reasons:
 //   1. debt and margin are structural dollar levels that only grow with the economy /
@@ -1861,11 +1917,16 @@ const SIGNPOST_COLLAPSE_WATCH = { treasury10y: 0.15, treasury2y: 0.15 };
 //      composite later - but only after re-running the backtest with them included.
 // Institutional practice (BofA-style signpost counts, GS FCI): keep the scored index
 // fixed to its validated inputs; show everything else as satellite context.
-// vixterm/nfci/claims/putcall: added per accuracy review as genuine institutional-grade
-// signals, but kept context-only for the same reason as geopol/feargreed - the 20/40/60%
-// action thresholds were calibrated on the original backtested input set. Candidates for
-// promotion into the composite after a re-run backtest.
-const SIGNPOST_CONTEXT_ONLY = new Set(['debt', 'spending', 'margin', 'geopol', 'feargreed', 'vixterm', 'nfci', 'claims', 'putcall']);
+// Membership set by the 2015-2026 re-run backtest (2,902 trading days, 9 drawdown
+// events >= 8%). PROMOTED to scored: vixterm (fired in 8/9 events, 1.9x lift - the only
+// input fast enough for vol-shock corrections) and nfci (near-zero noise, replaces the
+// credit tile whose FRED source is now truncated to 3 years and never triggered once in
+// its available window). DEMOTED to context: credit (see above). REJECTED from scoring:
+// claims (0.4x lift - jobless claims LAG equity corrections; still a valid recession
+// indicator, wrong tool for drawdown detection), putcall (1.3x lift + a 2019-2026 data
+// hole at the source - revisit once ~a year of live history accumulates), and the
+// structural/seasonal tiles (debt, spending, margin) plus unbacktested geopol/feargreed.
+const SIGNPOST_CONTEXT_ONLY = new Set(['debt', 'spending', 'margin', 'geopol', 'feargreed', 'claims', 'putcall', 'credit']);
 
 function computeSignposts() {
   const results = [];
@@ -1874,21 +1935,24 @@ function computeSignposts() {
     if (!cfg) return; // indicator without a real zone config - shouldn't happen, skip defensively
     if (SIGNPOST_CONTEXT_ONLY.has(ind.id)) return; // context tile - displayed but never scored (see set above)
 
-    const zones = SIGNPOST_STRESS_OVERRIDE_ZONES[ind.id] || cfg.zones;
+    const usingSp = !!(ind._spChartData && ind._spChartData.length);
+    if ((cfg.yoy || SIGNPOST_YOY_ZONES[ind.id]) && !usingSp) return; // YoY-scored series without enough history yet - skip rather than mis-score raw values
+    const zones = SIGNPOST_STRESS_OVERRIDE_ZONES[ind.id] || SIGNPOST_YOY_ZONES[ind.id] || cfg.zones;
     // Level check uses the override zone if one exists (recomputed from the raw current
-    // value, not ind.zonePos, since ind.zonePos was computed with the card's own zones)
-    // Same divide-before-zone-check fix as the card display (see loadFREDData) -
-    // chartData holds raw values, zones are defined in displayed-unit scale.
-    const currentRawUndivided = ind.chartData && ind.chartData.length ? ind.chartData[ind.chartData.length - 1] : null;
-    const currentRaw = (currentRawUndivided !== null && cfg.divide) ? currentRawUndivided / cfg.divide : currentRawUndivided;
+    // value, not ind.zonePos, since ind.zonePos was computed with the card's own zones).
+    // YoY-scored series (_spChartData) hold already-transformed % values - no divide.
+    const spSeries = usingSp ? ind._spChartData : ind.chartData;
+    const spVal = v => usingSp ? v : (cfg.divide ? v / cfg.divide : v);
+    const currentRawUndivided = spSeries && spSeries.length ? spSeries[spSeries.length - 1] : null;
+    const currentRaw = currentRawUndivided !== null ? spVal(currentRawUndivided) : null;
     const levelTriggered = currentRaw !== null
       ? computeZonePos(currentRaw, zones, cfg.redUpper) >= 0.66
       : ind.zonePos >= 0.66;
 
     let trendTriggered = false, trendDelta = null, collapseTriggered = false;
-    if (ind.chartData && ind.chartData.length >= SIGNPOST_TREND_LOOKBACK + 1) {
-      const series = ind.chartData;
-      const zonePosSeries = series.map(v => computeZonePos(cfg.divide ? v / cfg.divide : v, zones, cfg.redUpper));
+    if (spSeries && spSeries.length >= SIGNPOST_TREND_LOOKBACK + 1) {
+      const series = spSeries;
+      const zonePosSeries = series.map(v => computeZonePos(spVal(v), zones, cfg.redUpper));
       const recent = zonePosSeries[zonePosSeries.length - 1];
       const past = zonePosSeries[zonePosSeries.length - 1 - SIGNPOST_TREND_LOOKBACK];
       trendDelta = recent - past;
