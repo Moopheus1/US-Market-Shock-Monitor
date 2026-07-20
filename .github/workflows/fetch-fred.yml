@@ -46,7 +46,13 @@ jobs:
           fetch_series "DCOILWTICO"    "oil"
           fetch_series "CPIAUCSL"      "cpi"
           fetch_series "UNRATE"        "unemployment"
-          fetch_series "BAMLH0A0HYM2"  "credit"
+          # BUGFIX: was BAMLH0A0HYM2 (High Yield OAS) but the card's subtitle,
+          # zone thresholds (1.5/2.5/3.5%), and citation link were all calibrated
+          # for BAMLC0A0CM (Investment Grade OAS) - a materially different, less
+          # volatile series. Verified: live HY reading (~2.7%) vs IG reading (~0.78%)
+          # on the same date, ~3.5x apart. Switched fetch to match IG, since that's
+          # what the existing zones/subtitle/citation were built around.
+          fetch_series "BAMLC0A0CM"   "credit"
           fetch_series "WALCL"         "fedbal"
           fetch_series "UMCSENT"       "consumer"
           fetch_series "DGS10"         "treasury10y"

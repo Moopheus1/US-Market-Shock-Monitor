@@ -26,6 +26,9 @@
   .refresh-btn { font-size: 13px; color: var(--blue); cursor: pointer; background: none; border: 1px solid rgba(59,130,246,0.2); padding: 4px 10px; border-radius: 6px; transition: all 0.15s; }
   .refresh-btn:hover { background: var(--blue-dim); }
   .refresh-btn.spinning { animation: spin 1s linear infinite; }
+  .refresh-status { font-size: 11px; color: var(--text-muted); }
+  .refresh-status.err { color: var(--red); }
+  .refresh-status.ok { color: var(--green); }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   .signal-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
@@ -214,6 +217,7 @@
   .sev-med { background: var(--yellow-dim); color: var(--yellow); }
   .sev-high { background: var(--red-dim); color: var(--red); }
   .data-age { font-size: 11px; color: var(--text-muted); margin-left: 6px; }
+  .cadence-note { font-size: 11px; color: var(--text-muted); margin-left: 6px; opacity: 0.75; }
   .data-age.stale { color: var(--yellow); }
   .data-age.fresh { color: var(--green); }
   .source-link { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; text-decoration: none; }
@@ -310,6 +314,7 @@
       <div class="page-loaded-at" id="pageLoadedAt" title="When this page was last loaded/refreshed in your browser - not the same as how fresh the underlying data is, see each panel's own status for that">loading...</div>
       <div class="last-update" id="lastUpdate">loading...</div>
       <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh all data">↻ Refresh</button>
+      <span class="refresh-status" id="refreshStatus"></span>
     </div>
   </div>
 
@@ -1479,7 +1484,7 @@ const DEMO_INDICATORS = [
     value: '$742B', change: '-1.2%', changeDir: 'down', severity: 'med', severityLabel: 'declining',
     date: 'may 2026', sparkline: [780,775,770,765,760,755,750,748,745,743,742,741,742,742,742],
     chartData: [800,790,780,775,770,765,760,755,750,748,745,743,742,741,742,742,742,742,742],
-    sourceUrl: 'https://www.finra.org/investors/insights/margin-statistics', sourceName: 'FINRA',
+    sourceUrl: 'https://www.finra.org/rules-guidance/key-topics/margin-accounts', sourceName: 'FINRA',
     zones: [
       { label: 'accumulate', val: '< $0.9T', color: 'green', next: 'already contained. next: debt rises above $0.9T -> watch' },
       { label: 'watch', val: '$0.9T - $1.3T', color: 'yellow', next: 'next down: < $0.9T -> accumulate. next up: > $1.3T -> derisk' },
@@ -1557,7 +1562,7 @@ const DEMO_INDICATORS = [
     value: '142', change: '+8 pts', changeDir: 'up', severity: 'high', severityLabel: 'elevated',
     date: 'jul 2026', sparkline: [120,122,125,128,130,132,135,138,140,141,142,143,142,142,142],
     chartData: [100,105,110,115,120,122,125,128,130,132,135,138,140,141,142,143,142,142,142],
-    sourceUrl: 'https://www.matteoiacoviello.com/geopolitical_risk.htm', sourceName: 'Fed / Iacoviello',
+    sourceUrl: 'https://www.matteoiacoviello.com/gpr.htm', sourceName: 'Fed / Iacoviello',
     zones: [
       { label: 'accumulate', val: 'index < 100', color: 'green', next: 'already calm. next: index rises above 100 -> watch' },
       { label: 'watch', val: 'index 100 - 150', color: 'yellow', next: 'next down: index < 100 -> accumulate. next up: index > 150 -> derisk' },
@@ -1570,6 +1575,28 @@ const DEMO_INDICATORS = [
 let indicators = JSON.parse(JSON.stringify(DEMO_INDICATORS));
 
 const COLORS = { green: 'var(--green)', yellow: 'var(--yellow)', red: 'var(--red)' };
+// True publication cadence of each tile's underlying source - distinct from how often
+// the fetch workflow polls (several poll daily even though the source only updates
+// weekly/monthly, since polling is harmless and the workflow only commits on change).
+// Shown on cards so a same-day refresh with no visible change reads as "expected", not "broken".
+const CADENCE = {
+  vix: 'updates daily (business days)',
+  feargreed: 'updates daily',
+  dxy: 'updates daily (business days)',
+  yield10y2y: 'updates daily (business days)',
+  oil: 'updates daily (business days)',
+  debt: 'updates daily (business days)',
+  credit: 'updates daily (business days)',
+  spending: 'updates monthly',
+  cpi: 'updates monthly',
+  unemployment: 'updates monthly',
+  margin: 'updates monthly (~3wk lag)',
+  fedbal: 'updates weekly (Wed)',
+  m2: 'updates monthly',
+  cot: 'updates weekly (Fri)',
+  consumer: 'updates monthly',
+  geopol: 'updates weekly (Mon)'
+};
 const SEV = { low: { cls: 'sev-low', color: 'var(--green)' }, med: { cls: 'sev-med', color: 'var(--yellow)' }, high: { cls: 'sev-high', color: 'var(--red)' } };
 
 function buildSparkline(data, w, h) { const min = Math.min(...data), max = Math.max(...data), range = max - min || 1, step = w / (data.length - 1); let p = 'M0,' + (h - ((data[0] - min) / range) * h); for (let i = 1; i < data.length; i++) p += ' L' + (i * step) + ',' + (h - ((data[i] - min) / range) * h); return p; }
@@ -1613,11 +1640,12 @@ function renderCards() {
 
     // Data age badge
     const ageBadge = ind._dataAge ? dataAgeBadge(ind._dataAge) : '<span class="data-age">● demo</span>';
+    const cadenceNote = CADENCE[ind.id] ? '<span class="cadence-note">(' + CADENCE[ind.id] + ')</span>' : '';
 
     const card = document.createElement('div');
     card.className = 'card indicator-card';
     card.dataset.cat = ind.cat;
-    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
+    card.innerHTML = '<div class="card-top"><div class="card-title-wrap"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><div><div class="card-title">' + ind.title + '</div><div class="card-sub">' + ind.subtitle + '</div></div></div></div><div class="card-value-row"><div class="card-value">' + ind.value + '</div><div class="card-change ' + finalClass + '">' + arrow + ' ' + ind.change + '</div></div><svg class="card-sparkline" viewBox="0 0 240 36" preserveAspectRatio="none"><defs><linearGradient id="g-' + ind.id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + sev.color + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + sev.color + '" stop-opacity="0"/></linearGradient></defs><path d="' + areaPath + '" fill="url(#g-' + ind.id + ')" stroke="none"/><path d="' + sparkPath + '" fill="none" stroke="' + sev.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="th-strip"><div class="th-green-bg"></div><div class="th-yellow-bg"></div><div class="th-red-bg"></div><div class="th-marker" style="left:' + (ind.zonePos * 100) + '%;background:' + markerColor + '"></div></div><div class="th-labels"><span>accumulate</span><span>watch</span><span>derisk</span></div>' + zoneStrip + '<div class="th-current">current zone: <strong>' + currentZone.label + '</strong> — ' + currentZone.val + '</div><div class="card-footer"><span class="severity ' + sev.cls + '">' + ind.severityLabel + '</span><span>' + ageBadge + cadenceNote + '</span><a class="source-link" href="' + ind.sourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + linkSvg + ' ' + ind.sourceName + '</a></div>';
     card.onclick = () => {
       if (openDetailIndId === ind.id) closeDetail();
       else openDetail(ind, card);
@@ -1855,20 +1883,55 @@ function calcComposite() {
 // =========================================================
 async function manualRefresh() {
   const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spinning');
-  btn.textContent = 'Refreshing...';
+  const statusEl = document.getElementById('refreshStatus');
+  if (btn.classList.contains('spinning')) return; // already running, ignore double-click
 
-  await loadFREDData();
-  await loadBreadthData();
-  await loadNAAIMData();
-  await loadGoldData();
-  await loadBTCData();
-  await fetchRealtime();
-  renderCards();
-  calcComposite();
+  btn.classList.add('spinning');
+  btn.disabled = true;
+  btn.textContent = 'Refreshing...';
+  statusEl.textContent = '';
+  statusEl.className = 'refresh-status';
+
+  // Snapshot each indicator's displayed value before refetching, so we can tell the
+  // user how many tiles actually changed vs. how many just re-fetched the same static
+  // JSON unchanged (expected for the many tiles that only publish weekly/monthly -
+  // see the "(updates ...)" note on each card - not a sign the button is broken).
+  const before = {};
+  indicators.forEach(ind => { before[ind.id] = ind.value; });
+
+  let failed = false;
+  try {
+    await Promise.all([
+      loadFREDData(),
+      loadBreadthData(),
+      loadNAAIMData(),
+      loadGoldData(),
+      loadBTCData(),
+      fetchRealtime()
+    ]);
+    renderCards();
+    calcComposite();
+  } catch (e) {
+    console.error('manualRefresh failed', e);
+    failed = true;
+  }
+
+  const changedCount = indicators.filter(ind => before[ind.id] !== undefined && before[ind.id] !== ind.value).length;
+  const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   btn.classList.remove('spinning');
+  btn.disabled = false;
   btn.textContent = '↻ Refresh';
+
+  if (failed) {
+    statusEl.textContent = 'refresh hit an error - see console (F12)';
+    statusEl.className = 'refresh-status err';
+  } else {
+    statusEl.textContent = 'refreshed ' + now + ' - ' + changedCount + '/' + indicators.length + ' tiles changed';
+    statusEl.className = 'refresh-status ok';
+  }
+  // Clear the confirmation after a while so it doesn't look permanently "stuck"
+  setTimeout(() => { if (statusEl.textContent.indexOf('refreshed') === 0) statusEl.textContent = ''; }, 15000);
 }
 
 // =========================================================
