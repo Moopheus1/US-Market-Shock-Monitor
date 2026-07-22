@@ -1212,8 +1212,8 @@ async function loadBreadthData() {
     const total = d.upVolume + d.downVolume;
     const upPct = total > 0 ? (d.upVolume / total) * 100 : 50;
     el.querySelector('.breadth-item-bar').innerHTML =
-      '<div class="breadth-item-up" style="width:' + upPct.toFixed(1) + '%"></div>' +
-      '<div class="breadth-item-down" style="width:' + (100 - upPct).toFixed(1) + '%"></div>';
+      '<div class="breadth-item-down" style="width:' + (100 - upPct).toFixed(1) + '%"></div>' +
+      '<div class="breadth-item-up" style="width:' + upPct.toFixed(1) + '%"></div>';
     const pctEl = el.querySelector('.breadth-item-pct');
     pctEl.textContent = upPct.toFixed(0) + '% up-volume';
     pctEl.style.color = upPct > 55 ? 'var(--green)' : upPct < 45 ? 'var(--red)' : 'var(--text-secondary)';
