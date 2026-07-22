@@ -2,9 +2,9 @@
   "symbols": {
     "SPY": {
       "label": "S&P 500",
-      "upVolume": 11092568,
-      "downVolume": 14449745,
-      "flatVolume": 497873,
+      "upVolume": 11260207,
+      "downVolume": 14282842,
+      "flatVolume": 646684,
       "barsUsed": 390,
       "lastBarTimestamp": 1784750400
     },
@@ -18,25 +18,25 @@
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 1385221,
-      "downVolume": 1373174,
+      "upVolume": 1388978,
+      "downVolume": 1371204,
       "flatVolume": 42482,
       "barsUsed": 386,
       "lastBarTimestamp": 1784750400
     },
     "IWM": {
       "label": "Russell 2000",
-      "upVolume": 7566906,
-      "downVolume": 8203918,
+      "upVolume": 7566638,
+      "downVolume": 8251041,
       "flatVolume": 494659,
       "barsUsed": 390,
       "lastBarTimestamp": 1784750400
     }
   },
-  "totalUpVolume": 28978533,
-  "totalDownVolume": 33106156,
-  "upDownRatio": 0.875,
-  "_lastUpdated": "2026-07-22T20:00:36Z",
+  "totalUpVolume": 29149661,
+  "totalDownVolume": 32984406,
+  "upDownRatio": 0.884,
+  "_lastUpdated": "2026-07-22T20:15:20Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
