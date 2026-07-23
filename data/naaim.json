@@ -1,6 +1,6 @@
 {
-  "current": 95.64,
-  "postedLabel": "Thursday, July 16, 2026",
+  "current": 84.02,
+  "postedLabel": "Thursday, July 23, 2026",
   "history": [
     {
       "date": "2026-07-11",
@@ -11,9 +11,14 @@
       "date": "2026-07-16",
       "value": 95.64,
       "postedLabel": "Thursday, July 16, 2026"
+    },
+    {
+      "date": "2026-07-23",
+      "value": 84.02,
+      "postedLabel": "Thursday, July 23, 2026"
     }
   ],
-  "_lastFetched": "2026-07-23T11:00:36Z",
+  "_lastFetched": "2026-07-23T20:08:56Z",
   "_source": "https://naaim.org/programs/naaim-exposure-index/",
   "_fetchFailed": false,
   "_deprecationNote": "NAAIM stated this moves to subscription access effective Aug 1, 2026. If _fetchFailed is true after that date, this is why - see this workflow's file header for removal instructions."
