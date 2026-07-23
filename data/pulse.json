@@ -22,7 +22,7 @@
   "vix_spot": {
     "ticker": "^VIX",
     "current": 18.7,
-    "previous": 16.73
+    "previous": 18.77
   },
   "tnx": {
     "ticker": "^TNX",
@@ -31,7 +31,7 @@
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
-    "current": 101.452,
+    "current": 101.439,
     "previous": 100.99
   },
   "cl": {
@@ -39,6 +39,6 @@
     "current": 92.36,
     "previous": 83.23
   },
-  "_lastUpdated": "2026-07-23T21:15:24Z",
+  "_lastUpdated": "2026-07-23T21:30:29Z",
   "_failedSymbols": []
 }
