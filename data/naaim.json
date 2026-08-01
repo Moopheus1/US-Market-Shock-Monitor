@@ -23,8 +23,9 @@
       "postedLabel": "Thursday, July 23, 2026"
     }
   ],
-  "_lastFetched": "2026-07-31T16:44:35Z",
+  "_lastFetched": "2026-08-01T11:00:34Z",
   "_source": "https://naaim.org/programs/naaim-exposure-index/",
-  "_fetchFailed": false,
-  "_deprecationNote": "NAAIM stated this moves to subscription access effective Aug 1, 2026. If _fetchFailed is true after that date, this is why - see this workflow's file header for removal instructions."
+  "_fetchFailed": true,
+  "_deprecationNote": "NAAIM stated this moves to subscription access effective Aug 1, 2026. If this is failing on/after that date, that's expected - see this workflow's file header for removal instructions.",
+  "_fetchError": "Could not find NAAIM number in page - structure may have changed, or access may now require subscription (expected after Aug 1 2026)"
 }
