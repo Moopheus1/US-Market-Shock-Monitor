@@ -408,7 +408,7 @@
         <svg class="fomc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         <div>
           <div class="fomc-title">next FOMC meeting</div>
-          <div class="fomc-sub">federal reserve policy decision — jul 29-30, 2026</div>
+          <div class="fomc-sub" id="fomcSub">federal reserve policy decision — loading…</div>
           <div class="fomc-links">
             <a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> FOMC calendar &amp; statements</a>
             <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> rate decision probabilities (CME FedWatch)</a>
@@ -1843,7 +1843,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 function updateFOMC() {
-  const nextFOMC = new Date('2026-07-29T14:00:00-04:00');
+  const FOMC_MEETINGS=[{label:'Jul 28–Jul 29, 2026',decision:'2026-07-29T14:00:00-04:00'},{label:'Sep 15–Sep 16, 2026',decision:'2026-09-16T14:00:00-04:00'},{label:'Oct 27–Oct 28, 2026',decision:'2026-10-28T14:00:00-04:00'},{label:'Dec 8–Dec 9, 2026',decision:'2026-12-09T14:00:00-05:00'},{label:'Jan 26–Jan 27, 2027',decision:'2027-01-27T14:00:00-05:00'},{label:'Mar 16–Mar 17, 2027',decision:'2027-03-17T14:00:00-04:00'},{label:'Apr 27–Apr 28, 2027',decision:'2027-04-28T14:00:00-04:00'},{label:'Jun 8–Jun 9, 2027',decision:'2027-06-09T14:00:00-04:00'},{label:'Jul 27–Jul 28, 2027',decision:'2027-07-28T14:00:00-04:00'},{label:'Sep 14–Sep 15, 2027',decision:'2027-09-15T14:00:00-04:00'},{label:'Oct 26–Oct 27, 2027',decision:'2027-10-27T14:00:00-04:00'},{label:'Dec 7–Dec 8, 2027',decision:'2027-12-08T14:00:00-05:00'},{label:'Jan 25–Jan 26, 2028',decision:'2028-01-26T14:00:00-05:00'}]; const fomcNext=FOMC_MEETINGS.find(function(m){return new Date(m.decision)>new Date();}); const fomcSubEl=document.getElementById('fomcSub'); if(!fomcNext){ if(fomcSubEl) fomcSubEl.textContent='federal reserve policy decision — schedule needs updating, see federalreserve.gov'; document.getElementById('cdDays').textContent='—'; document.getElementById('cdHours').textContent='—'; document.getElementById('cdMins').textContent='—'; return; } if(fomcSubEl) fomcSubEl.textContent='federal reserve policy decision — ' + fomcNext.label; const nextFOMC = new Date(fomcNext.decision);
   const now = new Date();
   const diff = nextFOMC - now;
   if (diff > 0) {
