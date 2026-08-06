@@ -27,7 +27,7 @@
   "tnx": {
     "ticker": "^TNX",
     "current": 4.617,
-    "previous": 4.663
+    "previous": 4.745
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
@@ -39,6 +39,6 @@
     "current": 75.2,
     "previous": 80.34
   },
-  "_lastUpdated": "2026-08-06T12:15:33Z",
+  "_lastUpdated": "2026-08-06T12:30:33Z",
   "_failedSymbols": []
 }
