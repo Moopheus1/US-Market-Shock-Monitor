@@ -8,6 +8,14 @@
       "barsUsed": 390,
       "lastBarTimestamp": 1786392000
     },
+    "QQQ": {
+      "label": "NASDAQ 100",
+      "upVolume": 11305765,
+      "downVolume": 10994141,
+      "flatVolume": 333986,
+      "barsUsed": 390,
+      "lastBarTimestamp": 1786392000
+    },
     "DIA": {
       "label": "Dow 30",
       "upVolume": 1429007,
@@ -25,12 +33,10 @@
       "lastBarTimestamp": 1786392000
     }
   },
-  "totalUpVolume": 25369866,
-  "totalDownVolume": 22072415,
-  "upDownRatio": 1.149,
-  "_lastUpdated": "2026-08-11T08:30:30Z",
-  "_failedSymbols": [
-    "QQQ"
-  ],
+  "totalUpVolume": 36675631,
+  "totalDownVolume": 33066556,
+  "upDownRatio": 1.109,
+  "_lastUpdated": "2026-08-11T08:45:20Z",
+  "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
