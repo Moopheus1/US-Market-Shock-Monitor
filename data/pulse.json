@@ -6,7 +6,7 @@
   },
   "nq": {
     "ticker": "NQ=F",
-    "current": 29775.0,
+    "current": 29774.75,
     "previous": 29737.0
   },
   "ym": {
@@ -31,14 +31,14 @@
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
-    "current": 99.872,
+    "current": 99.873,
     "previous": 99.80999755859375
   },
   "cl": {
     "ticker": "CL=F",
-    "current": 84.13,
+    "current": 84.08,
     "previous": 82.12999725341797
   },
-  "_lastUpdated": "2026-08-11T10:30:31Z",
+  "_lastUpdated": "2026-08-11T10:30:43Z",
   "_failedSymbols": []
 }
