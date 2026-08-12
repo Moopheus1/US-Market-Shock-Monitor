@@ -2,9 +2,9 @@
   "symbols": {
     "SPY": {
       "label": "S&P 500",
-      "upVolume": 33079009,
-      "downVolume": 64565762,
-      "flatVolume": 843707,
+      "upVolume": 13933520,
+      "downVolume": 13691279,
+      "flatVolume": 843302,
       "barsUsed": 390,
       "lastBarTimestamp": 1786478400
     },
@@ -33,10 +33,10 @@
       "lastBarTimestamp": 1786478400
     }
   },
-  "totalUpVolume": 52677147,
-  "totalDownVolume": 85605615,
-  "upDownRatio": 0.615,
-  "_lastUpdated": "2026-08-12T06:00:33Z",
+  "totalUpVolume": 33531658,
+  "totalDownVolume": 34731132,
+  "upDownRatio": 0.965,
+  "_lastUpdated": "2026-08-12T06:15:22Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
