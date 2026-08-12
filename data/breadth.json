@@ -18,9 +18,9 @@
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 873122,
-      "downVolume": 1548741,
-      "flatVolume": 9554,
+      "upVolume": 873499,
+      "downVolume": 1548499,
+      "flatVolume": 9570,
       "barsUsed": 386,
       "lastBarTimestamp": 1786564800
     },
@@ -33,10 +33,10 @@
       "lastBarTimestamp": 1786564800
     }
   },
-  "totalUpVolume": 31149025,
-  "totalDownVolume": 32247135,
+  "totalUpVolume": 31149402,
+  "totalDownVolume": 32246893,
   "upDownRatio": 0.966,
-  "_lastUpdated": "2026-08-12T23:30:32Z",
+  "_lastUpdated": "2026-08-12T23:45:22Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
