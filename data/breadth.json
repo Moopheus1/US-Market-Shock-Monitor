@@ -18,25 +18,25 @@
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 1169337,
-      "downVolume": 1388934,
-      "flatVolume": 74366,
+      "upVolume": 1169218,
+      "downVolume": 1388912,
+      "flatVolume": 74348,
       "barsUsed": 388,
       "lastBarTimestamp": 1786478400
     },
     "IWM": {
       "label": "Russell 2000",
-      "upVolume": 6519080,
-      "downVolume": 5879734,
-      "flatVolume": 1010522,
+      "upVolume": 6518690,
+      "downVolume": 5889053,
+      "flatVolume": 1001454,
       "barsUsed": 390,
       "lastBarTimestamp": 1786478400
     }
   },
-  "totalUpVolume": 33532167,
-  "totalDownVolume": 34721835,
-  "upDownRatio": 0.966,
-  "_lastUpdated": "2026-08-12T07:15:23Z",
+  "totalUpVolume": 33531658,
+  "totalDownVolume": 34731132,
+  "upDownRatio": 0.965,
+  "_lastUpdated": "2026-08-12T07:30:36Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
