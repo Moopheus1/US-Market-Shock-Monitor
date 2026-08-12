@@ -1,10 +1,10 @@
 {
-  "price": 64067.19140625,
+  "price": 63437.421875,
   "prevClose": 63551.875,
-  "changePct": 0.810859484869644,
-  "change5d": -1.2530789172759478,
-  "change20d": -1.5029962516226794,
-  "_lastUpdated": "2026-08-12T13:01:44Z",
+  "changePct": -0.18009401768240513,
+  "change5d": -2.2237442584224802,
+  "change20d": -2.4712049481271086,
+  "_lastUpdated": "2026-08-12T22:20:23Z",
   "_source": "Yahoo Finance (BTC-USD)",
   "_fetchFailed": false
 }
