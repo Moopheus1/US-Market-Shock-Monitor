@@ -26,17 +26,17 @@
     },
     "IWM": {
       "label": "Russell 2000",
-      "upVolume": 6865456,
-      "downVolume": 16079177,
+      "upVolume": 6865375,
+      "downVolume": 6987469,
       "flatVolume": 129954,
       "barsUsed": 390,
       "lastBarTimestamp": 1786651200
     }
   },
-  "totalUpVolume": 186981361,
-  "totalDownVolume": 253436697,
-  "upDownRatio": 0.738,
-  "_lastUpdated": "2026-08-13T23:15:22Z",
+  "totalUpVolume": 186981280,
+  "totalDownVolume": 244344989,
+  "upDownRatio": 0.765,
+  "_lastUpdated": "2026-08-13T23:30:30Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
