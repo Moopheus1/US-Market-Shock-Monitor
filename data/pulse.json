@@ -1,4 +1,9 @@
 {
+  "es": {
+    "ticker": "ES=F",
+    "current": 7802.5,
+    "previous": 7822.5
+  },
   "nq": {
     "ticker": "NQ=F",
     "current": 30154.0,
@@ -34,8 +39,6 @@
     "current": 82.4,
     "previous": 81.25
   },
-  "_lastUpdated": "2026-08-14T23:30:31Z",
-  "_failedSymbols": [
-    "ES=F"
-  ]
+  "_lastUpdated": "2026-08-14T23:45:22Z",
+  "_failedSymbols": []
 }
