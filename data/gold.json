@@ -1,10 +1,10 @@
 {
-  "price": 4449.0,
+  "price": 4448.0,
   "prevClose": 4417.7998046875,
-  "changePct": 0.7062383243214208,
-  "change5d": 1.5058179329226558,
-  "change20d": 9.282500878848658,
-  "_lastUpdated": "2026-08-18T12:00:37Z",
+  "changePct": 0.6836026222930276,
+  "change5d": 1.483002509696555,
+  "change20d": 9.257937493620776,
+  "_lastUpdated": "2026-08-18T12:51:12Z",
   "_source": "Yahoo Finance (GC=F, COMEX gold futures)",
   "_fetchFailed": false
 }
