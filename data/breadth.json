@@ -10,17 +10,17 @@
     },
     "QQQ": {
       "label": "NASDAQ 100",
-      "upVolume": 19426479,
-      "downVolume": 23901318,
-      "flatVolume": 257992,
+      "upVolume": 324668461,
+      "downVolume": 155211512,
+      "flatVolume": 258033,
       "barsUsed": 390,
       "lastBarTimestamp": 1787083200
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 1614871,
-      "downVolume": 1556465,
-      "flatVolume": 110433,
+      "upVolume": 3371333,
+      "downVolume": 1556494,
+      "flatVolume": 110503,
       "barsUsed": 390,
       "lastBarTimestamp": 1787083200
     },
@@ -33,10 +33,10 @@
       "lastBarTimestamp": 1787083200
     }
   },
-  "totalUpVolume": 42832753,
-  "totalDownVolume": 52392955,
-  "upDownRatio": 0.818,
-  "_lastUpdated": "2026-08-19T03:00:38Z",
+  "totalUpVolume": 349831197,
+  "totalDownVolume": 183703178,
+  "upDownRatio": 1.904,
+  "_lastUpdated": "2026-08-19T03:15:22Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
