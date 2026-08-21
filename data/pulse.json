@@ -6,7 +6,7 @@
   },
   "nq": {
     "ticker": "NQ=F",
-    "current": 29503.75,
+    "current": 29501.75,
     "previous": 29300.5
   },
   "ym": {
@@ -39,6 +39,6 @@
     "current": 86.67,
     "previous": 87.83000183105469
   },
-  "_lastUpdated": "2026-08-21T12:00:29Z",
+  "_lastUpdated": "2026-08-21T12:00:37Z",
   "_failedSymbols": []
 }
