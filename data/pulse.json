@@ -22,23 +22,23 @@
   "vix_spot": {
     "ticker": "^VIX",
     "current": 14.43,
-    "previous": 15.210000038146973
+    "previous": 14.510000228881836
   },
   "tnx": {
     "ticker": "^TNX",
     "current": 4.72,
-    "previous": 4.664000034332275
+    "previous": 4.671999931335449
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
     "current": 99.677,
-    "previous": 99.16999816894531
+    "previous": 99.16000366210938
   },
   "cl": {
     "ticker": "CL=F",
     "current": 83.4,
     "previous": 82.2300033569336
   },
-  "_lastUpdated": "2026-08-29T16:30:30Z",
+  "_lastUpdated": "2026-08-29T16:45:23Z",
   "_failedSymbols": []
 }
