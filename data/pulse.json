@@ -27,18 +27,18 @@
   "tnx": {
     "ticker": "^TNX",
     "current": 4.7580004,
-    "previous": 4.671999931335449
+    "previous": 4.71999979019165
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
-    "current": 99.417,
-    "previous": 99.16000366210938
+    "current": 99.423,
+    "previous": 99.69999694824219
   },
   "cl": {
     "ticker": "CL=F",
     "current": 86.31,
     "previous": 83.4000015258789
   },
-  "_lastUpdated": "2026-08-31T21:15:24Z",
+  "_lastUpdated": "2026-08-31T21:30:31Z",
   "_failedSymbols": []
 }
