@@ -11,7 +11,7 @@
   },
   "ym": {
     "ticker": "YM=F",
-    "current": 53440.0,
+    "current": 53275.0,
     "previous": 53745.0
   },
   "rty": {
@@ -39,6 +39,6 @@
     "current": 91.22,
     "previous": 91.30000305175781
   },
-  "_lastUpdated": "2026-09-05T00:00:37Z",
+  "_lastUpdated": "2026-09-05T00:15:22Z",
   "_failedSymbols": []
 }
