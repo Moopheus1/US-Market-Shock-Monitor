@@ -18,7 +18,7 @@
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 1729858,
+      "upVolume": 1729860,
       "downVolume": 1551020,
       "flatVolume": 26677,
       "barsUsed": 390,
@@ -26,17 +26,17 @@
     },
     "IWM": {
       "label": "Russell 2000",
-      "upVolume": 8770004,
+      "upVolume": 8770044,
       "downVolume": 7312150,
       "flatVolume": 845925,
       "barsUsed": 390,
       "lastBarTimestamp": 1788984000
     }
   },
-  "totalUpVolume": 33505109,
+  "totalUpVolume": 33505151,
   "totalDownVolume": 34806349,
   "upDownRatio": 0.963,
-  "_lastUpdated": "2026-09-10T06:30:33Z",
+  "_lastUpdated": "2026-09-10T06:45:25Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
