@@ -1,22 +1,22 @@
 {
   "es": {
     "ticker": "ES=F",
-    "current": 7674.0,
+    "current": 7669.0,
     "previous": 7625.0
   },
   "nq": {
     "ticker": "NQ=F",
-    "current": 29383.5,
+    "current": 29349.75,
     "previous": 29152.25
   },
   "ym": {
     "ticker": "YM=F",
-    "current": 52672.0,
+    "current": 52646.0,
     "previous": 52440.0
   },
   "rty": {
     "ticker": "RTY=F",
-    "current": 2906.2,
+    "current": 2904.7,
     "previous": 2894.10009765625
   },
   "vix_spot": {
@@ -31,14 +31,14 @@
   },
   "dxy_spot": {
     "ticker": "DX-Y.NYB",
-    "current": 99.602,
+    "current": 99.614,
     "previous": 99.45999908447266
   },
   "cl": {
     "ticker": "CL=F",
-    "current": 103.3,
+    "current": 103.18,
     "previous": 101.38999938964844
   },
-  "_lastUpdated": "2026-09-15T05:00:38Z",
+  "_lastUpdated": "2026-09-15T05:15:21Z",
   "_failedSymbols": []
 }
