@@ -36,7 +36,7 @@
   "totalUpVolume": 63066702,
   "totalDownVolume": 60531381,
   "upDownRatio": 1.042,
-  "_lastUpdated": "2026-09-19T00:45:22Z",
+  "_lastUpdated": "2026-09-19T01:00:35Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
