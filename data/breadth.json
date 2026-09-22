@@ -2,41 +2,41 @@
   "symbols": {
     "SPY": {
       "label": "S&P 500",
-      "upVolume": 3816089,
-      "downVolume": 8469300,
-      "flatVolume": 164395,
-      "barsUsed": 149,
-      "lastBarTimestamp": 1790092740
+      "upVolume": 4164943,
+      "downVolume": 8674603,
+      "flatVolume": 164220,
+      "barsUsed": 164,
+      "lastBarTimestamp": 1790093640
     },
     "QQQ": {
       "label": "NASDAQ 100",
-      "upVolume": 7030252,
-      "downVolume": 5883093,
+      "upVolume": 8493181,
+      "downVolume": 6157579,
       "flatVolume": 326060,
-      "barsUsed": 149,
-      "lastBarTimestamp": 1790092740
+      "barsUsed": 164,
+      "lastBarTimestamp": 1790093640
     },
     "DIA": {
       "label": "Dow 30",
-      "upVolume": 505285,
-      "downVolume": 751373,
-      "flatVolume": 3349,
-      "barsUsed": 147,
-      "lastBarTimestamp": 1790092740
+      "upVolume": 544240,
+      "downVolume": 768809,
+      "flatVolume": 6386,
+      "barsUsed": 164,
+      "lastBarTimestamp": 1790093640
     },
     "IWM": {
       "label": "Russell 2000",
-      "upVolume": 4597493,
-      "downVolume": 4111816,
+      "upVolume": 4670165,
+      "downVolume": 4340875,
       "flatVolume": 64337,
-      "barsUsed": 149,
-      "lastBarTimestamp": 1790092740
+      "barsUsed": 164,
+      "lastBarTimestamp": 1790093640
     }
   },
-  "totalUpVolume": 15949119,
-  "totalDownVolume": 19215582,
-  "upDownRatio": 0.83,
-  "_lastUpdated": "2026-09-22T16:00:40Z",
+  "totalUpVolume": 17872529,
+  "totalDownVolume": 19941866,
+  "upDownRatio": 0.896,
+  "_lastUpdated": "2026-09-22T16:15:26Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
