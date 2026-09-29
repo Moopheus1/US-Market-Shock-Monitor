@@ -1047,6 +1047,18 @@ function updateBiasBar(bias) {
 const BREADTH_WEIGHT = 10; // same order of magnitude as VIX/MOO - meaningful but not dominant
 let breadthData = null;
 
+// True only when breadth.json's bars come from TODAY's US session (New York date).
+// Before the open, Yahoo's range=1d returns the PRIOR session's bars while the file's
+// _lastUpdated timestamp still looks fresh - so without this check, the 8pm SGT
+// "pre-market" score was silently including yesterday's up/down volume.
+function breadthIsTodaysSession(bd) {
+  if (!bd || !bd.symbols) return false;
+  const ts = Object.values(bd.symbols).map(s => s.lastBarTimestamp).filter(Boolean);
+  if (ts.length === 0) return false;
+  const nyDate = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(d);
+  return nyDate(new Date(Math.max(...ts) * 1000)) === nyDate(new Date());
+}
+
 // NAAIM SECTION START — see fetch-naaim.yml header for full removal instructions.
 // This entire block is self-contained: flip NAAIM_ENABLED to false to disable
 // without deleting code, or delete this whole block (through NAAIM SECTION END)
@@ -1198,8 +1210,9 @@ async function loadBreadthData() {
 
   const age = hoursAgo(breadthData._lastUpdated);
   const ageTxt = age < (1/60) ? 'just now' : age < 1 ? Math.round(age * 60) + 'm ago' : Math.round(age) + 'h ago';
-  statusEl.textContent = 'updated ' + ageTxt + (breadthData._failedSymbols && breadthData._failedSymbols.length ? ' · ' + breadthData._failedSymbols.length + ' symbol(s) failed' : '');
-  statusEl.className = 'breadth-status ' + (age < 1 ? 'live' : 'error');
+  const staleSession = !breadthIsTodaysSession(breadthData);
+  statusEl.textContent = (staleSession ? "previous session's data — not scored until today's open · " : '') + 'updated ' + ageTxt + (breadthData._failedSymbols && breadthData._failedSymbols.length ? ' · ' + breadthData._failedSymbols.length + ' symbol(s) failed' : '');
+  statusEl.className = 'breadth-status ' + (age < 1 && !staleSession ? 'live' : 'error');
 
   const ratio = breadthData.upDownRatio;
   const ratioEl = document.getElementById('breadthRatio');
@@ -1330,7 +1343,7 @@ function recomputeAndRenderBias() {
     });
   }
 
-  if (breadthData && breadthData.upDownRatio !== null && breadthData.upDownRatio !== undefined) {
+  if (breadthData && breadthData.upDownRatio !== null && breadthData.upDownRatio !== undefined && breadthIsTodaysSession(breadthData)) {
     const ratio = breadthData.upDownRatio;
     // log-scaled so it's symmetric: a 2x up/down ratio and a 0.5x ratio are equally extreme.
     // 2x treated as the "maxed out" reference point - a judgment call, not backtested,
