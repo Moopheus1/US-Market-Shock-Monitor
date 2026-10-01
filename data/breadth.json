@@ -3,7 +3,7 @@
     "SPY": {
       "label": "S&P 500",
       "upVolume": 18744137,
-      "downVolume": 20704669,
+      "downVolume": 20704605,
       "flatVolume": 197646,
       "barsUsed": 390,
       "lastBarTimestamp": 1790884800
@@ -11,7 +11,7 @@
     "QQQ": {
       "label": "NASDAQ 100",
       "upVolume": 15230449,
-      "downVolume": 16502863,
+      "downVolume": 16410765,
       "flatVolume": 46798,
       "barsUsed": 390,
       "lastBarTimestamp": 1790884800
@@ -34,9 +34,9 @@
     }
   },
   "totalUpVolume": 52281723,
-  "totalDownVolume": 52702180,
-  "upDownRatio": 0.992,
-  "_lastUpdated": "2026-10-01T21:30:28Z",
+  "totalDownVolume": 52610018,
+  "upDownRatio": 0.994,
+  "_lastUpdated": "2026-10-01T21:45:20Z",
   "_failedSymbols": [],
   "_methodology": "Bar-direction proxy (1-min bar volume classified by close vs prior close), NOT tick-level aggressor-side (Lee-Ready) volume - that requires paid NBBO quote data."
 }
